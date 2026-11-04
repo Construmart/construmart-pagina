@@ -1,6 +1,4 @@
 # Construmart Ferretería
 
-Página web de Construmart: catálogo y cotización por WhatsApp.
-
-- `/` página principal
-- `/mart/` versión de prueba con el branding de Mart
+Página web de Construmart con Mart: catálogo, Pregúntale a Mart y cotización por WhatsApp.
+Se publica sola en Cloudflare cada vez que cambia esta carpeta.

@@ -2,22 +2,23 @@
 <title>Construmart Ferretería</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,800;1,900&display=swap">
 <style>
 /* Layout: réplica de la maqueta — encabezado blanco, franja negra con pestaña naranja, menú lateral + banner, beneficios, productos destacados; vistas por categoría y cotización */
 :root{
-  --page:#2b2b2b; --bg:#ffffff; --soft:#f6f5f3; --ink:#1d1d1f; --muted:#6e6c69; --line:#e7e5e1;
-  --accent:#f26a1b; --accent-ink:#ffffff; --accent-soft:#fff3eb; --band:#1e1e1f; --band-ink:#f1efeb; --ok:#1f8a4c;
+  --page:#343639; --bg:#ffffff; --soft:#F5EBDD; --ink:#343639; --muted:#6d6862; --line:#eadfcf;
+  --accent:#FF6A00; --accent-ink:#ffffff; --accent-soft:#FFF1E4; --band:#343639; --band-ink:#F5EBDD; --ok:#1f8a4c;
+  --cream:#F5EBDD; --cream-page:#FBF6EE;
   --logo-bg:transparent; --logo-pad:0; --map-bg:#efebe4; --map-road:#ffffff; --map-line:#e2b48f; --map-water:#a9cfe8; --map-park:#cfe3c1;
-  --display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
-  --body:"Inter","Segoe UI",Roboto,Arial,sans-serif;
+  --display:"Montserrat","Segoe UI",Arial,sans-serif;
+  --body:"Montserrat","Segoe UI",Roboto,Arial,sans-serif;
 }
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+@media (prefers-color-scheme: dark) and (max-width:0px){:root:not([data-theme="light"]){
   --page:#0e0e0f; --bg:#18181a; --soft:#202022; --ink:#f1efeb; --muted:#a29f9a; --line:#2f2e2c;
-  --accent:#ff7a2e; --accent-ink:#1a0e05; --accent-soft:#2b1c12; --band:#0d0d0e; --band-ink:#f1efeb; --ok:#4fc17f; --logo-bg:#f4f2ee; --logo-pad:4px 8px; --map-bg:#26282b; --map-road:#3a3d42; --map-line:#7a5638; --map-water:#1f3a4d; --map-park:#24372a; color-scheme:dark}}
-:root[data-theme="dark"]{
+  --accent:#FF7A1A; --accent-ink:#1a0e05; --accent-soft:#2b1c12; --band:#0d0d0e; --band-ink:#f1efeb; --ok:#4fc17f; --logo-bg:#f4f2ee; --logo-pad:4px 8px; --map-bg:#26282b; --map-road:#3a3d42; --map-line:#7a5638; --map-water:#1f3a4d; --map-park:#24372a; color-scheme:dark}}
+:root[data-theme="sin-modo-oscuro"]{
   --page:#0e0e0f; --bg:#18181a; --soft:#202022; --ink:#f1efeb; --muted:#a29f9a; --line:#2f2e2c;
-  --accent:#ff7a2e; --accent-ink:#1a0e05; --accent-soft:#2b1c12; --band:#0d0d0e; --band-ink:#f1efeb; --ok:#4fc17f; --logo-bg:#f4f2ee; --logo-pad:4px 8px; --map-bg:#26282b; --map-road:#3a3d42; --map-line:#7a5638; --map-water:#1f3a4d; --map-park:#24372a; color-scheme:dark}
+  --accent:#FF7A1A; --accent-ink:#1a0e05; --accent-soft:#2b1c12; --band:#0d0d0e; --band-ink:#f1efeb; --ok:#4fc17f; --logo-bg:#f4f2ee; --logo-pad:4px 8px; --map-bg:#26282b; --map-road:#3a3d42; --map-line:#7a5638; --map-water:#1f3a4d; --map-park:#24372a; color-scheme:dark}
 
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:14px;line-height:1.45}
@@ -403,18 +404,120 @@ footer b.f{font-family:var(--display);font-size:22px;letter-spacing:.3px}
   .steps{grid-template-columns:1fr!important}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+/* ===== Branding Mart ===== */
+html,:root{color-scheme:light}
+body{background:var(--cream-page);color:var(--ink)}
+.hero{height:auto!important;aspect-ratio:1671/941;max-height:none}
+.hero .dots{left:auto!important;right:14px;bottom:10px;transform:none}
+.hero .ad-main{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;box-shadow:none}
+:root:not([data-theme="dark"]) .top{background:#fff}
+.logo img{height:68px}
+.flogo{background:var(--cream);padding:8px 12px;border-radius:8px}
+.flogo img{height:62px}
+.band-brand{font-family:var(--display);font-weight:900;font-size:19px;letter-spacing:.5px}
+.cat-banner h1{font-size:26px;font-weight:900;letter-spacing:0}
+.sub-band{font-size:19px;font-weight:800;letter-spacing:0}
+.slide h1{font-weight:900;letter-spacing:0}
+.slide-brand{font-weight:900}
+.sec-head h2{font-size:19px;font-weight:800}
+.card h3{font-weight:600}
+.steps b{font-weight:900}
+.card{border-color:var(--line)}
+.addbtn,.btn-primary,.mart-btn{font-weight:700}
+.mart-hi{position:relative;display:grid;grid-template-columns:200px 1fr;gap:22px;align-items:center;margin:18px 0 6px;padding:18px 24px 18px 18px;border-radius:12px;background:var(--cream);overflow:hidden}
+.mart-hi::before{content:"";position:absolute;left:-40px;top:50%;width:250px;height:250px;border-radius:50%;background:var(--accent);opacity:.92;transform:translateY(-50%)}
+.mart-pic{position:relative;height:190px;display:flex;justify-content:center}
+.mart-pic img{height:210px;width:auto;margin-top:-6px;filter:drop-shadow(0 6px 10px rgba(0,0,0,.18))}
+.mart-txt{position:relative;color:#343639}
+.mart-tag{display:inline-block;background:#343639;color:var(--cream);font-size:11px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;border-radius:20px;padding:4px 11px;margin-bottom:8px}
+.mart-hi h2{font-family:var(--display);font-weight:900;font-size:clamp(20px,2.4vw,26px);line-height:1.15;margin:0 0 6px}
+.mart-hi p{margin:0 0 6px;font-size:14px;line-height:1.45}
+.mart-lema{font-weight:800;font-style:italic;color:var(--accent)}
+.mart-btn{display:inline-flex;align-items:center;gap:8px;margin-top:6px;background:var(--accent);color:#fff;text-decoration:none;border-radius:8px;padding:10px 18px;font-size:14px}
+.mart-btn:hover{filter:brightness(1.06)}
+.mart-empty{display:flex;align-items:center;gap:16px;background:var(--cream);border-radius:12px;padding:16px 20px;margin:6px 0 12px;color:#343639}
+.mart-empty img{width:96px;height:auto;flex:none}
+.mart-empty p{margin:0;font-size:14px;line-height:1.5}
+.empty-mart{display:block;width:80px;height:auto;margin:0 auto 8px}
+.cat-img{margin-bottom:16px;border-radius:10px;overflow:hidden;line-height:0;background:var(--cream)}
+.cat-img img{display:block;width:100%;height:auto}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.cot-mart{position:relative;overflow:hidden;padding-block:14px}
+.cot-mart img{width:86px;height:auto;flex:none;filter:drop-shadow(0 4px 8px rgba(0,0,0,.3))}
+.gratis-tag{display:inline-block;vertical-align:middle;background:var(--ok);color:#fff;font-size:12px;font-weight:800;letter-spacing:.6px;border-radius:5px;padding:3px 8px;margin-left:6px}
+@media (max-width:680px){.cot-mart img{width:64px}.gratis-tag{font-size:10px}}
+.cotiza{padding-block:4px}
+.cotiza-mart{width:42px;height:auto;flex:none;margin:-4px 0}
+@media (max-width:680px){.cotiza-mart{width:32px}}
+.mart-more{margin-top:22px}
+.mart-more a{color:var(--accent);font-weight:700}
+.qa-mart{display:flex;align-items:center;gap:12px;margin:10px 0 8px}
+.qa-mart img{width:64px;height:auto;flex:none}
+.qa-mart .qlabel{margin:0;font-weight:500;line-height:1.35}
+.qa-mart .qlabel span{display:block;font-size:15px;font-weight:800;color:var(--ink)}
+.sent-mart{width:190px;height:auto;flex:none;align-self:center}
+.sent h2{font-weight:900}
+.sent-lead{font-weight:800;color:var(--accent);margin:2px 0 6px}
+@media (max-width:680px){.sent{flex-direction:column;align-items:center;text-align:center}.sent-mart{width:170px}}
+@media (max-width:680px){
+  .mart-hi{grid-template-columns:110px 1fr;gap:12px;padding:14px 14px 14px 10px}
+  .mart-hi::before{width:160px;height:160px;left:-34px}
+  .mart-pic{height:150px}
+  .mart-pic img{height:158px}
+  .mart-hi p{font-size:13px}
+  .mart-tag{font-size:10px}
+  .logo img{height:54px}
+  .mart-empty{flex-direction:column;text-align:center}
+}
+/* Pregúntale a Mart */
+.dudas-head{display:flex;align-items:center;gap:18px;background:var(--cream);border-radius:12px;padding:16px 22px;margin-bottom:14px}
+.dudas-head img{width:110px;height:auto;flex:none}
+.dudas-head h1{font-family:var(--display);font-weight:900;font-size:30px;line-height:1.1;margin:4px 0 6px;color:var(--ink)}
+.dudas-head p{margin:0;font-size:14px;line-height:1.5;color:var(--ink)}
+.dfil{display:flex;gap:8px;overflow-x:auto;padding:2px 0 12px;scrollbar-width:none}
+.dfil::-webkit-scrollbar{display:none}
+.dfil button{flex:none;border:1px solid var(--line);background:var(--bg);border-radius:30px;padding:7px 14px;font:inherit;font-size:13px;font-weight:600;color:var(--ink);cursor:pointer}
+.dfil button.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.dgroup{margin-bottom:18px}
+.dgroup h2{font-size:13px;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);font-weight:800;margin:6px 0 8px}
+.duda{background:var(--bg);border:1px solid var(--line);border-radius:10px;margin-bottom:8px}
+.duda summary{list-style:none;display:flex;align-items:center;gap:10px;justify-content:space-between;padding:14px 16px;font-weight:700;font-size:15px;cursor:pointer;color:var(--ink)}
+.duda summary::-webkit-details-marker{display:none}
+.dchev{flex:none;color:var(--accent);transition:transform .2s}
+details[open]>summary .dchev{transform:rotate(180deg)}
+.duda[open]{border-color:var(--accent)}
+.duda-a{padding:0 16px 14px;font-size:14px;line-height:1.55;color:var(--ink)}
+.duda-a p{margin:0 0 8px}
+.duda-ver{display:inline-flex;align-items:center;gap:5px;color:var(--accent);font-weight:700;font-size:13.5px;text-decoration:none}
+.dcat{background:var(--cream);border-radius:10px;margin:0 0 16px}
+.dcat>summary{list-style:none;display:flex;align-items:center;gap:12px;padding:8px 16px 8px 10px;cursor:pointer}
+.dcat>summary::-webkit-details-marker{display:none}
+.dcat>summary img{width:46px;height:auto;flex:none}
+.dcat>summary span{flex:1;display:grid;line-height:1.25;color:var(--ink)}
+.dcat>summary b{font-size:15px;font-weight:800}
+.dcat>summary small{font-size:12.5px;color:var(--muted)}
+.dcat-list{padding:0 12px 12px}
+.dcat-all{display:inline-block;margin-top:4px;color:var(--accent);font-weight:700;font-size:13.5px;text-decoration:none}
+.duda-link{display:inline-flex;align-items:center;gap:5px;margin:4px 0 2px;font-size:12px;font-weight:700;color:var(--accent);text-decoration:none;line-height:1.2}
+.duda-link .ic{width:15px;height:15px;flex:none}
+.side a.mart-q svg.ic{color:var(--accent)}
+.mart-btns{display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center}
+.mart-btn2{display:inline-flex;align-items:center;gap:6px;border:2px solid var(--ink);color:var(--ink);border-radius:8px;padding:9px 14px;font-weight:800;font-size:14px;text-decoration:none}
+.mart-btn2:hover{border-color:var(--accent);color:var(--accent)}
+@media (max-width:680px){.dudas-head{padding:12px 14px;gap:12px}.dudas-head img{width:76px}.dudas-head h1{font-size:23px}.dudas-head p{font-size:13px}.duda summary{font-size:14.5px;padding:13px 14px}.mart-btn2{font-size:13px;padding:8px 12px}}
+.mart-btns{margin-top:6px}.mart-btns .mart-btn{margin-top:0}
 </style>
 
 <header class="top">
   <div class="wrap">
-    <a class="logo" href="#inicio"><img src="logo-construmart.png" alt="Construmart Ferretería" width="230" height="53"></a>
+    <a class="logo" href="#inicio"><img src="marca/logo-construmart.png" alt="Construmart. Tu proyecto, nuestro compromiso." width="240" height="81"></a>
     <form class="search" id="searchForm" role="search">
       <select id="scope" aria-label="Categoría de búsqueda"><option value="">Todas las categorías</option></select>
       <input id="q" type="search" placeholder="Buscar productos, marcas y más..." aria-label="Buscar productos">
       <button type="submit" aria-label="Buscar"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg></button>
     </form>
     <a class="cotiza" href="#cotizacion">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4M9 12h7M9 16h5"/></svg>
+      <img class="cotiza-mart" src="marca/mart-lentes-v2.png" alt="" width="295" height="300">
       <span><strong>Cotiza tu proyecto <em class="free">GRATIS</em></strong><small>Recibe una cotización</small></span>
     </a>
     
@@ -449,8 +552,8 @@ footer b.f{font-family:var(--display);font-size:22px;letter-spacing:.3px}
 
 <footer>
   <div class="wrap">
-    <div><span class="flogo"><img src="logo-construmart.png" alt="Construmart Ferretería" width="190" height="44"></span><p>Cotiza en línea y recoge en tienda.</p></div>
-    <div><strong>Visítanos</strong><p>Matriz · C. Río Suchiate 616</p><p>Sucursal Armadillo · Palomas 636</p><p><a href="#recoge" style="color:inherit">Ver mapas y horarios</a></p></div>
+    <div><span class="flogo"><img src="marca/logo-construmart.png" alt="Construmart. Tu proyecto, nuestro compromiso." width="240" height="81"></span><p>Cotiza en línea y recoge en tienda.</p></div>
+    <div><strong>Visítanos</strong><p>Matriz · C. Río Suchiate 616</p><p>Sucursal Armadillo · Palomas 636</p><p><a href="#recoge" style="color:inherit">Ver mapas y horarios</a></p><p><a href="#dudas" style="color:inherit">Pregúntale a Mart</a></p></div>
     <div class="fphones" id="fphones"><strong>Contacto</strong></div>
   </div>
 </footer>
@@ -905,7 +1008,7 @@ function cardFull(p){ // con cantidad, para la vista de categoría
   const sel=p.variants&&p.variants.length>1?`${p.elige?`<label class="elige" for="v-${p.id}">${esc(p.elige)}</label>`:""}<select id="v-${p.id}" required aria-label="${esc(p.elige||"Presentación")}"><option value="" disabled selected>Selecciona una opción</option>${p.variants.map(v=>`<option>${esc(v)}</option>`).join("")}</select>`:"";
   const spec=p.spec||(p.variants&&p.variants.length===1?p.variants[0]:"");
   return `<article class="card" data-id="${p.id}">${rapBadge(p)}${galeria(p).length>1?`<div class="pic rot">${rotHTML(p,galeria(p))}</div>`:`<div class="pic">${p.variants&&p.variants.length>1&&!p.photo?picV(p,p.variants[0]):pic(p)}</div>`}
-  <div class="brand${p.brand==="Material"?" generic":""}">${p.brand==="Material"?"Material de obra":esc(p.brand)}</div><h3>${p.name}</h3>${descBox(p.desc)}${spec?`<div class="spec">${esc(spec)}</div>`:""}${sel}${!sel&&p.elige?`<label class="elige elige-qty" for="n-${p.id}">${esc(p.elige)}</label>`:""}
+  <div class="brand${p.brand==="Material"?" generic":""}">${p.brand==="Material"?"Material de obra":esc(p.brand)}</div><h3>${p.name}</h3>${dudaLink(p)}${descBox(p.desc)}${spec?`<div class="spec">${esc(spec)}</div>`:""}${sel}${!sel&&p.elige?`<label class="elige elige-qty" for="n-${p.id}">${esc(p.elige)}</label>`:""}
   <div class="foot"><div class="qty"><button type="button" data-step="-1" aria-label="Menos">−</button><input id="n-${p.id}" type="number" min="1" value="1" aria-label="Cantidad"><button type="button" data-step="1" aria-label="Más">+</button></div>
   <button class="addbtn" type="button" data-addfull="${p.id}">${cartSvg}Agregar</button></div>
   ${p.unit?`<div class="spec" style="font-size:11.5px">Cantidad en ${UNIT[unitKey(p)][1]}</div>`:""}</article>`;
@@ -914,9 +1017,9 @@ function cardFull(p){ // con cantidad, para la vista de categoría
 // ===== Vistas =====
 let slideIx=0,slideTimer=null;
 const SLIDES=[
- {img:"banner-moctezuma.jpg",href:"#construccion",alt:"Cementos Moctezuma: cotiza en un clic, construye ahora. Ir a Construcción"},
- {img:"banner-truper.jpg",href:"#herramientas-manuales",alt:"Herramientas Truper. Ir a Herramientas manuales"},
- {img:"banner-acero.jpg",href:"#metal",alt:"Construmart: el acero que tu obra necesita. Cotiza ahora. Ir a Metal"},
+ {img:"marca/banner-inicio-v2.jpg",href:"#construccion",alt:"Construmart: tu obra empieza aquí. Cemento gris, mortero y cemento blanco Moctezuma. Cotiza ahora. Ir a Construcción"},
+ {img:"marca/banner-texturas-v2.jpg",href:"#construccion",alt:"Textura, color y acabado en un solo lugar: Econotex de Niasa, Adestuk de ADE 1000 y Adeblok Plus de Cemix. Cotiza ahora. Ir a Construcción"},
+ {img:"marca/banner-pegapisos-v2.jpg",href:"#construccion",alt:"Firmeza desde la base: pegapiso Unicerámica, Pegapiso ADE 1000 y Pegamix pisos y mármol gris de Cemix. Cotiza ahora. Ir a Construcción"},
 ];
 function heroArt(kind){
   const g=(id,x,y,s,r=0)=>`<g transform="translate(${x},${y}) rotate(${r}) scale(${s})">${typeof D[id]==="function"?D[id]({label:"CEMENTO",color:"#8b8f94"}):D[id]}</g>`;
@@ -937,7 +1040,16 @@ function viewHome(){
     <div class="perk"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"/><path d="m9 12 2 2 4-4"/></svg><div><strong>Cotiza sin compromiso</strong><small>Precio y existencia por WhatsApp</small></div></div>
     <div class="perk"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="9" r="6"/><path d="m9 14-2 7 5-3 5 3-2-7"/></svg><div><strong>Productos originales</strong><small>Garantía de fábrica</small></div></div>
     <div class="perk"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 14v-2a8 8 0 0 1 16 0v2"/><rect x="3" y="14" width="4" height="6" rx="1"/><rect x="17" y="14" width="4" height="6" rx="1"/></svg><div><strong>Asesoría personalizada</strong><small>Estamos para ayudarte</small></div></div>
-  </div>`;
+  </div>
+  <section class="mart-hi" aria-label="Mart, el oso constructor">
+    <div class="mart-pic"><img src="marca/mart.png" alt="Mart, el oso constructor de Construmart, con el pulgar arriba" width="471" height="700"></div>
+    <div class="mart-txt"><span class="mart-tag">Mart · el oso constructor</span>
+      <h2>¡Hola! Soy Mart, estoy para ayudarte en tu obra.</h2>
+      <p>Arma tu lista, mándanos tu cotización por WhatsApp y recoge en tienda. Sin filas y sin compromiso.</p>
+      <p class="mart-lema">Tu proyecto, nuestro compromiso.</p>
+      <div class="mart-btns"><a class="mart-btn" href="#cotizacion">Cotiza tu proyecto <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8"><path d="m9 6 6 6-6 6"/></svg></a><a class="mart-btn2" href="#dudas">¿Dudas? Pregúntale a Mart</a></div>
+    </div>
+  </section>`;
   const rap=RAPIDOS();
   $("#below").innerHTML=`${rap.length?`<section class="sec"><div class="sec-head rap-head"><h2>${RAYO.replace("<svg",'<svg width="20" height="20"')}Entrega inmediata</h2><a href="#entrega-inmediata">Ver todos (${rap.length}) <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="m9 6 6 6-6 6"/></svg></a></div>
   <div class="grid5">${rap.slice(0,5).map(cardFull).join("")}</div></section>`:""}<section class="sec"><div class="sec-head"><h2>Productos destacados</h2><a href="#herramientas-manuales">Ver todos <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="m9 6 6 6-6 6"/></svg></a></div>
@@ -948,17 +1060,19 @@ function viewHome(){
 }
 // ===== Banners por categoría (se administran en el Catálogo, por identificador de categoría) =====
 const BANNERS={};
+// Portadas de categoría con el branding Mart
+const CATIMG={construccion:"marca/cat-construccion.jpg","seguridad-industrial":"marca/cat-seguridad.jpg",pintura:"marca/cat-pintura.jpg",limpieza:"marca/cat-limpieza.jpg",ferreteria:"marca/cat-ferreteria.jpg",mallas:"marca/cat-mallas.jpg","herramientas-electricas":"marca/cat-herramientas-electricas.jpg",jardineria:"marca/cat-jardineria.jpg",impermeabilizantes:"marca/cat-impermeabilizantes.jpg",metal:"marca/cat-metal.jpg",plomeria:"marca/cat-plomeria.jpg","material-electrico":"marca/cat-material-electrico.jpg","herramientas-manuales":"marca/cat-herramientas-manuales.jpg"};
 // ===== Subcategorías: orden y banner delgado (computadora 1920x320, celular 1080x400). Sin banner se muestra una franja con el nombre =====
 const SUBS={
  construccion:[
-  {name:"Cementos y morteros",d:"banners/construccion-cementos_computadora.jpg",m:"banners/construccion-cementos_celular.jpg"},
-  {name:"Block, ladrillo y agregados",d:"banners/construccion-block_computadora.jpg",m:"banners/construccion-block_celular.jpg"},
-  {name:"Pegapisos y pegazulejos",d:"banners/construccion-pegapisos_computadora.jpg",m:"banners/construccion-pegapisos_celular.jpg"},
-  {name:"Acabados para muros",d:"banners/construccion-acabados_computadora.jpg",m:"banners/construccion-acabados_celular.jpg"},
+  {name:"Cementos y morteros"},
+  {name:"Block, ladrillo y agregados"},
+  {name:"Pegapisos y pegazulejos"},
+  {name:"Acabados para muros"},
  ],
  plomeria:[
-  {name:"PVC",d:"banners/plomeria-pvc_computadora.jpg",m:"banners/plomeria-pvc_celular.jpg"},
-  {name:"CPVC",d:"banners/plomeria-cpvc_computadora.jpg",m:"banners/plomeria-cpvc_celular.jpg"},
+  {name:"PVC"},
+  {name:"CPVC"},
   {name:"PPR"},{name:"Cobre"},{name:"Galvanizado"},
  ],
 };
@@ -984,10 +1098,12 @@ function subsHTML(slug,all){
 function viewCat(slug){
   const c=catBy(slug), all=P.filter(p=>p.cat===slug&&!p.hidden), list=P.filter(p=>p.cat===slug&&!p.group&&!p.hidden), obra=P.filter(p=>p.cat===slug&&p.group);
   $("#view").innerHTML=`<div class="crumbs"><a href="#inicio">Inicio</a><span>›</span><span>${c.name}</span></div>
-  <div class="cat-banner${showHero(slug)?" slim":""}">${cIcon(slug,"")}<div><h1>${c.name}</h1><p>${c.blurb} Agrega a tu lista los que necesites y te cotizamos.</p></div></div>
+  ${CATIMG[slug]?`<div class="cat-img"><img src="${CATIMG[slug]}" alt="${c.name}: ${c.blurb}"></div><h1 class="sr-only">${c.name}</h1>`:`<div class="cat-banner${showHero(slug)?" slim":""}">${cIcon(slug,"")}<div><h1>${c.name}</h1><p>${c.blurb} Agrega a tu lista los que necesites y te cotizamos.</p></div></div>`}
+  ${dudasCat(slug)}
   ${all.some(p=>p.sub)?subsHTML(slug,all):`<div class="grid5" id="catGrid">${list.map(cardFull).join("")}</div>
   ${obra.length?`<div class="sec-head" style="margin-top:24px"><h2>Materiales para obra</h2></div><div class="grid5">${obra.map(cardFull).join("")}</div>`:""}`}
-  ${!list.length&&!obra.length?`<p class="note" style="font-size:15px;color:var(--ink)">Muy pronto verás aquí nuestros productos de ${c.name.toLowerCase()}. Mientras tanto, escribe lo que buscas en “¿No encuentras lo que buscabas?” de tu lista y te lo cotizamos.</p>`:""}
+  ${!list.length&&!obra.length?`<div class="mart-empty"><img src="marca/mart-pensando-v2.png" alt="" width="300" height="292"><p><strong>¡Mart está acomodando los anaqueles!</strong><br>Muy pronto verás aquí nuestros productos de ${c.name.toLowerCase()}. Mientras tanto, escribe lo que buscas en “¿No encuentras lo que buscabas?” de tu lista y te lo cotizamos.</p></div>`:""}
+  ${list.length||obra.length?`<div class="mart-empty mart-more"><img src="marca/mart-guino-v2.png" alt="" width="290" height="300"><p><strong>¡Mart sigue acomodando los anaqueles!</strong><br>Muy pronto verás más productos de ${c.name.toLowerCase()}. ¿No encuentras lo que buscas? Escríbelo en “¿No encuentras lo que buscabas?” de <a href="#cotizacion">tu cotización</a> y te lo conseguimos.</p></div>`:""}
   <p class="note">Precio y existencia se confirman en tu cotización.</p>`;
   $("#below").innerHTML="";
 }
@@ -1008,7 +1124,7 @@ function viewSearch(q,scope){
   const list=P.filter(p=>!p.hidden&&(!scope||p.cat===scope)&&norm([p.name,p.spec,p.brand,catBy(p.cat).name,(p.variants||[]).join(" ")].join(" ")).includes(norm(q)));
   $("#view").innerHTML=`<div class="crumbs"><a href="#inicio">Inicio</a><span>›</span><span>Búsqueda</span></div>
   <div class="sec-head"><h2>${list.length} resultado${list.length===1?"":"s"} para “${esc(q)}”${scope?` en ${catBy(scope).name}`:""}</h2></div>
-  <div class="grid5">${list.length?list.map(cardFull).join(""):`<div class="empty"><strong>No encontramos ese producto en línea.</strong><br>Escríbelo en los comentarios de tu cotización y te confirmamos si lo tenemos en tienda.</div>`}</div>`;
+  <div class="grid5">${list.length?list.map(cardFull).join(""):`<div class="empty"><img class="empty-mart" src="marca/mart-sorpresa-v2.png" alt="" width="300" height="299"><strong>No encontramos ese producto en línea.</strong><br>Escríbelo en los comentarios de tu cotización y te confirmamos si lo tenemos en tienda.</div>`}</div>`;
   $("#below").innerHTML="";
 }
 function mapArt(k){
@@ -1065,10 +1181,10 @@ function msg(){
 }
 function viewQuote(){
   $("#view").innerHTML=`<div class="crumbs"><a href="#inicio">Inicio</a><span>›</span><span>Cotiza tu proyecto</span></div>
-  <div class="cat-banner"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4M9 12h7M9 16h5"/></svg><div><h1>Cotiza tu proyecto</h1><p>Revisa tu lista, déjanos tus datos y envíala. Te respondemos con precio y existencia.</p></div></div>
+  <div class="cat-banner cot-mart"><img src="marca/mart-lentes-v2.png" alt="" width="295" height="300"><div><h1>Cotiza tu proyecto <span class="gratis-tag">GRATIS</span></h1><p>Revisa tu lista, déjanos tus datos y envíala. Te respondemos con precio y existencia.</p></div></div>
   <div class="quote">
     <div class="qcol"><div class="panel quick"><h2>Agrega rápido</h2>
-      <label class="qlabel" for="qa-q">Busca el producto por nombre</label>
+      <div class="qa-mart"><img src="marca/mart-feliz-v2.png" alt="" width="289" height="300"><label class="qlabel" for="qa-q"><span>Busca el producto por nombre</span>Escríbelo y agrégalo a tu lista</label></div>
       <div class="qa-row">
         <div class="qa-search"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><input id="qa-q" type="search" autocomplete="off" placeholder="Ej. cemento, martillo, cinta de aislar..." role="combobox" aria-expanded="false" aria-controls="qa-list"><div class="qa-list" id="qa-list" role="listbox" hidden></div></div>
         <select id="qa-v" aria-label="Presentación" hidden></select>
@@ -1076,7 +1192,7 @@ function viewQuote(){
         <button type="button" class="addbtn qa-btn" id="qa-add">${cartSvg}Agregar</button>
       </div>
       <div class="qa-sep"></div>
-      <label class="qlabel" for="qa-c">¿No encuentras lo que buscabas? Escríbelo aquí y lo conseguimos</label>
+      <div class="qa-mart"><img src="marca/mart-pensando-v2.png" alt="" width="300" height="292"><label class="qlabel" for="qa-c"><span>¿No encuentras lo que buscabas?</span>Escríbelo aquí y lo conseguimos</label></div>
       <div class="qa-row">
         <input id="qa-c" class="qa-free" autocomplete="off" placeholder="Ej. Tinaco 1,100 L, varilla 3/8, malla ciclónica...">
         <div class="qty"><button type="button" data-qastep="-1" data-for="qa-cn" aria-label="Menos">−</button><input id="qa-cn" type="number" min="1" value="1" aria-label="Cantidad"><button type="button" data-qastep="1" data-for="qa-cn" aria-label="Más">+</button></div>
@@ -1148,8 +1264,8 @@ function recordSend(){
     const n=$("#fnotes");if(n)n.value="";
     renderQuote();renderHist();
     const box=$("#sentMsg");
-    if(box){box.innerHTML=`<div class="sent-ic" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg></div>
-      <div><h2>¡Muchas gracias por tu confianza!</h2>
+    if(box){box.innerHTML=`<img class="sent-mart" src="marca/mart-gracias.png" alt="Mart con el pulgar arriba y la cotización palomeada" width="520" height="396">
+      <div><h2>¡Cotización enviada con éxito!</h2><p class="sent-lead">¡Gracias por confiar en Construmart!</p>
       <p>Recibimos tu cotización <b>${esc(sent)}</b>. En <b>15 a 30 minutos</b> te enviamos por WhatsApp el precio y la existencia (en horario de tienda).</p>
       <p class="sent-sub">Para recoger en ${esc(br)}. Si necesitas algo más, puedes armar una nueva lista abajo.</p></div>
       <button type="button" class="sent-x" id="sentClose" aria-label="Cerrar mensaje">✕</button>`;box.hidden=false;box.scrollIntoView({behavior:"smooth",block:"start"})}
@@ -1222,20 +1338,71 @@ function startSlides(){clearInterval(slideTimer);if(matchMedia("(prefers-reduced
 // ===== Router =====
 function renderSide(active){
   const nr=RAPIDOS().length;$("#bandRap").hidden=!nr;
-  $("#sideList").innerHTML=(nr?`<li><a class="rap" href="#entrega-inmediata"${active==="entrega-inmediata"?' aria-current="page"':""}><svg class="ic" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg><span>Entrega inmediata</span><svg class="chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m9 6 6 6-6 6"/></svg></a></li>`:"")+CATS.map(c=>`<li><a href="#${c.slug}"${c.slug===active?' aria-current="page"':""}>${cIcon(c.slug)}<span>${c.name}</span><svg class="chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m9 6 6 6-6 6"/></svg></a></li>`).join("");
+  $("#sideList").innerHTML=(nr?`<li><a class="rap" href="#entrega-inmediata"${active==="entrega-inmediata"?' aria-current="page"':""}><svg class="ic" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg><span>Entrega inmediata</span><svg class="chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m9 6 6 6-6 6"/></svg></a></li>`:"")+`<li><a class="mart-q" href="#dudas"${active==="dudas"?' aria-current="page"':""}>${QSVG}<span>Pregúntale a Mart</span><svg class="chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m9 6 6 6-6 6"/></svg></a></li>`+CATS.map(c=>`<li><a href="#${c.slug}"${c.slug===active?' aria-current="page"':""}>${cIcon(c.slug)}<span>${c.name}</span><svg class="chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m9 6 6 6-6 6"/></svg></a></li>`).join("");
 }
+// ===== Pregúntale a Mart (dudas frecuentes) =====
+// Cada duda: área, pregunta, respuesta corta, búsqueda de productos y a qué productos se le pone el enlace.
+const DUDAS=[
+ {id:"truper-pretul",cat:"marcas",tambien:["herramientas-manuales","herramientas-electricas","seguridad-industrial","pintura","jardineria"],q:"¿Qué diferencia hay entre Truper y Pretul?",a:"Las dos son de la misma empresa, el <b>Grupo Truper</b>. La diferencia está en la calidad y el precio. <b>Pretul</b> es la línea económica, pensada para usarse en casa o de vez en cuando. <b>Truper</b> es más resistente y está hecha para trabajo frecuente.",ver:["Pretul","","Ver productos Pretul"]},
+ {id:"truper-expert",cat:"marcas",tambien:["herramientas-manuales","herramientas-electricas","seguridad-industrial"],q:"¿Qué es Truper Expert?",a:"Es la línea más alta de Truper, hecha para uso profesional e intensivo: todos los días, en la obra, el taller o la planta. Si lo vas a usar a diario en tu trabajo, conviene Expert. Aquí la encuentras, por ejemplo, en chalecos, respiradores e impermeables.",ver:["Expert","","Ver productos Truper Expert"]},
+ {id:"cual-marca",cat:"marcas",tambien:["herramientas-manuales","herramientas-electricas"],q:"Pretul, Truper o Truper Expert: ¿cuál me llevo?",a:"Depende de qué tanto lo vas a usar:<br><b>En casa, de vez en cuando:</b> Pretul.<br><b>Trabajo frecuente:</b> Truper.<br><b>Uso diario e intensivo:</b> Truper Expert.<br>Si tienes duda, dinos para qué lo necesitas en tu cotización y te recomendamos."},
+ {id:"familia",cat:"marcas",tambien:["plomeria","material-electrico","limpieza","ferreteria","mallas","metal"],q:"¿Conoces las marcas que complementan a Truper?",a:"Son marcas del mismo Grupo Truper, cada una especializada en su área:<br><b>Foset:</b> plomería.<br><b>Volteck:</b> material eléctrico.<br><b>Fiero:</b> productos de acero, como tornillería, clavos y mallas.<br><b>Hermex:</b> cerrajería, como candados y cerraduras.<br><b>Klintek:</b> limpieza."},
+ {id:"garantia",cat:"marcas",q:"¿Las marcas económicas tienen garantía?",a:"Sí. Las herramientas Pretul también tienen garantía de fábrica, igual que Truper. El tiempo y las condiciones vienen en el empaque o en el manual de cada producto; guarda tu comprobante."},
+ {id:"cpvc-pvc",cat:"plomeria",q:"¿CPVC o PVC?",a:"El <b>CPVC</b> aguanta agua caliente: úsalo en la línea del calentador, regaderas y lavabos. El <b>PVC hidráulico</b> es solo para agua fría: tomas, cisterna y riego. Si por el tubo va a pasar agua caliente, usa CPVC.",ver:["CPVC","plomeria","Ver tubería y conexiones CPVC"],match:/^Tubo (CPVC|PVC hidráulico)/i},
+ {id:"hidra-sani",cat:"plomeria",q:"¿PVC hidráulico o sanitario?",a:"El <b>hidráulico</b> trabaja con presión y lleva el agua limpia a la casa. El <b>sanitario</b> es para el drenaje: baños, lavabos y desagües, sin presión. No se cambian uno por otro.",ver:["sanitario","plomeria","Ver tubo sanitario"],match:/^Tubo PVC sanitario/i},
+ {id:"ppr",cat:"plomeria",q:"¿Qué es el PPR y cuándo conviene?",a:"Es tubería de polipropileno para agua fría y caliente. No lleva pegamento: se une con calor (termofusión), por eso las uniones quedan de una pieza y duran mucho. Necesitas la termofusionadora.",ver:["PPR","plomeria","Ver tubería PPR"],match:/^Tubo de PPR/i},
+ {id:"cobre",cat:"plomeria",q:"¿Cobre o CPVC para agua caliente?",a:"Los dos sirven. El <b>cobre</b> aguanta más temperatura y golpes, pero se suelda con soplete. El <b>CPVC</b> es más económico y se pega con su cemento especial.",ver:["cobre","plomeria","Ver conexiones de cobre"],},
+ {id:"cemento",cat:"construccion",q:"¿Cemento gris, mortero o cemento blanco?",a:"<b>Cemento gris:</b> para concreto de colados, firmes, castillos y dalas. <b>Mortero:</b> para pegar block y ladrillo y para aplanar muros; no se usa en la estructura. <b>Cemento blanco:</b> para acabados, junteo y trabajos decorativos.",ver:["Cemento","construccion","Ver cementos y morteros"],match:/^(Cemento gris|Cemento blanco|Mortero)$/},
+ {id:"pegapiso",cat:"construccion",q:"¿Pegapiso o pegazulejo?",a:"El <b>pegazulejo</b> es para azulejo en muros. El <b>pegapiso</b> aguanta más peso y tráfico: es para pisos y piezas grandes. Para porcelanato, pide uno especial para porcelanato.",ver:["Pega","construccion","Ver pegapisos y pegazulejos"],match:/^(Pegapiso|Pegazulejo)/i},
+ {id:"brocha-rodillo",cat:"pintura",q:"¿Brocha o rodillo?",a:"El <b>rodillo</b> es para muros y techos: pinta más rápido y más parejo. La <b>brocha</b> es para orillas, esquinas, marcos, puertas y rejas. Con los dos el trabajo queda mejor.",ver:["Rodillo","pintura","Ver rodillos y brochas"]},
+ {id:"cuanta-pintura",cat:"pintura",q:"¿Cuánta pintura necesito?",a:"Mide cada muro (largo por alto) y suma los metros cuadrados. Divídelos entre el rendimiento que dice la cubeta y multiplícalo por las manos que vas a dar (casi siempre son 2). Si quieres, pon las medidas en los comentarios de tu cotización y te ayudamos a calcular."},
+ {id:"sellador",cat:"impermeabilizantes",q:"¿Por qué poner sellador antes de impermeabilizar?",a:"El sellador prepara la azotea: tapa el poro para que el impermeabilizante se pegue bien y rinda más. Sin sellador se gasta más producto y dura menos.",ver:["Sellador","impermeabilizantes","Ver selladores"],match:/^Sellador/},
+ {id:"aplicar-imper",cat:"impermeabilizantes",q:"¿Cómo aplico el impermeabilizante?",a:"1) Barre y lava la azotea. 2) Resana grietas y fisuras. 3) Aplica el sellador y deja secar. 4) Da dos manos de impermeabilizante en cruz, con cepillo, dejando secar entre una y otra.",ver:["Impermeabilizante","impermeabilizantes","Ver impermeabilizantes"],match:/^Impermeabilizante/i},
+ {id:"casquillo",cat:"seguridad-industrial",q:"¿Casquillo de acero o de composite?",a:"Los dos protegen la punta del pie de golpes. El de <b>composite</b> o <b>aramida</b> pesa menos, no conduce electricidad ni frío y no suena en los detectores de metal. El <b>metálico</b> suele ser más económico.",ver:["Bota","seguridad-industrial","Ver calzado de seguridad"],match:/^Bota de seguridad/},
+ {id:"guantes",cat:"seguridad-industrial",q:"¿Qué guante para qué trabajo?",a:"<b>Carnaza:</b> carga y trabajo rudo. <b>Nitrilo:</b> buen agarre y contacto con aceites. <b>Anticorte:</b> vidrio y lámina. <b>Carnaza para soldador:</b> calor y chispas.",ver:["Guantes","seguridad-industrial","Ver guantes"]},
+];
+let dudaOpen=null;
+const QSVG=`<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5h16v11H9l-5 4z"/><path d="M10 8.6a2 2 0 1 1 2.8 1.8c-.5.3-.8.7-.8 1.3"/><circle cx="12" cy="13.6" r=".4" fill="currentColor"/></svg>`;
+const nVer=d=>d.ver?P.filter(p=>!p.hidden&&(!d.ver[1]||p.cat===d.ver[1])&&norm([p.name,p.spec,p.brand,catBy(p.cat).name,(p.variants||[]).join(" ")].join(" ")).includes(norm(d.ver[0]))).length:0;
+function dudaHTML(d){
+  return `<details class="duda" id="duda-${d.id}" name="duda"${dudaOpen===d.id?" open":""}><summary>${esc(d.q)}<svg class="dchev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="m6 9 6 6 6-6"/></svg></summary>
+    <div class="duda-a"><p>${d.a}</p>${nVer(d)?`<a href="#buscar" class="duda-ver" data-buscar="${esc(d.ver[0])}" data-scope="${d.ver[1]||""}">${esc(d.ver[2])} <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8"><path d="m9 6 6 6-6 6"/></svg></a>`:""}</div></details>`;
+}
+function viewDudas(){
+  const cats=[{slug:"marcas",name:"Nuestras marcas"},...CATS].filter(c=>DUDAS.some(d=>d.cat===c.slug));
+  $("#view").innerHTML=`<div class="crumbs"><a href="#inicio">Inicio</a><span>›</span><span>Pregúntale a Mart</span></div>
+  <div class="dudas-head"><img src="marca/mart-pensando-v2.png" alt="Mart pensando" width="300" height="292"><div><span class="mart-tag">Dudas frecuentes</span><h1>Pregúntale a Mart</h1><p>Lo que más nos preguntan en mostrador, explicado fácil. Toca una pregunta para ver la respuesta.</p></div></div>
+  <div class="dfil" role="group" aria-label="Filtrar por área"><button type="button" class="on" data-dfil="">Todas</button>${cats.map(c=>`<button type="button" data-dfil="${c.slug}">${esc(c.name)}</button>`).join("")}</div>
+  ${cats.map(c=>`<section class="dgroup" data-dcat="${c.slug}"><h2>${esc(c.name)}</h2>${DUDAS.filter(d=>d.cat===c.slug).map(dudaHTML).join("")}</section>`).join("")}
+  <div class="mart-empty"><img src="marca/mart-guino-v2.png" alt="" width="290" height="300"><p><strong>¿Tu duda no está aquí?</strong><br>Escríbela en los comentarios de <a href="#cotizacion" style="color:var(--accent);font-weight:700">tu cotización</a> y te respondemos por WhatsApp.</p></div>`;
+  $("#below").innerHTML="";
+  if(dudaOpen){const el=document.getElementById("duda-"+dudaOpen);dudaOpen=null;if(el)setTimeout(()=>el.scrollIntoView({block:"center"}),60)}
+}
+// Dentro de cada categoría: un renglón plegado con sus dudas
+function dudasCat(slug){
+  const ds=[...DUDAS.filter(d=>d.cat===slug),...DUDAS.filter(d=>(d.tambien||[]).includes(slug))];if(!ds.length)return "";
+  return `<details class="dcat"><summary><img src="marca/mart-pensando-v2.png" alt="" width="300" height="292"><span><b>¿Dudas? Mart te explica</b><small>${ds.length} pregunta${ds.length===1?"":"s"} frecuente${ds.length===1?"":"s"}</small></span><svg class="dchev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="m6 9 6 6 6-6"/></svg></summary><div class="dcat-list">${ds.map(dudaHTML).join("")}<a class="dcat-all" href="#dudas">Ver todas las dudas ›</a></div></details>`;
+}
+// En la tarjeta del producto: enlace chiquito a su duda
+function dudaLink(p){const d=DUDAS.find(d=>d.match&&d.match.test(p.name));return d?`<a href="#dudas" class="duda-link" data-duda="${d.id}">${QSVG}${esc(d.q)}</a>`:""}
+document.addEventListener("click",e=>{
+  const dl=e.target.closest("[data-duda]");if(dl){e.preventDefault();dudaOpen=dl.dataset.duda;location.hash==="#dudas"?route():(location.hash="dudas");return}
+  const bv=e.target.closest("[data-buscar]");if(bv){e.preventDefault();search={q:bv.dataset.buscar,scope:bv.dataset.scope||""};location.hash==="#buscar"?route():(location.hash="buscar");return}
+  const df=e.target.closest("[data-dfil]");if(df){const v=df.dataset.dfil;document.querySelectorAll("[data-dfil]").forEach(b=>b.classList.toggle("on",b===df));document.querySelectorAll(".dgroup").forEach(g=>g.hidden=!!v&&g.dataset.dcat!==v)}
+});
 let search=null;
 function route(){
   showHero(null);
   clearInterval(slideTimer);
   const h=location.hash.slice(1)||"inicio";
-  renderSide(catBy(h)||h==="entrega-inmediata"?h:null);
+  renderSide(catBy(h)||h==="entrega-inmediata"||h==="dudas"?h:null);
   if(h==="buscar"&&search) viewSearch(search.q,search.scope);
   else if(catBy(h)) viewCat(h);
   else if(h==="entrega-inmediata") viewRapido();
   else if(h==="categorias") viewAll();
   else if(h==="cotizacion") viewQuote();
   else if(h==="recoge") viewPickup();
+  else if(h==="dudas") viewDudas();
   else viewHome();
   if(h!=="inicio")window.scrollTo({top:0});
 }
