@@ -61,6 +61,8 @@ main.bandeja{display:grid;grid-template-columns:minmax(0,380px) minmax(0,1fr);ga
 .chip.resp{background:var(--ok);color:#fff}
 .chip.may{background:var(--ink);color:#fff}
 .chip.fac{background:#2563eb;color:#fff}
+.chip.env{background:var(--accent);color:#fff;outline:2px solid var(--ink);outline-offset:-2px}
+.envio-row{display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--accent-soft);border-radius:10px;padding:10px 12px;font-weight:800;flex-wrap:wrap}
 .vacio{background:var(--panel);border:1.5px dashed var(--line);border-radius:10px;padding:26px 16px;text-align:center;color:var(--muted)}
 .vacio img{width:80px;display:block;margin:0 auto 8px}
 /* Detalle */
@@ -200,7 +202,7 @@ function pintarLista(){
   $("#lista").innerHTML=L.length?L.map(q=>`<button type="button" class="q${abierta===q.id?" on":""}" data-id="${esc(q.id)}">
     <span class="t"><b>${esc(q.cliente||q.nombre||"Sin nombre")}</b><time datetime="${new Date(q.fecha).toISOString()}" title="${esc(fecha(q.fecha))}">${hace(q.fecha)}</time></span>
     <small>${esc(q.folio)} · ${q.productos} producto${q.productos===1?"":"s"} · ${esc(q.sucursal)}${q.total!=null?" · "+pesos(q.total):""}</small>
-    <span class="chips">${q.estado==="pendiente"?`<i class="chip pend">Por contestar</i>`:q.estado==="respondida"?`<i class="chip resp">Respondida</i>`:`<i class="chip">Archivada</i>`}${q.cliente?`<i class="chip may">Mayoreo</i>`:""}${q.factura?`<i class="chip fac">Factura</i>`:""}${q.telefono?"":`<i class="chip">Sin teléfono</i>`}</span>
+    <span class="chips">${q.estado==="pendiente"?`<i class="chip pend">Por contestar</i>`:q.estado==="respondida"?`<i class="chip resp">Respondida</i>`:`<i class="chip">Archivada</i>`}${q.cliente?`<i class="chip may">Mayoreo</i>`:""}${q.factura?`<i class="chip fac">Factura</i>`:""}${q.entrega==="envio"?`<i class="chip env">Envío</i>`:""}${q.telefono?"":`<i class="chip">Sin teléfono</i>`}</span>
   </button>`).join(""):`<div class="vacio"><img src="/marca/mart-guino-v2.png" alt="" width="290" height="300">${filtro==="pendiente"?"No tienes cotizaciones por contestar. ¡Al corriente!":"No hay cotizaciones aquí."}</div>`;
 }
 document.querySelector(".tabs").addEventListener("click",e=>{const b=e.target.closest("[data-f]");if(!b)return;filtro=b.dataset.f;document.querySelectorAll(".tabs button").forEach(x=>x.classList.toggle("on",x===b));pintarLista()});
@@ -218,6 +220,7 @@ function recalcular(){
   let total=0,sin=0;
   [...document.querySelectorAll("#filas tr")].forEach((tr,i)=>{const it=actual.items[i];const v=Number(tr.querySelector("input").value.replace(/[$,\s]/g,""))||0;const ex=tr.querySelector("select").value;
     tr.classList.toggle("no",ex==="no");const sub=ex==="no"?0:v*it.q;tr.querySelector(".s").textContent=v?pesos(v*it.q):"—";total+=sub;if(!v&&ex!=="no")sin++});
+  const ev=$("#envio");if(ev)total+=Number(ev.value.replace(/[$,\s]/g,""))||0;
   $("#tot").textContent=pesos(total);$("#totn").textContent=sin?`${sin} producto${sin===1?"":"s"} sin precio`:"Precios con IVA incluido";
   actualizarWA();
 }
@@ -228,9 +231,13 @@ function mensaje(){
     if(l.existe==="no")M.push(`▪ ${desc} · ❌ Sin existencia`);
     else if(l.precio){const sub=l.precio*it.q;total+=sub;M.push(`▪ ${desc} · ${pesos(l.precio)} c/u = *${pesos(sub)}*${l.existe==="parcial"?" ⚠️ Existencia parcial":" ✅"}`)}
     else M.push(`▪ ${desc} · Precio por confirmar`)});
+  const ev=$("#envio"),envio=ev?Number(ev.value.replace(/[$,\s]/g,""))||0:0;
+  if(q.entrega==="envio")M.push(envio?`▪ 🚚 Envío a domicilio · *${pesos(envio)}*`:"▪ 🚚 Envío a domicilio · costo por confirmar");
+  total+=envio;
   M.push("",`*TOTAL: ${pesos(total)}* (precios con IVA incluido)`);
   const n=$("#notas").value.trim();if(n)M.push("",`*Notas:* ${n}`);
-  if(q.sucursal)M.push("",`*Recoges en:* ${q.sucursal}`);
+  if(q.entrega==="envio")M.push("",`*Te lo enviamos a:* ${q.direccion||"(confírmanos tu dirección)"}`);
+  else if(q.sucursal)M.push("",`*Recoges en:* ${q.sucursal}`);
   if(q.factura)M.push("","Para tu factura, mándanos por este medio tu Constancia de Situación Fiscal (o RFC, razón social, régimen fiscal, código postal y uso del CFDI).");
   M.push("","También la puedes ver en la página de Construmart, en \"Mis cotizaciones anteriores\". ¡Gracias por tu preferencia!");
   return M.join("\n");
@@ -240,7 +247,7 @@ function pintarDet(){
   const q=actual,r=q.respuesta;
   $("#det").innerHTML=`<div class="det-h"><div><h2>${esc(q.cliente?q.cliente.nombre:q.nombre||"Sin nombre")}</h2><p>${esc(q.folio)} · llegó ${esc(fecha(q.fecha))}${r?` · respondida ${esc(fecha(r.fecha))}`:""}</p></div>
     <button type="button" class="btn atras" id="atras">← Volver a la lista</button></div>
-  <div class="datos"><div><span>Nombre</span><b>${esc(q.nombre||"—")}</b></div><div><span>Teléfono</span><b>${esc(q.telefono||"No lo dejó")}</b></div><div><span>Sucursal</span><b>${esc(q.sucursal||"—")}</b></div><div><span>¿Cuándo pasa?</span><b>${esc(q.recoge||"—")}</b></div><div><span>Factura</span><b>${q.factura?"Sí, la pidió":"No"}</b></div>${q.cliente?`<div><span>Cliente de mayoreo</span><b>${esc(q.cliente.nombre)} (${esc(q.cliente.usuario)})</b></div>`:""}</div>
+  <div class="datos"><div><span>Nombre</span><b>${esc(q.nombre||"—")}</b></div><div><span>Teléfono</span><b>${esc(q.telefono||"No lo dejó")}</b></div><div><span>Sucursal</span><b>${esc(q.sucursal||"—")}</b></div>${q.entrega==="envio"?`<div><span>Entrega</span><b>🚚 Envío a domicilio</b></div><div style="grid-column:1/-1"><span>Dirección</span><b>${esc(q.direccion||"No la escribió")}</b></div><div><span>Lo necesita</span><b>${esc(q.recoge||"—")}</b></div>`:`<div><span>¿Cuándo pasa?</span><b>${esc(q.recoge||"—")}</b></div>`}<div><span>Factura</span><b>${q.factura?"Sí, la pidió":"No"}</b></div>${q.cliente?`<div><span>Cliente de mayoreo</span><b>${esc(q.cliente.nombre)} (${esc(q.cliente.usuario)})</b></div>`:""}</div>
   ${q.notas?`<div class="notas-c"><b>Comentarios del cliente:</b> ${esc(q.notas)}</div>`:""}
   <div class="tbox"><table><thead><tr><th>Cant.</th><th>Producto</th><th>Precio c/u</th><th>Existencia</th><th style="text-align:right">Subtotal</th></tr></thead><tbody id="filas">
   ${q.items.map((it,i)=>{const l=r&&r.lineas[i]||{};const pv=l.precio||it.pc||"";const ex=l.existe||"si";
@@ -248,6 +255,7 @@ function pintarDet(){
     <td><div class="money"><span>$</span><input inputmode="decimal" value="${pv}" aria-label="Precio de ${esc(it.n)}"></div></td>
     <td><select aria-label="Existencia de ${esc(it.n)}"><option value="si"${ex==="si"?" selected":""}>Hay</option><option value="parcial"${ex==="parcial"?" selected":""}>Parcial</option><option value="no"${ex==="no"?" selected":""}>No hay</option></select></td>
     <td class="s">—</td></tr>`}).join("")}</tbody></table></div>
+  ${q.entrega==="envio"?`<div class="envio-row"><span>🚚 Costo de envío</span><div class="money"><span>$</span><input inputmode="decimal" id="envio" value="${r&&r.envio?r.envio:""}" aria-label="Costo de envío"></div></div>`:""}
   <div class="total"><div><span style="font-weight:800">Total</span><small id="totn"></small></div><strong id="tot">$0.00</strong></div>
   <label class="l">Notas para el cliente <span style="font-weight:500;color:var(--muted)">(opcional)</span><textarea id="notas" placeholder="Ej. Listo para recoger hoy después de las 4 p. m.">${esc(r?r.notas:"")}</textarea></label>
   <div class="acts">
@@ -261,12 +269,12 @@ function pintarDet(){
   recalcular();
 }
 async function guardar(silencio){
-  try{const j=await api("/api/dueno/cotizaciones/"+actual.id,{accion:"responder",respuesta:{lineas:lineas(),notas:$("#notas").value.trim()}});
+  try{const j=await api("/api/dueno/cotizaciones/"+actual.id,{accion:"responder",respuesta:{lineas:lineas(),notas:$("#notas").value.trim(),envio:$("#envio")?Number($("#envio").value.replace(/[$,\s]/g,""))||0:0}});
     if(j.ok){actual.respuesta=j.respuesta;actual.estado="respondida";const s=todas.find(q=>q.id===actual.id);if(s){s.estado="respondida";s.total=j.respuesta.total;s.respondida=j.respuesta.fecha}pintarLista();if(!silencio)toast("Respuesta guardada");return true}}
   catch(e){}
   toast("No se pudo guardar. Revisa tu conexión e inténtalo otra vez.");return false;
 }
-$("#det").addEventListener("input",e=>{if(e.target.closest("#filas")||e.target.id==="notas")recalcular()});
+$("#det").addEventListener("input",e=>{if(e.target.closest("#filas")||e.target.id==="notas"||e.target.id==="envio")recalcular()});
 $("#det").addEventListener("change",e=>{if(e.target.closest("#filas"))recalcular()});
 $("#det").addEventListener("click",async e=>{
   const t=e.target.closest("button,a");if(!t)return;

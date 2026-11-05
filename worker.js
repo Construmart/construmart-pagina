@@ -87,7 +87,7 @@ const nuevoToken = () => hex(crypto.getRandomValues(new Uint8Array(16)));
 const bandeja = (env) => env.BANDEJA.get(env.BANDEJA.idFromName("principal"));
 const resumen = (q) => ({
   id: q.id, folio: q.folio, fecha: q.fecha, nombre: q.nombre, telefono: q.telefono, sucursal: q.sucursal,
-  recoge: q.recoge, factura: !!q.factura, cliente: q.cliente ? q.cliente.nombre : "", productos: q.items.length, estado: q.estado,
+  recoge: q.recoge, factura: !!q.factura, entrega: q.entrega || "recoger", cliente: q.cliente ? q.cliente.nombre : "", productos: q.items.length, estado: q.estado,
   total: q.respuesta ? q.respuesta.total : null, respondida: q.respuesta ? q.respuesta.fecha : null,
 });
 
@@ -129,6 +129,7 @@ async function recibirCotizacion(request, env) {
     id: nuevoId(), token: nuevoToken(), fecha: Date.now(), estado: "pendiente",
     folio: txt(b.folio, 30), nombre: txt(b.nombre, 80), telefono: txt(b.telefono, 30),
     sucursal: txt(b.sucursal, 60), recoge: txt(b.recoge, 80), notas: txt(b.notas, 1000), factura: !!b.factura,
+    entrega: b.entrega === "envio" ? "envio" : "recoger", direccion: txt(b.direccion, 400),
     cliente: s ? { usuario: s.usuario, nombre: s.c.n } : null,
     items: items.map((it) => {
       const id = txt(it.id, 40), v = txt(it.v, 80);
@@ -223,7 +224,8 @@ async function api(request, env, url) {
           if (!actual) return json({ ok: false, error: "no_encontrada" }, 404);
           // El total se calcula aquí con las cantidades guardadas; lo que no hay no se cobra
           const total = Math.round(lineas.reduce((a, l, i) => a + (l.precio && l.existe !== "no" && actual.items[i] ? l.precio * actual.items[i].q : 0), 0) * 100) / 100;
-          const respuesta = { fecha: Date.now(), lineas, notas: txt(r.notas, 1000), total };
+          const envio = Number(r.envio) > 0 ? Math.round(Number(r.envio) * 100) / 100 : 0;
+          const respuesta = { fecha: Date.now(), lineas, notas: txt(r.notas, 1000), envio, total: Math.round((total + envio) * 100) / 100 };
           const q = await bandeja(env).actualizar(id, { estado: "respondida", respuesta });
           return q ? json({ ok: true, respuesta }) : json({ ok: false, error: "no_encontrada" }, 404);
         }
