@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Bandeja de cotizaciones · Construmart</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800;900&display=swap">
+<link rel="icon" href="/marca/mart-lentes-v2.png">
+<style>
+/* Bandeja del dueño: lista de cotizaciones a la izquierda (arriba en celular) y la cotización abierta con precio y existencia por producto. */
+:root{
+  --bg:#FBF6EE; --panel:#ffffff; --ink:#343639; --muted:#6d6862; --line:#eadfcf; --cream:#F5EBDD;
+  --accent:#FF6A00; --accent-soft:#FFF1E4; --ok:#16a34a; --warn:#d97706; --danger:#c0392b; --wa:#25D366;
+  --display:"Montserrat","Segoe UI",Arial,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 var(--display)}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+[hidden]{display:none!important}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+h1,h2,h3{margin:0;text-wrap:balance}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header{background:var(--ink);color:var(--cream);position:sticky;top:0;z-index:5}
+header .wrap{display:flex;align-items:center;gap:12px;padding-block:12px;flex-wrap:wrap}
+header img{width:40px;height:auto}
+header h1{font-weight:900;font-size:19px;flex:1;min-width:0}
+header h1 span{color:var(--accent)}
+.hbtn{border:1px solid #ffffff55;background:transparent;color:#fff;border-radius:8px;padding:6px 12px;font-weight:700;font-size:12.5px}
+/* Entrar */
+.login{min-height:70vh;display:grid;place-items:center;padding:24px 16px}
+.login form{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:24px 22px;width:min(360px,100%);display:grid;gap:12px;text-align:center}
+.login img{width:96px;justify-self:center}
+.login h2{font-weight:900;font-size:22px}
+.login p{margin:0;color:var(--muted);font-size:13px}
+input,select,textarea{border:1.5px solid var(--line);border-radius:8px;padding:10px 12px;background:var(--panel);font-size:14px;min-width:0;width:100%}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent)}
+.go{background:var(--accent);color:#fff;border:0;border-radius:8px;padding:12px;font-weight:800;font-size:15px}
+.err{color:var(--danger);font-weight:700;font-size:13px;min-height:1em;margin:0}
+/* Bandeja */
+main.bandeja{display:grid;grid-template-columns:minmax(0,380px) minmax(0,1fr);gap:16px;padding-block:16px 40px;align-items:start}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.tabs button{border:1.5px solid var(--line);background:var(--panel);border-radius:30px;padding:6px 12px;font-weight:700;font-size:12.5px}
+.tabs button.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.tabs b{font-variant-numeric:tabular-nums}
+.lista{display:grid;gap:8px}
+.q{display:grid;gap:3px;text-align:left;width:100%;background:var(--panel);border:1.5px solid var(--line);border-radius:10px;padding:10px 12px}
+.q.on{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.q .t{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.q .t b{font-size:14px;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.q .t time{font-size:11.5px;color:var(--muted);white-space:nowrap}
+.q small{color:var(--muted);font-size:12px}
+.chips{display:flex;gap:5px;flex-wrap:wrap;margin-top:3px}
+.chip{font-size:10.5px;font-weight:800;border-radius:20px;padding:2px 8px;background:var(--cream);color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
+.chip.pend{background:var(--accent);color:#fff}
+.chip.resp{background:var(--ok);color:#fff}
+.chip.may{background:var(--ink);color:#fff}
+.vacio{background:var(--panel);border:1.5px dashed var(--line);border-radius:10px;padding:26px 16px;text-align:center;color:var(--muted)}
+.vacio img{width:80px;display:block;margin:0 auto 8px}
+/* Detalle */
+.det{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;display:grid;gap:14px;position:sticky;top:76px}
+.det-h{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:flex-start}
+.det-h h2{font-weight:900;font-size:20px}
+.det-h p{margin:2px 0 0;color:var(--muted);font-size:12.5px}
+.datos{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;background:var(--cream);border-radius:10px;padding:10px 12px;font-size:13px}
+.datos span{display:block;font-size:10.5px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);font-weight:700}
+.datos b{overflow-wrap:anywhere}
+.notas-c{background:var(--accent-soft);border-radius:8px;padding:8px 10px;font-size:13px}
+.tbox{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
+table{width:100%;border-collapse:collapse;font-size:13px;min-width:560px}
+th{text-align:left;font-size:10.5px;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);font-weight:700;padding:8px;background:var(--cream)}
+td{padding:7px 8px;border-top:1px solid var(--line);vertical-align:middle}
+td.c{font-weight:800;white-space:nowrap;font-variant-numeric:tabular-nums}
+td.p strong{display:block;font-weight:700}
+td.p small{color:var(--muted);font-size:11.5px}
+.tag{display:inline-block;font-size:10px;font-weight:800;background:var(--warn);color:#fff;border-radius:4px;padding:1px 5px;margin-left:4px;vertical-align:middle}
+.money{display:flex;align-items:center;border:1.5px solid var(--line);border-radius:8px;background:var(--panel);width:120px}
+.money span{padding-left:8px;color:var(--muted);font-weight:700}
+.money input{border:0;padding:7px 6px;font-weight:700;font-variant-numeric:tabular-nums}
+.money:focus-within{border-color:var(--accent)}
+td select{padding:7px 6px;width:auto}
+td.s{text-align:right;font-weight:800;white-space:nowrap;font-variant-numeric:tabular-nums}
+tr.no td{color:var(--muted)}
+tr.no td.s{text-decoration:line-through}
+.pc{display:block;font-size:10.5px;color:var(--ok);font-weight:700;margin-top:2px}
+.total{display:flex;justify-content:space-between;align-items:baseline;border-top:2px solid var(--ink);padding-top:10px}
+.total strong{font-weight:900;font-size:26px;font-variant-numeric:tabular-nums}
+.total small{display:block;color:var(--muted);font-size:12px;font-weight:600}
+label.l{display:grid;gap:4px;font-size:12.5px;font-weight:700}
+textarea{min-height:64px;resize:vertical}
+.acts{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.btn{border:1.5px solid var(--ink);background:transparent;border-radius:8px;padding:9px 14px;font-weight:800;font-size:13px;text-decoration:none;color:var(--ink);display:inline-flex;align-items:center;gap:7px}
+.btn.wa{background:var(--wa);border-color:var(--wa);color:#fff;font-size:14px;padding:11px 16px}
+.btn.wa[aria-disabled="true"]{opacity:.45;pointer-events:none}
+.btn.danger{border-color:var(--danger);color:var(--danger)}
+.btn.sure{background:var(--danger);color:#fff}
+.aviso{font-size:12.5px;color:var(--muted);margin:0}
+.aviso.bad{color:var(--danger);font-weight:700}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--cream);padding:10px 18px;border-radius:30px;font-size:13px;z-index:30;max-width:calc(100% - 32px)}
+.atras{display:none}
+@media (max-width:600px){
+  header h1{font-size:16px}
+  header .hm{display:none}
+  header img{width:32px}
+  table{min-width:0}
+  thead{display:none}
+  table,tbody{display:block}
+  #filas tr{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto;grid-template-areas:"p p p" "pr ex s";gap:8px 10px;padding:10px;border-top:1px solid var(--line)}
+  #filas tr:first-child{border-top:0}
+  #filas td{border:0;padding:0;display:block}
+  #filas td.c{display:none}
+  #filas td.p{grid-area:p}
+  #filas td:nth-child(3){grid-area:pr}
+  #filas td:nth-child(4){grid-area:ex}
+  #filas td:nth-child(4) select{width:100%}
+  #filas td.s{grid-area:s;align-self:center}
+  .money{width:100%}
+  .q-cant{display:inline!important}
+}
+@media (max-width:860px){
+  main.bandeja{grid-template-columns:1fr}
+  .det{position:static}
+  body.abierta .col-lista{display:none}
+  body:not(.abierta) .det{display:none}
+  .atras{display:inline-flex}
+}
+@media (prefers-reduced-motion:no-preference){.q,.tabs button{transition:border-color .15s,background .15s}}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <img src="/marca/mart-lentes-v2.png" alt="" width="295" height="300">
+  <h1><b class="hm">Construmart · </b><span>Bandeja de cotizaciones</span></h1>
+  <button class="hbtn" id="recargar" type="button" hidden>Actualizar</button>
+  <button class="hbtn" id="salir" type="button" hidden>Salir</button>
+</div></header>
+
+<section class="login" id="login" hidden>
+  <form id="fLogin" autocomplete="on">
+    <img src="/marca/mart-lentes-v2.png" alt="" width="295" height="300">
+    <h2>Bandeja del dueño</h2>
+    <p>Aquí llegan las cotizaciones que mandan tus clientes desde la página.</p>
+    <input type="text" name="username" value="dueño" autocomplete="username" hidden>
+    <input type="password" id="clave" name="password" autocomplete="current-password" placeholder="Tu clave de dueño" required aria-label="Clave de dueño">
+    <p class="err" id="lerr" role="alert"></p>
+    <button class="go" type="submit" id="lgo">Entrar</button>
+  </form>
+</section>
+
+<main class="wrap bandeja" id="app" hidden>
+  <div class="col-lista">
+    <div class="tabs" role="group" aria-label="Filtrar">
+      <button type="button" class="on" data-f="pendiente">Pendientes <b id="n-pendiente">0</b></button>
+      <button type="button" data-f="respondida">Respondidas <b id="n-respondida">0</b></button>
+      <button type="button" data-f="archivada">Archivadas <b id="n-archivada">0</b></button>
+      <button type="button" data-f="">Todas</button>
+    </div>
+    <div class="lista" id="lista"></div>
+  </div>
+  <section class="det" id="det">
+    <div class="vacio"><img src="/marca/mart-pensando-v2.png" alt="" width="300" height="292">Escoge una cotización de la lista para contestarla.</div>
+  </section>
+</main>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const pesos=n=>Number(n||0).toLocaleString("es-MX",{style:"currency",currency:"MXN"});
+const digits=s=>String(s||"").replace(/\D/g,"");
+function toast(t){const el=$("#toast");el.textContent=t;el.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>el.hidden=true,2600)}
+function hace(t){const m=Math.round((Date.now()-t)/60000);if(m<1)return "ahorita";if(m<60)return `hace ${m} min`;const h=Math.round(m/60);if(h<24)return `hace ${h} h`;return new Date(t).toLocaleDateString("es-MX",{day:"numeric",month:"short"})}
+const fecha=t=>new Date(t).toLocaleString("es-MX",{day:"numeric",month:"short",hour:"numeric",minute:"2-digit"});
+async function api(path,body){const r=await fetch(path,body?{method:"POST",credentials:"same-origin",headers:{"content-type":"application/json"},body:JSON.stringify(body)}:{credentials:"same-origin",cache:"no-store"});
+  const j=await r.json().catch(()=>({}));if(r.status===401&&!path.endsWith("/entrar")){verLogin();throw new Error("sin_sesion")}return j}
+
+let todas=[],filtro="pendiente",abierta=null,actual=null;
+function verLogin(){$("#login").hidden=false;$("#app").hidden=true;$("#salir").hidden=$("#recargar").hidden=true;setTimeout(()=>$("#clave").focus(),50)}
+function verApp(){$("#login").hidden=true;$("#app").hidden=false;$("#salir").hidden=$("#recargar").hidden=false;cargar()}
+
+$("#fLogin").addEventListener("submit",async e=>{e.preventDefault();const b=$("#lgo");b.disabled=true;b.textContent="Revisando…";$("#lerr").textContent="";
+  try{const j=await api("/api/dueno/entrar",{clave:$("#clave").value});if(j.ok){$("#clave").value="";verApp()}else $("#lerr").textContent="Clave incorrecta. Revísala e intenta otra vez."}
+  catch(err){$("#lerr").textContent="No se pudo entrar. Revisa tu conexión."}finally{b.disabled=false;b.textContent="Entrar"}});
+$("#salir").onclick=async()=>{try{await api("/api/dueno/salir",{})}catch(e){}verLogin()};
+$("#recargar").onclick=()=>cargar(true);
+
+async function cargar(aviso){
+  try{const j=await api("/api/dueno/cotizaciones");todas=j.cotizaciones||[];pintarLista();if(aviso)toast("Bandeja actualizada")}
+  catch(e){if(e.message!=="sin_sesion")toast("No se pudo cargar la bandeja. Revisa tu conexión.")}
+}
+function pintarLista(){
+  ["pendiente","respondida","archivada"].forEach(k=>$("#n-"+k).textContent=todas.filter(q=>q.estado===k).length);
+  const L=todas.filter(q=>!filtro||q.estado===filtro);
+  $("#lista").innerHTML=L.length?L.map(q=>`<button type="button" class="q${abierta===q.id?" on":""}" data-id="${esc(q.id)}">
+    <span class="t"><b>${esc(q.cliente||q.nombre||"Sin nombre")}</b><time datetime="${new Date(q.fecha).toISOString()}" title="${esc(fecha(q.fecha))}">${hace(q.fecha)}</time></span>
+    <small>${esc(q.folio)} · ${q.productos} producto${q.productos===1?"":"s"} · ${esc(q.sucursal)}${q.total!=null?" · "+pesos(q.total):""}</small>
+    <span class="chips">${q.estado==="pendiente"?`<i class="chip pend">Por contestar</i>`:q.estado==="respondida"?`<i class="chip resp">Respondida</i>`:`<i class="chip">Archivada</i>`}${q.cliente?`<i class="chip may">Mayoreo</i>`:""}${q.telefono?"":`<i class="chip">Sin teléfono</i>`}</span>
+  </button>`).join(""):`<div class="vacio"><img src="/marca/mart-guino-v2.png" alt="" width="290" height="300">${filtro==="pendiente"?"No tienes cotizaciones por contestar. ¡Al corriente!":"No hay cotizaciones aquí."}</div>`;
+}
+document.querySelector(".tabs").addEventListener("click",e=>{const b=e.target.closest("[data-f]");if(!b)return;filtro=b.dataset.f;document.querySelectorAll(".tabs button").forEach(x=>x.classList.toggle("on",x===b));pintarLista()});
+$("#lista").addEventListener("click",e=>{const b=e.target.closest(".q");if(b)abrir(b.dataset.id)});
+
+async function abrir(id){
+  abierta=id;pintarLista();document.body.classList.add("abierta");
+  $("#det").innerHTML=`<p class="aviso">Abriendo…</p>`;
+  try{const j=await api("/api/dueno/cotizaciones/"+id);if(!j.ok){$("#det").innerHTML=`<p class="aviso bad">Esa cotización ya no existe.</p>`;return}actual=j.cotizacion;pintarDet()}
+  catch(e){if(e.message!=="sin_sesion")$("#det").innerHTML=`<p class="aviso bad">No se pudo abrir. Revisa tu conexión.</p>`}
+  window.scrollTo({top:0});
+}
+function lineas(){return [...document.querySelectorAll("#filas tr")].map(tr=>{const v=tr.querySelector("input").value.replace(/[$,\s]/g,"");return {precio:v===""?null:Number(v)>0?Number(v):null,existe:tr.querySelector("select").value}})}
+function recalcular(){
+  let total=0,sin=0;
+  [...document.querySelectorAll("#filas tr")].forEach((tr,i)=>{const it=actual.items[i];const v=Number(tr.querySelector("input").value.replace(/[$,\s]/g,""))||0;const ex=tr.querySelector("select").value;
+    tr.classList.toggle("no",ex==="no");const sub=ex==="no"?0:v*it.q;tr.querySelector(".s").textContent=v?pesos(v*it.q):"—";total+=sub;if(!v&&ex!=="no")sin++});
+  $("#tot").textContent=pesos(total);$("#totn").textContent=sin?`${sin} producto${sin===1?"":"s"} sin precio`:"Precios con IVA incluido";
+  actualizarWA();
+}
+function mensaje(){
+  const q=actual,L=lineas();let total=0;
+  const M=["*COTIZACIÓN CONSTRUMART*",`*Folio:* ${q.folio}`,"",`Hola${q.nombre?" "+q.nombre:""}, gracias por tu cotización. Aquí están el precio y la existencia:`,""];
+  q.items.forEach((it,i)=>{const l=L[i];const desc=`*${it.q} ${it.u}* — ${it.n}${it.v?" "+it.v:""}${it.b?` (${it.b})`:""}`;
+    if(l.existe==="no")M.push(`▪ ${desc} · ❌ Sin existencia`);
+    else if(l.precio){const sub=l.precio*it.q;total+=sub;M.push(`▪ ${desc} · ${pesos(l.precio)} c/u = *${pesos(sub)}*${l.existe==="parcial"?" ⚠️ Existencia parcial":" ✅"}`)}
+    else M.push(`▪ ${desc} · Precio por confirmar`)});
+  M.push("",`*TOTAL: ${pesos(total)}* (precios con IVA incluido)`);
+  const n=$("#notas").value.trim();if(n)M.push("",`*Notas:* ${n}`);
+  if(q.sucursal)M.push("",`*Recoges en:* ${q.sucursal}`);
+  M.push("","También la puedes ver en la página de Construmart, en \"Mis cotizaciones anteriores\". ¡Gracias por tu preferencia!");
+  return M.join("\n");
+}
+function actualizarWA(){const a=$("#wa");if(!a)return;const d=digits(actual.telefono);a.setAttribute("aria-disabled",String(d.length<10));a.href=d.length>=10?`https://wa.me/52${d.slice(-10)}?text=${encodeURIComponent(mensaje())}`:"#"}
+function pintarDet(){
+  const q=actual,r=q.respuesta;
+  $("#det").innerHTML=`<div class="det-h"><div><h2>${esc(q.cliente?q.cliente.nombre:q.nombre||"Sin nombre")}</h2><p>${esc(q.folio)} · llegó ${esc(fecha(q.fecha))}${r?` · respondida ${esc(fecha(r.fecha))}`:""}</p></div>
+    <button type="button" class="btn atras" id="atras">← Volver a la lista</button></div>
+  <div class="datos"><div><span>Nombre</span><b>${esc(q.nombre||"—")}</b></div><div><span>Teléfono</span><b>${esc(q.telefono||"No lo dejó")}</b></div><div><span>Sucursal</span><b>${esc(q.sucursal||"—")}</b></div><div><span>¿Cuándo pasa?</span><b>${esc(q.recoge||"—")}</b></div>${q.cliente?`<div><span>Cliente de mayoreo</span><b>${esc(q.cliente.nombre)} (${esc(q.cliente.usuario)})</b></div>`:""}</div>
+  ${q.notas?`<div class="notas-c"><b>Comentarios del cliente:</b> ${esc(q.notas)}</div>`:""}
+  <div class="tbox"><table><thead><tr><th>Cant.</th><th>Producto</th><th>Precio c/u</th><th>Existencia</th><th style="text-align:right">Subtotal</th></tr></thead><tbody id="filas">
+  ${q.items.map((it,i)=>{const l=r&&r.lineas[i]||{};const pv=l.precio||it.pc||"";const ex=l.existe||"si";
+    return `<tr><td class="c">${it.q} <small>${esc(it.u)}</small></td><td class="p"><strong><span class="q-cant" style="display:none">${it.q} ${esc(it.u)} · </span>${esc(it.n)}${it.custom?`<span class="tag">Por conseguir</span>`:""}</strong><small>${esc([it.v,it.b,it.cod?"Cód. "+it.cod:""].filter(Boolean).join(" · "))}</small>${it.pc?`<span class="pc">Su precio de mayoreo: ${pesos(it.pc)}</span>`:""}</td>
+    <td><div class="money"><span>$</span><input inputmode="decimal" value="${pv}" aria-label="Precio de ${esc(it.n)}"></div></td>
+    <td><select aria-label="Existencia de ${esc(it.n)}"><option value="si"${ex==="si"?" selected":""}>Hay</option><option value="parcial"${ex==="parcial"?" selected":""}>Parcial</option><option value="no"${ex==="no"?" selected":""}>No hay</option></select></td>
+    <td class="s">—</td></tr>`}).join("")}</tbody></table></div>
+  <div class="total"><div><span style="font-weight:800">Total</span><small id="totn"></small></div><strong id="tot">$0.00</strong></div>
+  <label class="l">Notas para el cliente <span style="font-weight:500;color:var(--muted)">(opcional)</span><textarea id="notas" placeholder="Ej. Listo para recoger hoy después de las 4 p. m.">${esc(r?r.notas:"")}</textarea></label>
+  <div class="acts">
+    <a class="btn wa" id="wa" href="#" target="_blank" rel="noopener"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2z"/></svg>Guardar y mandar por WhatsApp</a>
+    <button type="button" class="btn" id="guardar">Solo guardar</button>
+    <button type="button" class="btn" id="copiar">Copiar mensaje</button>
+    <button type="button" class="btn" id="archivar">${q.estado==="archivada"?"Sacar de archivadas":"Archivar"}</button>
+    <button type="button" class="btn danger" id="borrar">Borrar</button>
+  </div>
+  ${digits(q.telefono).length<10?`<p class="aviso bad">El cliente no dejó un teléfono de 10 dígitos. Usa "Copiar mensaje" y mándaselo por otro lado.</p>`:`<p class="aviso">Al tocar el botón verde se guarda tu respuesta, se abre WhatsApp con el mensaje listo y el cliente también la ve en la página.</p>`}`;
+  recalcular();
+}
+async function guardar(silencio){
+  try{const j=await api("/api/dueno/cotizaciones/"+actual.id,{accion:"responder",respuesta:{lineas:lineas(),notas:$("#notas").value.trim()}});
+    if(j.ok){actual.respuesta=j.respuesta;actual.estado="respondida";const s=todas.find(q=>q.id===actual.id);if(s){s.estado="respondida";s.total=j.respuesta.total;s.respondida=j.respuesta.fecha}pintarLista();if(!silencio)toast("Respuesta guardada");return true}}
+  catch(e){}
+  toast("No se pudo guardar. Revisa tu conexión e inténtalo otra vez.");return false;
+}
+$("#det").addEventListener("input",e=>{if(e.target.closest("#filas")||e.target.id==="notas")recalcular()});
+$("#det").addEventListener("change",e=>{if(e.target.closest("#filas"))recalcular()});
+$("#det").addEventListener("click",async e=>{
+  const t=e.target.closest("button,a");if(!t)return;
+  if(t.id==="atras"){document.body.classList.remove("abierta");abierta=null;pintarLista();return}
+  if(t.id==="wa"){if(t.getAttribute("aria-disabled")==="true"){e.preventDefault();return}actualizarWA();guardar(true).then(ok=>{if(ok)toast("Respuesta guardada. Envía el mensaje en WhatsApp.")});return}
+  if(t.id==="guardar"){t.disabled=true;await guardar();t.disabled=false;return}
+  if(t.id==="copiar"){const m=mensaje();try{await navigator.clipboard.writeText(m);toast("Mensaje copiado")}catch(err){toast("No se pudo copiar en este navegador")}return}
+  if(t.id==="archivar"){const nuevo=actual.estado==="archivada"?(actual.respuesta?"respondida":"pendiente"):"archivada";
+    try{const j=await api("/api/dueno/cotizaciones/"+actual.id,{accion:"estado",estado:nuevo});if(j.ok){actual.estado=nuevo;const s=todas.find(q=>q.id===actual.id);if(s)s.estado=nuevo;pintarLista();pintarDet();toast(nuevo==="archivada"?"Archivada":"De regreso en la bandeja")}}catch(err){toast("No se pudo cambiar. Inténtalo otra vez.")}return}
+  if(t.id==="borrar"){if(!t.classList.contains("sure")){t.classList.add("sure");t.textContent="¿Seguro? Toca otra vez";setTimeout(()=>{if(t.isConnected){t.classList.remove("sure");t.textContent="Borrar"}},3500);return}
+    try{const j=await api("/api/dueno/cotizaciones/"+actual.id,{accion:"borrar"});if(j.ok){todas=todas.filter(q=>q.id!==actual.id);actual=null;abierta=null;document.body.classList.remove("abierta");pintarLista();$("#det").innerHTML=`<div class="vacio">Cotización borrada.</div>`;toast("Cotización borrada")}}catch(err){toast("No se pudo borrar.")}}
+});
+// Revisa si hay cotizaciones nuevas cada minuto mientras la bandeja está abierta
+setInterval(()=>{if(!$("#app").hidden&&document.visibilityState==="visible")cargar()},60000);
+(async()=>{try{const r=await fetch("/api/dueno/sesion",{credentials:"same-origin",cache:"no-store"});if(r.ok)verApp();else verLogin()}catch(e){verLogin()}})();
+</script>
+</body>
+</html>

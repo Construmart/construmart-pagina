@@ -2,6 +2,10 @@
  "secreto": "9ccec1c0224164dcee605fe988c5510e43301af830b252ee2bb8193c589f702b",
  "iter": 100000,
  "nota": "Precios con IVA incluido.",
+ "admin": {
+  "s": "a66e90da05aa06d8",
+  "h": "02b91e72dd56d98862a35988bcc765d1d5a064fdf5478eadcc580e8753b3c32c"
+ },
  "clientes": {
   "prueba": {
    "n": "Cliente de prueba",

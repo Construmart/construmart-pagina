@@ -578,6 +578,20 @@ details[open]>summary .dchev{transform:rotate(180deg)}
 .cli-wa{display:flex;align-items:center;justify-content:center;gap:8px;background:#25D366;color:#fff;border-radius:8px;padding:11px;font-weight:800;font-size:14px;text-decoration:none}
 .cli-pedir small{display:block;margin-top:6px}
 .cli-box{max-height:calc(100dvh - 32px);overflow-y:auto;overscroll-behavior:contain}
+/* Respuesta de la tienda en "Mis cotizaciones anteriores" */
+.hist-est{font-style:normal;font-size:11px;font-weight:700;border-radius:20px;padding:2px 8px;margin-left:4px;background:var(--cream);color:var(--muted);white-space:nowrap}
+.hist-est.ok{background:#16a34a;color:#fff}
+.hist-resp{margin:0 14px 12px;border:1.5px solid #16a34a;border-radius:8px;padding:10px 12px;background:#16a34a0d;font-size:13px}
+.hist-resp>b{display:block;color:#16a34a;margin-bottom:6px}
+.hist-resp ul{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+.hist-resp li{display:flex;justify-content:space-between;gap:10px}
+.hist-resp .hr-p{white-space:nowrap;font-weight:700}
+.hist-resp em{font-style:normal;font-size:11px;font-weight:700;border-radius:4px;padding:1px 5px}
+.hist-resp em.no{background:#c0392b;color:#fff}
+.hist-resp em.pa{background:#f59e0b;color:#fff}
+.hr-tot{display:flex;justify-content:space-between;border-top:1px solid #16a34a55;margin-top:8px;padding-top:6px;font-weight:700}
+.hr-tot strong{font-family:var(--display);font-weight:900;font-size:17px}
+.hr-n{margin:6px 0 0;color:var(--ink)}
 </style>
 
 <header class="top">
@@ -1330,11 +1344,12 @@ function renderHist(){
     ${h.notes?`<p class="hist-notes">Comentarios: ${esc(h.notes)}</p>`:""}
     <div class="hist-actions"><button type="button" class="btn btn-primary" data-reorder="${i}">${cartSvg}Volver a pedir</button><button type="button" class="btn btn-outline" data-delhist="${i}">Borrar</button></div>
   </details>`}).join("")}</div>`;
+  cotizHist();
 }
 function recordSend(){
   if(!quote.length)return;
   hist.unshift({folio,date:Date.now(),items:JSON.parse(JSON.stringify(quote)),notes:form.notes||""});
-  hist=hist.slice(0,20);saveHist();
+  hist=hist.slice(0,20);saveHist();cotizGuardar(hist[0]);
   try{localStorage.setItem("cm-form",JSON.stringify({name:form.name,phone:form.phone,pick:form.pick,branch:form.branch}))}catch(e){}
   const sent=folio, br=branchOf(form.branch).nombre;
   setTimeout(()=>{
@@ -1574,7 +1589,42 @@ document.addEventListener("click",async e=>{
   if(e.target.closest("#cliSalir")){try{await fetch("/api/salir",{method:"POST",credentials:"same-origin"})}catch(err){}cliSet(null);toast("Saliste de tu sesión de cliente.")}
 });
 (async()=>{try{const r=await fetch("/api/sesion",{credentials:"same-origin",cache:"no-store"});if(!r.ok)return;const j=await r.json();if(!j||j.ok!==true)return;
-  $("#cliBtn").hidden=false;if(j.cliente)cliSet(j.cliente)}catch(e){}})();
+  $("#cliBtn").hidden=false;SRV=true;cotizHist();if(j.cliente)cliSet(j.cliente)}catch(e){}})();
+// ===== Bandeja: la cotización también se guarda en la tienda y aquí se ve la respuesta =====
+// Solo en la página de internet (Cloudflare). En las páginas de Claude no hace nada.
+let SRV=false,RESP={},respHora=0;
+function cotizGuardar(h){
+  if(!SRV||!h||!h.items||!h.items.length)return;
+  const items=h.items.map(it=>{const p=prodOf(it)||{};return {id:it.custom?"":it.id,v:it.custom?"":(it.variant||""),n:it.custom?it.name:p.name,b:it.custom||p.brand==="Material"?"":(p.brand||""),q:it.qty,u:unitOf(p,it.qty),cod:it.custom?"":codeOf(p,it.variant),custom:!!it.custom}});
+  const body={folio:h.folio,nombre:form.name||"",telefono:form.phone||"",sucursal:branchOf(form.branch).nombre,recoge:form.pick||"",notas:h.notes||"",items};
+  fetch("/api/cotizaciones",{method:"POST",credentials:"same-origin",keepalive:true,headers:{"content-type":"application/json"},body:JSON.stringify(body)})
+    .then(r=>r.json()).then(j=>{if(j&&j.ok){h.rid=j.id;h.tok=j.token;saveHist();cotizPintar()}}).catch(()=>{});
+}
+const EXIST={si:"Hay",no:"No hay",parcial:"Existencia parcial"};
+function cotizPintar(){
+  const el=$("#histPanel");if(!el)return;
+  el.querySelectorAll(".hist-item").forEach((d,i)=>{const h=hist[i];if(!h||!h.rid)return;
+    const r=RESP[h.rid],sum=d.querySelector(".hist-count");
+    let chip=d.querySelector(".hist-est");if(!chip&&sum){sum.insertAdjacentHTML("beforeend",` <i class="hist-est"></i>`);chip=d.querySelector(".hist-est")}
+    const lista=r&&r.respuesta;
+    if(chip){chip.className="hist-est"+(lista?" ok":"");chip.textContent=lista?"Respondida":"En espera de respuesta"}
+    let box=d.querySelector(".hist-resp");
+    if(!lista){if(box)box.remove();return}
+    const valid=h.items;
+    const html=`<b>Respuesta de Construmart</b><ul>${valid.map((it,k)=>{const l=lista.lineas[k]||{};const p=prodOf(it);if(!p)return "";
+      return `<li><span>${it.qty} ${unitOf(p,it.qty)} · ${esc(p.name)}${it.variant&&!it.custom?" "+esc(it.variant):""}</span><span class="hr-p">${l.existe==="no"?`<em class="no">No hay</em>`:`${l.precio?pesos(l.precio)+" c/u":"Sin precio"}${l.existe==="parcial"?` <em class="pa">Parcial</em>`:""}`}</span></li>`}).join("")}</ul>
+      <div class="hr-tot"><span>Total</span><strong>${pesos(lista.total||0)}</strong></div>${lista.notas?`<p class="hr-n">${esc(lista.notas)}</p>`:""}`;
+    if(!box){const ul=d.querySelector("ul");(ul||d.querySelector("summary")).insertAdjacentHTML("afterend",`<div class="hist-resp"></div>`);box=d.querySelector(".hist-resp")}
+    if(box.dataset.h!==html){box.innerHTML=html;box.dataset.h=html}
+  });
+}
+function cotizHist(){
+  if(!SRV)return;cotizPintar();
+  const pares=hist.filter(h=>h.rid&&h.tok).map(h=>[h.rid,h.tok]).slice(0,25);
+  if(!pares.length||Date.now()-respHora<20000)return;respHora=Date.now();
+  fetch("/api/mis-cotizaciones",{method:"POST",credentials:"same-origin",headers:{"content-type":"application/json"},body:JSON.stringify({pares})})
+    .then(r=>r.json()).then(j=>{if(j&&j.ok){(j.cotizaciones||[]).forEach(c=>RESP[c.id]=c);cotizPintar()}}).catch(()=>{});
+}
 let search=null;
 function route(){
   showHero(null);
