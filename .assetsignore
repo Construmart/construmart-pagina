@@ -2,3 +2,7 @@
 wrangler.jsonc
 README.md
 .assetsignore
+worker.js
+privado
+privado/*
+pruebas

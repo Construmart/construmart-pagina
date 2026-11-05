@@ -1,0 +1,26 @@
+{
+ "secreto": "9ccec1c0224164dcee605fe988c5510e43301af830b252ee2bb8193c589f702b",
+ "iter": 100000,
+ "nota": "",
+ "clientes": {
+  "prueba": {
+   "n": "Cliente de prueba",
+   "s": "8374ab73b283511b",
+   "h": "3f1a985aefa6ccdb4bd54d6f31774f614fd634508305d00138ec9d258b2a1fda",
+   "p": {
+    "o1|25 kilos": 210.0,
+    "o2|25 kilos": 180.0,
+    "pmvk05sv6|25 kilos": 320.0,
+    "pmvk15mhl|20 kilos": 145.0,
+    "pmvlho4sg|1/2\"": 95.0,
+    "pmvlho4sg|3/4\"": 150.0,
+    "pmvlikpgv|1/2\"": 9.5,
+    "pmvlikpgv|3/4\"": 14.0,
+    "pmvy45j6j|1\"": 22.0,
+    "pmvy45j6j|2\"": 35.0,
+    "pmvrbcgis|M / 8": 48.0,
+    "pmvrbcgis|G / 9": 48.0
+   }
+  }
+ }
+}

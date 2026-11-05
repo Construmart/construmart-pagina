@@ -534,6 +534,41 @@ details[open]>summary .dchev{transform:rotate(180deg)}
   .mcats-grid a.mq{background:var(--cream)}
   .mcats-grid a:active{transform:scale(.97)}
 }
+/* Clientes de mayoreo */
+.cli-btn{display:flex;align-items:center;gap:6px;border:1.5px solid var(--ink);border-radius:8px;background:transparent;padding:6px 10px;font:inherit;font-weight:700;font-size:13px;color:var(--ink);cursor:pointer;max-width:180px}
+.cli-btn span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cli-btn svg{flex:none}
+.cli-btn.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.cli-btn:hover{border-color:var(--accent)}
+.cli-bar{background:var(--ink);color:#fff;font-size:13.5px}
+.cli-bar .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-block:8px}
+.cli-bar b{color:var(--accent)}
+.cli-bar button{flex:none;border:1px solid #ffffff66;background:transparent;color:#fff;border-radius:6px;padding:5px 12px;font:inherit;font-weight:700;font-size:12.5px;cursor:pointer}
+.cprecio{margin-top:8px;font-family:var(--display);font-weight:900;font-size:19px;line-height:1.1;color:var(--ink)}
+.cprecio small{display:block;font-family:var(--body);font-size:11px;font-weight:600;color:#16a34a;margin-top:2px}
+.cprecio .sin{display:block;font-family:var(--body);font-size:12px;font-weight:600;color:var(--muted)}
+.cli-p{display:block;margin-top:3px;font-size:12px;color:var(--ink)}
+.cli-p b{font-weight:800}
+.cli-p.sin{color:var(--muted)}
+.qtotal{margin-top:12px;border-top:2px solid var(--ink);padding-top:10px}
+.qtotal div{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.qtotal span{font-weight:700}
+.qtotal strong{font-family:var(--display);font-weight:900;font-size:24px}
+.qtotal small{display:block;color:var(--muted);font-size:12px;margin-top:4px}
+.cli-veil{position:fixed;inset:0;background:#0008;z-index:60;display:grid;place-items:center;padding:16px}
+.cli-box{position:relative;background:var(--bg);border-radius:14px;padding:24px 22px 18px;width:min(380px,100%);display:grid;gap:10px;box-shadow:0 20px 50px #0005}
+.cli-box img{width:84px;height:auto;justify-self:center;margin-top:-4px}
+.cli-box h2{margin:0;text-align:center;font-family:var(--display);font-weight:900;font-size:22px}
+.cli-box p{margin:0;font-size:13.5px;text-align:center;color:var(--ink)}
+.cli-box label{display:grid;gap:4px;font-size:13px;font-weight:700}
+.cli-box input{border:1.5px solid var(--line);border-radius:8px;padding:11px 12px;font:inherit;font-size:15px;background:var(--bg)}
+.cli-box input:focus{outline:none;border-color:var(--accent)}
+.cli-err{color:#c0392b!important;font-weight:600;min-height:1em}
+.cli-go{background:var(--accent);color:#fff;border:0;border-radius:8px;padding:12px;font:inherit;font-weight:800;font-size:15px;cursor:pointer}
+.cli-go:disabled{opacity:.6}
+.cli-box small{font-size:12px;color:var(--muted);text-align:center}
+.cli-x{position:absolute;right:10px;top:8px;border:0;background:none;font-size:24px;line-height:1;color:var(--muted);cursor:pointer}
+@media (max-width:680px){.cli-btn{order:1;margin-left:auto;padding:7px}.cli-btn span{display:none}.cotiza{order:2}.cart{order:3}.cli-bar{font-size:12.5px}}
 </style>
 
 <header class="top">
@@ -549,6 +584,7 @@ details[open]>summary .dchev{transform:rotate(180deg)}
       <span><strong>Cotiza tu proyecto <em class="free">GRATIS</em></strong><small>Recibe una cotización</small></span>
     </a>
     
+    <button class="cli-btn" id="cliBtn" type="button" hidden aria-label="Acceso para clientes"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg><span id="cliTxt">Clientes</span></button>
     <a class="cart" href="#cotizacion" aria-label="Mi lista de cotización">
       <svg width="28" height="26" viewBox="0 0 28 26" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 2h4l3.2 14h14L25 6H7"/><circle cx="10" cy="22" r="1.8"/><circle cx="21" cy="22" r="1.8"/></svg>
       <span class="badge" id="badge">0</span>
@@ -556,6 +592,7 @@ details[open]>summary .dchev{transform:rotate(180deg)}
     </a>
   </div>
 </header>
+<div class="cli-bar" id="cliBar" hidden></div>
 
 <div class="band">
   <div class="wrap">
@@ -1200,15 +1237,15 @@ function msg(){
     const cod=codeOf(p,it.variant);
     return [p.name,v].filter(Boolean).join(" de ").replace(/ de (\d)/," de $1")+(p.brand&&p.brand!=="Material"?` (${p.brand})`:"")+(cod?` · Cód. ${cod}`:"")};
   const prods=quote.filter(i=>!i.custom), extra=quote.filter(i=>i.custom);
-  const L=["*NUEVA COTIZACIÓN · CONSTRUMART*",`*Folio:* ${folio}`,""];
-  L.push(`*Cliente:* ${form.name||"(sin nombre)"}`);
+  const L=[CLI?"*NUEVO PEDIDO DE CLIENTE · CONSTRUMART*":"*NUEVA COTIZACIÓN · CONSTRUMART*",`*Folio:* ${folio}`,""];
+  L.push(`*Cliente:* ${form.name||"(sin nombre)"}`);if(CLI)L.push(`*Cliente de mayoreo:* ${CLI.nombre} (usuario: ${CLI.usuario})`);
   if(form.phone)L.push(`*Teléfono:* ${form.phone}`);
   L.push(`*Sucursal:* ${(SUCURSALES.find(b=>b.id===form.branch)||SUCURSALES[0]).nombre}`);
   L.push(`*Recoge:* ${form.pick}`);
-  if(prods.length){L.push("",`*PRODUCTOS (${prods.length})*`);prods.forEach(it=>{const p=byId(it.id);L.push(`▪ *${qtyTxt(p,it.qty)}* — ${detail(p,it)}`)})}
+  if(prods.length){L.push("",`*PRODUCTOS (${prods.length})*`);prods.forEach(it=>{const p=byId(it.id);L.push(`▪ *${qtyTxt(p,it.qty)}* — ${detail(p,it)}${cliLinea(it)}`)})}
   if(extra.length){L.push("",`*POR CONSEGUIR (${extra.length})*`,"_No están en la página, ¿los pueden conseguir?_");extra.forEach(it=>L.push(`▪ *${qtyTxt(prodOf(it),it.qty)}* — ${it.name}`))}
   if(form.notes)L.push("",`*Comentarios:* ${form.notes}`);
-  L.push("","Quedo en espera de precio y existencia. ¡Gracias!");
+  if(CLI){const t=cliTotal();if(t.n)L.push("",`*TOTAL CON MIS PRECIOS:* ${pesos(t.total)}`+(t.sin?` (${t.sin} producto${t.sin===1?"":"s"} por confirmar precio)`:""));L.push("","Quedo en espera de confirmación de existencia. ¡Gracias!")}else L.push("","Quedo en espera de precio y existencia. ¡Gracias!");
   return L.join("\n");
 }
 function viewQuote(){
@@ -1262,6 +1299,7 @@ function renderQuote(){
   $("#qbody").innerHTML=quote.map((it,ix)=>{const p=prodOf(it);return `<tr><td><div class="mini">${it.custom?pic(p):picV(p,it.variant)}</div></td><td><strong>${esc(p.name)}</strong><small>${it.custom?'<span class="tag">Por conseguir</span>':(p.brand!=="Material"?p.brand+" · ":"")+esc(it.variant)}</small></td>
     <td><div class="qty" style="width:max-content"><button type="button" data-q="${ix}" data-step="-1" aria-label="Menos">−</button><input id="q-${ix}" type="number" min="1" value="${it.qty}" data-q="${ix}" aria-label="Cantidad"><button type="button" data-q="${ix}" data-step="1" aria-label="Más">+</button></div><small>${unitOf(p,it.qty)}</small></td>
     <td><button type="button" class="rm" data-rm="${ix}">Quitar</button></td></tr>`}).join("");
+  cliQuote();
   const m=msg(),ok=quote.length>0;
   $("#preview").textContent=m;
   $("#waBtn").setAttribute("aria-disabled",String(!ok));
@@ -1441,6 +1479,82 @@ function sideHint(){
   if(!sideHint.hecho&&matchMedia("(max-width:960px)").matches&&!matchMedia("(prefers-reduced-motion: reduce)").matches&&ul.scrollWidth>ul.clientWidth+4){
     sideHint.hecho=1;setTimeout(()=>{ul.scrollTo({left:90,behavior:"smooth"});setTimeout(()=>ul.scrollTo({left:0,behavior:"smooth"}),750)},1100)}
 }
+// ===== Clientes de mayoreo: entran con usuario y clave y ven sus precios =====
+// Solo funciona en la página publicada en internet (Cloudflare), donde está el portero /api.
+let CLI=null;
+const pesos=n=>Number(n).toLocaleString("es-MX",{style:"currency",currency:"MXN"});
+const cliKey=(id,v)=>id+"|"+(v||"");
+const cliPrecio=(id,v)=>CLI&&CLI.precios?CLI.precios[cliKey(id,v)]:undefined;
+function cliLinea(it){if(!CLI||it.custom)return "";const pr=cliPrecio(it.id,it.variant);return pr?` · ${pesos(pr)} por ${unitOf(byId(it.id),1)} = *${pesos(pr*it.qty)}*`:" · _precio por confirmar_"}
+function cliTotal(){let total=0,n=0,sin=0;quote.forEach(it=>{if(it.custom){sin++;return}const pr=cliPrecio(it.id,it.variant);if(pr){total+=pr*it.qty;n++}else sin++});return {total,n,sin}}
+function cliQuote(){
+  const tb=$("#qbody");if(!tb)return;
+  let box=$("#qtotal");
+  if(!CLI){if(box)box.remove();return}
+  [...tb.querySelectorAll("tr")].forEach((tr,ix)=>{const it=quote[ix];if(!it)return;const td=tr.children[1];if(!td)return;
+    const pr=it.custom?undefined:cliPrecio(it.id,it.variant);
+    td.insertAdjacentHTML("beforeend",pr?`<small class="cli-p">${pesos(pr)} por ${unitOf(byId(it.id),1)} · <b>${pesos(pr*it.qty)}</b></small>`:`<small class="cli-p sin">Precio por confirmar</small>`)});
+  if(!box){const t=tb.closest(".tablebox");if(!t)return;t.insertAdjacentHTML("afterend",`<div class="qtotal" id="qtotal"></div>`);box=$("#qtotal")}
+  const t=cliTotal();
+  box.hidden=!quote.length;
+  box.innerHTML=`<div><span>Total con tus precios</span><strong>${pesos(t.total)}</strong></div>${t.sin?`<small>${t.sin} producto${t.sin===1?"":"s"} sin precio: te lo confirmamos en tu pedido.</small>`:""}${CLI.nota?`<small>${esc(CLI.nota)}</small>`:""}`;
+}
+// Precio en cada tarjeta de producto
+function cliCard(card){
+  const p=byId(card.dataset.id);if(!p)return;
+  let el=card.querySelector(".cprecio");
+  if(!CLI){if(el)el.remove();return}
+  const sel=card.querySelector("select");
+  const vs=p.variants&&p.variants.length>1?p.variants:[p.spec||(p.variants||[])[0]||""];
+  let html;
+  if(sel&&sel.value){const pr=cliPrecio(p.id,sel.value);html=pr?`${pesos(pr)}<small>Tu precio · ${esc(sel.value)}</small>`:`<span class="sin">Precio por confirmar</span>`}
+  else{const ps=vs.map(v=>cliPrecio(p.id,v)).filter(Boolean);
+    html=!ps.length?`<span class="sin">Precio por confirmar</span>`:vs.length>1?`${ps.length>1&&Math.min(...ps)!==Math.max(...ps)?"Desde ":""}${pesos(Math.min(...ps))}<small>Tu precio${ps.length<vs.length?" · algunas medidas":""}</small>`:`${pesos(ps[0])}<small>Tu precio</small>`}
+  if(!el){const foot=card.querySelector(".foot");if(!foot)return;foot.insertAdjacentHTML("beforebegin",`<div class="cprecio"></div>`);el=card.querySelector(".cprecio")}
+  if(el.dataset.h!==html){el.innerHTML=html;el.dataset.h=html}
+}
+let cliRaf=0;
+function cliPintar(){cancelAnimationFrame(cliRaf);cliRaf=requestAnimationFrame(()=>{document.querySelectorAll(".card[data-id]").forEach(cliCard)})}
+new MutationObserver(()=>{if(CLI||document.querySelector(".cprecio"))cliPintar()}).observe(document.body,{childList:true,subtree:true});
+document.addEventListener("change",e=>{const c=e.target.closest&&e.target.closest(".card[data-id]");if(c&&e.target.tagName==="SELECT")cliCard(c)});
+function cliSet(c){
+  CLI=c;
+  const b=$("#cliBtn"),bar=$("#cliBar");
+  b.classList.toggle("on",!!c);$("#cliTxt").textContent=c?c.nombre:"Clientes";b.setAttribute("aria-label",c?"Sesión de "+c.nombre:"Acceso para clientes");
+  bar.hidden=!c;
+  bar.innerHTML=c?`<div class="wrap"><span><b>Hola, ${esc(c.nombre)}.</b> Estás viendo tus precios de cliente.</span><button type="button" id="cliSalir">Salir</button></div>`:"";
+  cliPintar();if($("#qbody"))renderQuote();
+}
+function cliModal(){
+  let v=$("#cliVeil");
+  if(!v){document.body.insertAdjacentHTML("beforeend",`<div class="cli-veil" id="cliVeil" hidden><form class="cli-box" id="cliForm" autocomplete="on">
+    <button type="button" class="cli-x" id="cliX" aria-label="Cerrar">×</button>
+    <img src="marca/mart-lentes-v2.png" alt="" width="295" height="300">
+    <h2>Acceso para clientes</h2>
+    <p>Entra con el usuario y la clave que te dio Construmart para ver tus precios.</p>
+    <label>Usuario<input id="cliU" name="username" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" required></label>
+    <label>Clave<input id="cliK" name="password" type="password" autocomplete="current-password" required></label>
+    <p class="cli-err" id="cliErr" role="alert"></p>
+    <button class="cli-go" id="cliGo" type="submit">Entrar</button>
+    <small>¿Eres cliente de mayoreo y no tienes acceso? Pídelo por WhatsApp a tu sucursal.</small>
+  </form></div>`);v=$("#cliVeil");
+    v.addEventListener("click",e=>{if(e.target===v||e.target.id==="cliX")v.hidden=true});
+    $("#cliForm").addEventListener("submit",async e=>{e.preventDefault();const go=$("#cliGo");go.disabled=true;go.textContent="Revisando…";$("#cliErr").textContent="";
+      try{const r=await fetch("/api/entrar",{method:"POST",credentials:"same-origin",headers:{"content-type":"application/json"},body:JSON.stringify({usuario:$("#cliU").value,clave:$("#cliK").value})});
+        const j=await r.json().catch(()=>({}));
+        if(j.ok&&j.cliente){v.hidden=true;$("#cliK").value="";cliSet(j.cliente);toast("Bienvenido, "+j.cliente.nombre+". Ya ves tus precios.")}
+        else $("#cliErr").textContent="Usuario o clave incorrectos. Revísalos e intenta otra vez.";
+      }catch(err){$("#cliErr").textContent="No se pudo entrar. Revisa tu conexión e intenta otra vez."}
+      finally{go.disabled=false;go.textContent="Entrar"}});
+  }
+  v.hidden=false;setTimeout(()=>$("#cliU").focus(),50);
+}
+document.addEventListener("click",async e=>{
+  if(e.target.closest("#cliBtn")){if(CLI){document.querySelector("#cliBar").scrollIntoView({block:"nearest"});const s=$("#cliSalir");if(s)s.focus()}else cliModal();return}
+  if(e.target.closest("#cliSalir")){try{await fetch("/api/salir",{method:"POST",credentials:"same-origin"})}catch(err){}cliSet(null);toast("Saliste de tu sesión de cliente.")}
+});
+(async()=>{try{const r=await fetch("/api/sesion",{credentials:"same-origin",cache:"no-store"});if(!r.ok)return;const j=await r.json();if(!j||j.ok!==true)return;
+  $("#cliBtn").hidden=false;if(j.cliente)cliSet(j.cliente)}catch(e){}})();
 let search=null;
 function route(){
   showHero(null);
