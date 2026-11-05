@@ -1,7 +1,7 @@
 {
  "secreto": "9ccec1c0224164dcee605fe988c5510e43301af830b252ee2bb8193c589f702b",
  "iter": 100000,
- "nota": "",
+ "nota": "Precios con IVA incluido.",
  "clientes": {
   "prueba": {
    "n": "Cliente de prueba",

@@ -1245,7 +1245,7 @@ function msg(){
   if(prods.length){L.push("",`*PRODUCTOS (${prods.length})*`);prods.forEach(it=>{const p=byId(it.id);L.push(`▪ *${qtyTxt(p,it.qty)}* — ${detail(p,it)}${cliLinea(it)}`)})}
   if(extra.length){L.push("",`*POR CONSEGUIR (${extra.length})*`,"_No están en la página, ¿los pueden conseguir?_");extra.forEach(it=>L.push(`▪ *${qtyTxt(prodOf(it),it.qty)}* — ${it.name}`))}
   if(form.notes)L.push("",`*Comentarios:* ${form.notes}`);
-  if(CLI){const t=cliTotal();if(t.n)L.push("",`*TOTAL CON MIS PRECIOS:* ${pesos(t.total)}`+(t.sin?` (${t.sin} producto${t.sin===1?"":"s"} por confirmar precio)`:""));L.push("","Quedo en espera de confirmación de existencia. ¡Gracias!")}else L.push("","Quedo en espera de precio y existencia. ¡Gracias!");
+  if(CLI){const t=cliTotal();if(t.n)L.push("",`*TOTAL CON MIS PRECIOS:* ${pesos(t.total)}${CLI.nota?" ("+CLI.nota.replace(/\.$/,"").toLowerCase()+")":""}`+(t.sin?` (${t.sin} producto${t.sin===1?"":"s"} por confirmar precio)`:""));L.push("","Quedo en espera de confirmación de existencia. ¡Gracias!")}else L.push("","Quedo en espera de precio y existencia. ¡Gracias!");
   return L.join("\n");
 }
 function viewQuote(){
