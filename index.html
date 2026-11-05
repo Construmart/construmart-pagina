@@ -506,6 +506,34 @@ details[open]>summary .dchev{transform:rotate(180deg)}
 .mart-btn2:hover{border-color:var(--accent);color:var(--accent)}
 @media (max-width:680px){.dudas-head{padding:12px 14px;gap:12px}.dudas-head img{width:76px}.dudas-head h1{font-size:23px}.dudas-head p{font-size:13px}.duda summary{font-size:14.5px;padding:13px 14px}.mart-btn2{font-size:13px;padding:8px 12px}}
 .mart-btns{margin-top:6px}.mart-btns .mart-btn{margin-top:0}
+/* Celular: cuadrícula de categorías en el inicio y aviso de "hay más" en la fila */
+.mcats{display:none}
+.side li.m-all,.side-more{display:none}
+@media (max-width:960px){
+  .side{position:relative}
+  .side li.m-all{display:block}
+  .side a{border-color:var(--accent)!important}
+  .side a.rap{border-color:#16a34a!important}
+  .side li.m-all a{font-weight:700}
+  .side-more{display:flex;align-items:center;justify-content:flex-end;position:absolute;right:0;top:10px;height:34px;width:64px;padding:0 4px 0 0;border:0;background:linear-gradient(90deg,rgba(251,246,238,0),var(--cream-page) 55%);color:var(--accent);cursor:pointer;transition:opacity .2s}
+  .side-more svg{width:26px;height:26px;padding:5px;border-radius:50%;background:var(--accent);color:#fff;box-shadow:0 2px 6px rgba(0,0,0,.2)}
+  .side-more.off{opacity:0;pointer-events:none}
+  .side ul{scrollbar-width:none}
+  .side ul::-webkit-scrollbar{display:none}
+}
+@media (max-width:680px){
+  .mcats{display:block;margin:16px 0 6px}
+  .mcats-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:10px}
+  .mcats-head h2{font-family:var(--display);font-weight:900;font-size:19px;margin:0;color:var(--ink)}
+  .mcats-head a{font-size:13px;font-weight:700;color:var(--accent);text-decoration:none}
+  .mcats-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+  .mcats-grid a{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:6px;padding:12px 4px 10px;min-height:88px;background:var(--bg);border:1.5px solid var(--accent);border-radius:10px;text-decoration:none;color:var(--ink);font-size:11px;font-weight:700;line-height:1.2;text-align:center;hyphens:auto}
+  .mcats-grid a svg{width:28px;height:28px;flex:none;color:var(--accent)}
+  .mcats-grid a.rap{border-color:#16a34a;background:#16a34a0d}
+  .mcats-grid a.rap svg{color:#16a34a}
+  .mcats-grid a.mq{background:var(--cream)}
+  .mcats-grid a:active{transform:scale(.97)}
+}
 </style>
 
 <header class="top">
@@ -1035,6 +1063,10 @@ function viewHome(){
     <button class="arrow r" type="button" data-slide="1" aria-label="Siguiente"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="m9 6 6 6-6 6"/></svg></button>
     <div class="dots">${SLIDES.map((_,i)=>`<button type="button" data-dot="${i}" class="${i===slideIx?"on":""}" aria-label="Ir a la imagen ${i+1}"></button>`).join("")}</div>
   </section>
+  <section class="mcats" aria-label="Categorías">
+    <div class="mcats-head"><h2>Categorías</h2><a href="#categorias">Ver todas ›</a></div>
+    <div class="mcats-grid">${RAPIDOS().length?`<a class="rap" href="#entrega-inmediata"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg><span>Entrega inmediata</span></a>`:""}${CATS.map(c=>`<a href="#${c.slug}">${cIcon(c.slug,"")}<span>${c.slug==="impermeabilizantes"?"Impermea&shy;bilizantes":c.name}</span></a>`).join("")}<a class="mq" href="#dudas">${QSVG}<span>Pregúntale a Mart</span></a></div>
+  </section>
   <div class="perks">
     <a class="perk perk-link" href="#recoge"><svg width="34" height="30" viewBox="0 0 34 30" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 13 17 3l14 10v14H3z"/><path d="M12 27v-8h10v8"/></svg><div><strong>Recoge en tienda</strong><small>Tu pedido listo en mostrador</small></div></a>
     <div class="perk"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"/><path d="m9 12 2 2 4-4"/></svg><div><strong>Cotiza sin compromiso</strong><small>Precio y existencia por WhatsApp</small></div></div>
@@ -1390,6 +1422,25 @@ document.addEventListener("click",e=>{
   const bv=e.target.closest("[data-buscar]");if(bv){e.preventDefault();search={q:bv.dataset.buscar,scope:bv.dataset.scope||""};location.hash==="#buscar"?route():(location.hash="buscar");return}
   const df=e.target.closest("[data-dfil]");if(df){const v=df.dataset.dfil;document.querySelectorAll("[data-dfil]").forEach(b=>b.classList.toggle("on",b===df));document.querySelectorAll(".dgroup").forEach(g=>g.hidden=!!v&&g.dataset.dcat!==v)}
 });
+// ===== Celular: que se note que hay más categorías =====
+// Fila de categorías: degradado con flecha a la derecha, "Ver todas" al final y un pequeño movimiento la primera vez
+const _renderSide=renderSide;
+renderSide=function(a){
+  _renderSide(a);
+  $("#sideList").insertAdjacentHTML("beforeend",`<li class="m-all"><a href="#categorias"${a==="categorias"?' aria-current="page"':""}><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/></svg><span>Ver todas</span></a></li>`);
+  sideHint();
+};
+function sideHint(){
+  const ul=$("#sideList"),nav=ul.closest(".side");
+  let b=nav.querySelector(".side-more");
+  if(!b){nav.insertAdjacentHTML("beforeend",`<button type="button" class="side-more" aria-label="Ver más categorías"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8"><path d="m9 6 6 6-6 6"/></svg></button>`);b=nav.querySelector(".side-more");
+    b.addEventListener("click",()=>ul.scrollBy({left:Math.round(ul.clientWidth*.7),behavior:"smooth"}));
+    ul.addEventListener("scroll",()=>sideHint.upd(),{passive:true});window.addEventListener("resize",()=>sideHint.upd())}
+  sideHint.upd=()=>{const hay=ul.scrollWidth>ul.clientWidth+4,fin=ul.scrollLeft+ul.clientWidth>=ul.scrollWidth-6;b.classList.toggle("off",!hay||fin)};
+  sideHint.upd();
+  if(!sideHint.hecho&&matchMedia("(max-width:960px)").matches&&!matchMedia("(prefers-reduced-motion: reduce)").matches&&ul.scrollWidth>ul.clientWidth+4){
+    sideHint.hecho=1;setTimeout(()=>{ul.scrollTo({left:90,behavior:"smooth"});setTimeout(()=>ul.scrollTo({left:0,behavior:"smooth"}),750)},1100)}
+}
 let search=null;
 function route(){
   showHero(null);
