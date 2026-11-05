@@ -129,7 +129,7 @@ async function recibirCotizacion(request, env) {
     id: nuevoId(), token: nuevoToken(), fecha: Date.now(), estado: "pendiente",
     folio: txt(b.folio, 30), nombre: txt(b.nombre, 80), telefono: txt(b.telefono, 30),
     sucursal: txt(b.sucursal, 60), recoge: txt(b.recoge, 80), notas: txt(b.notas, 1000), factura: !!b.factura,
-    entrega: b.entrega === "envio" ? "envio" : "recoger", direccion: txt(b.direccion, 400),
+    entrega: ["envio", "recoger", "cotizar"].includes(b.entrega) ? b.entrega : "recoger", direccion: txt(b.direccion, 400),
     cliente: s ? { usuario: s.usuario, nombre: s.c.n } : null,
     items: items.map((it) => {
       const id = txt(it.id, 40), v = txt(it.v, 80);
