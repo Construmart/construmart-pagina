@@ -60,6 +60,7 @@ main.bandeja{display:grid;grid-template-columns:minmax(0,380px) minmax(0,1fr);ga
 .chip.pend{background:var(--accent);color:#fff}
 .chip.resp{background:var(--ok);color:#fff}
 .chip.may{background:var(--ink);color:#fff}
+.chip.fac{background:#2563eb;color:#fff}
 .vacio{background:var(--panel);border:1.5px dashed var(--line);border-radius:10px;padding:26px 16px;text-align:center;color:var(--muted)}
 .vacio img{width:80px;display:block;margin:0 auto 8px}
 /* Detalle */
@@ -199,7 +200,7 @@ function pintarLista(){
   $("#lista").innerHTML=L.length?L.map(q=>`<button type="button" class="q${abierta===q.id?" on":""}" data-id="${esc(q.id)}">
     <span class="t"><b>${esc(q.cliente||q.nombre||"Sin nombre")}</b><time datetime="${new Date(q.fecha).toISOString()}" title="${esc(fecha(q.fecha))}">${hace(q.fecha)}</time></span>
     <small>${esc(q.folio)} · ${q.productos} producto${q.productos===1?"":"s"} · ${esc(q.sucursal)}${q.total!=null?" · "+pesos(q.total):""}</small>
-    <span class="chips">${q.estado==="pendiente"?`<i class="chip pend">Por contestar</i>`:q.estado==="respondida"?`<i class="chip resp">Respondida</i>`:`<i class="chip">Archivada</i>`}${q.cliente?`<i class="chip may">Mayoreo</i>`:""}${q.telefono?"":`<i class="chip">Sin teléfono</i>`}</span>
+    <span class="chips">${q.estado==="pendiente"?`<i class="chip pend">Por contestar</i>`:q.estado==="respondida"?`<i class="chip resp">Respondida</i>`:`<i class="chip">Archivada</i>`}${q.cliente?`<i class="chip may">Mayoreo</i>`:""}${q.factura?`<i class="chip fac">Factura</i>`:""}${q.telefono?"":`<i class="chip">Sin teléfono</i>`}</span>
   </button>`).join(""):`<div class="vacio"><img src="/marca/mart-guino-v2.png" alt="" width="290" height="300">${filtro==="pendiente"?"No tienes cotizaciones por contestar. ¡Al corriente!":"No hay cotizaciones aquí."}</div>`;
 }
 document.querySelector(".tabs").addEventListener("click",e=>{const b=e.target.closest("[data-f]");if(!b)return;filtro=b.dataset.f;document.querySelectorAll(".tabs button").forEach(x=>x.classList.toggle("on",x===b));pintarLista()});
@@ -230,6 +231,7 @@ function mensaje(){
   M.push("",`*TOTAL: ${pesos(total)}* (precios con IVA incluido)`);
   const n=$("#notas").value.trim();if(n)M.push("",`*Notas:* ${n}`);
   if(q.sucursal)M.push("",`*Recoges en:* ${q.sucursal}`);
+  if(q.factura)M.push("","Para tu factura, mándanos por este medio tu Constancia de Situación Fiscal (o RFC, razón social, régimen fiscal, código postal y uso del CFDI).");
   M.push("","También la puedes ver en la página de Construmart, en \"Mis cotizaciones anteriores\". ¡Gracias por tu preferencia!");
   return M.join("\n");
 }
@@ -238,7 +240,7 @@ function pintarDet(){
   const q=actual,r=q.respuesta;
   $("#det").innerHTML=`<div class="det-h"><div><h2>${esc(q.cliente?q.cliente.nombre:q.nombre||"Sin nombre")}</h2><p>${esc(q.folio)} · llegó ${esc(fecha(q.fecha))}${r?` · respondida ${esc(fecha(r.fecha))}`:""}</p></div>
     <button type="button" class="btn atras" id="atras">← Volver a la lista</button></div>
-  <div class="datos"><div><span>Nombre</span><b>${esc(q.nombre||"—")}</b></div><div><span>Teléfono</span><b>${esc(q.telefono||"No lo dejó")}</b></div><div><span>Sucursal</span><b>${esc(q.sucursal||"—")}</b></div><div><span>¿Cuándo pasa?</span><b>${esc(q.recoge||"—")}</b></div>${q.cliente?`<div><span>Cliente de mayoreo</span><b>${esc(q.cliente.nombre)} (${esc(q.cliente.usuario)})</b></div>`:""}</div>
+  <div class="datos"><div><span>Nombre</span><b>${esc(q.nombre||"—")}</b></div><div><span>Teléfono</span><b>${esc(q.telefono||"No lo dejó")}</b></div><div><span>Sucursal</span><b>${esc(q.sucursal||"—")}</b></div><div><span>¿Cuándo pasa?</span><b>${esc(q.recoge||"—")}</b></div><div><span>Factura</span><b>${q.factura?"Sí, la pidió":"No"}</b></div>${q.cliente?`<div><span>Cliente de mayoreo</span><b>${esc(q.cliente.nombre)} (${esc(q.cliente.usuario)})</b></div>`:""}</div>
   ${q.notas?`<div class="notas-c"><b>Comentarios del cliente:</b> ${esc(q.notas)}</div>`:""}
   <div class="tbox"><table><thead><tr><th>Cant.</th><th>Producto</th><th>Precio c/u</th><th>Existencia</th><th style="text-align:right">Subtotal</th></tr></thead><tbody id="filas">
   ${q.items.map((it,i)=>{const l=r&&r.lineas[i]||{};const pv=l.precio||it.pc||"";const ex=l.existe||"si";
