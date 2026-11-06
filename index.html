@@ -592,6 +592,60 @@ details[open]>summary .dchev{transform:rotate(180deg)}
 .hr-tot{display:flex;justify-content:space-between;border-top:1px solid #16a34a55;margin-top:8px;padding-top:6px;font-weight:700}
 .hr-tot strong{font-family:var(--display);font-weight:900;font-size:17px}
 .hr-n{margin:6px 0 0;color:var(--ink)}
+/* Casilla de factura */
+.fchk{display:flex!important;align-items:flex-start;gap:10px;border:1.5px solid var(--line);border-radius:8px;padding:10px 12px;cursor:pointer;background:var(--bg)}
+.fchk input{width:20px;height:20px;margin:1px 0 0;accent-color:var(--accent);flex:none}
+.fchk span{display:grid;gap:1px}
+.fchk b{font-size:14px}
+.fchk small{font-weight:500;color:var(--muted);font-size:12px}
+.fchk:has(input:checked){border-color:var(--accent);background:var(--accent-soft,#FFF1E4)}
+/* Cinco ventajas en el inicio (se agregó "Facturamos tu compra") */
+.perks{grid-template-columns:repeat(5,minmax(0,1fr))!important}
+@media (max-width:960px){.perks{grid-template-columns:repeat(2,minmax(0,1fr))!important}.perks .perk:last-child{grid-column:1/-1}}
+/* Envío a domicilio */
+.envio-strip{display:flex;align-items:center;gap:14px;margin:14px 0 0;padding:14px 18px;border-radius:10px;background:var(--ink);color:#fff;text-decoration:none;border-left:6px solid var(--accent)}
+.envio-strip svg{color:var(--accent);flex:none}
+.envio-strip span{display:grid;gap:2px;flex:1;min-width:0}
+.envio-strip b{font-family:var(--display);font-weight:900;font-size:19px}
+.envio-strip small{font-size:13px;opacity:.85}
+.envio-strip em{font-style:normal;background:var(--accent);color:#fff;border-radius:8px;padding:9px 14px;font-weight:800;font-size:13.5px;white-space:nowrap}
+.band-link.envio{color:#fff;font-weight:700}
+.band-link.envio svg{color:var(--accent)}
+.fent{border:0;padding:0;margin:0;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.fent legend{font-size:13px;font-weight:700;margin-bottom:6px;padding:0}
+.fent label{display:block!important;cursor:pointer}
+.fent input{position:absolute;opacity:0;pointer-events:none}
+.fent span{display:flex;align-items:center;justify-content:center;gap:8px;text-align:center;border:1.5px solid var(--line);border-radius:8px;padding:11px 8px;font-weight:700;font-size:13.5px;background:var(--bg);min-height:48px}
+.fent span svg{flex:none;color:var(--accent)}
+.fent input:checked+span{border-color:var(--accent);background:var(--accent-soft,#FFF1E4);box-shadow:0 0 0 2px var(--accent) inset}
+.fent input:focus-visible+span{outline:2px solid var(--accent);outline-offset:2px}
+.fdir-n{display:block;font-weight:500;color:var(--muted);font-size:12px;margin-top:4px}
+.hr-env{display:flex;justify-content:space-between;margin-top:8px;font-weight:700}
+@media (max-width:680px){.envio-strip{flex-wrap:wrap;padding:12px 14px;gap:10px}.envio-strip svg{width:30px;height:30px}.envio-strip b{font-size:17px}.envio-strip span{flex:1 1 180px}.envio-strip em{width:100%;text-align:center}}
+@media (max-width:1240px){.band-items>span:nth-of-type(2){display:none}}
+.fent{grid-template-columns:repeat(3,minmax(0,1fr))!important;min-inline-size:0;min-width:0;width:100%;max-width:100%}
+.fent span{flex-direction:column;gap:5px;font-size:12.5px;line-height:1.2;padding:10px 4px;min-height:64px}
+.fent span svg{width:20px;height:20px}
+/* Tabletas (681 a 960 px): que la página no se haga más ancha que la pantalla */
+@media (max-width:960px){.shell{grid-template-columns:minmax(0,1fr)!important}.shell>*{min-width:0}}
+.quote{grid-template-columns:minmax(0,1.5fr) minmax(0,1fr)!important}
+@media (max-width:1100px){.quote{grid-template-columns:minmax(0,1fr)!important}}
+/* Celulares angostos: que el formulario de la cotización no se salga */
+.form{grid-template-columns:minmax(0,1fr)!important}.form>*{min-width:0;max-width:100%}.form input,.form select,.form textarea{min-width:0;max-width:100%;box-sizing:border-box}
+/* Lo nuevo */
+.nuevo-tag{position:absolute;top:8px;right:8px;z-index:2;background:var(--accent);color:#fff;font-size:10.5px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;border-radius:20px;padding:3px 9px;line-height:1.2;box-shadow:0 2px 6px rgba(255,106,0,.35);pointer-events:none}
+.nuevos-strip{display:flex;align-items:center;gap:12px;margin:10px 0 0;padding:8px 16px 8px 10px;border-radius:10px;background:var(--cream);border:1.5px solid var(--accent);text-decoration:none;color:var(--ink)}
+.nuevos-strip img{width:52px;height:auto;flex:none}
+.nuevos-strip span{display:grid;gap:1px;flex:1;min-width:0}
+.nuevos-strip b{font-family:var(--display);font-weight:800;font-size:15.5px;line-height:1.25}
+.nuevos-strip small{font-size:12.5px;color:var(--muted)}
+.nuevos-strip em{font-style:normal;color:var(--accent);font-weight:800;font-size:13.5px;white-space:nowrap}
+.nuevos-head{display:flex;align-items:center;gap:18px;background:var(--cream);border-radius:12px;padding:14px 22px;margin-bottom:14px}
+.nuevos-head img{width:100px;height:auto;flex:none}
+.nuevos-head h1{font-family:var(--display);font-weight:900;font-size:28px;margin:4px 0 6px;color:var(--ink)}
+.nuevos-head p{margin:0;font-size:14px;color:var(--ink)}
+.f-act{font-size:12px;opacity:.75;margin-top:6px}
+@media (max-width:680px){.nuevos-strip{gap:10px;padding:8px 12px 8px 8px}.nuevos-strip img{width:44px}.nuevos-strip b{font-size:14px}.nuevos-strip small{display:none}.nuevos-strip em{font-size:12.5px}.nuevos-head{padding:12px 14px;gap:12px}.nuevos-head img{width:70px}.nuevos-head h1{font-size:22px}}
 </style>
 
 <header class="top">
@@ -621,10 +675,12 @@ details[open]>summary .dchev{transform:rotate(180deg)}
   <div class="wrap">
     <a class="alltab" href="#categorias"><span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg>Todas las categorías</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m9 6 6 6-6 6"/></svg></a>
     <div class="band-items">
+      <a class="band-link envio" href="#cotizacion" data-envio="1"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 6h11v10H2zM13 9h4l4 4v3h-8z"/><circle cx="6" cy="17.5" r="1.8"/><circle cx="17" cy="17.5" r="1.8"/></svg>Envío a domicilio</a>
       <a class="band-link rap" id="bandRap" href="#entrega-inmediata" hidden><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>Entrega inmediata</a>
       <a class="band-link" href="#recoge"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 10 12 3l9 7v10H3z"/><path d="M9 20v-6h6v6"/></svg>Recoge en tienda</a>
-      <span><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"/><path d="m9 12 2 2 4-4"/></svg>Productos 100% originales</span>
+      <span><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"/><path d="m9 12 2 2 4-4"/></svg>100% originales</span>
       <span><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>Cotiza sin compromiso</span>
+      <span><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4M9 12h7M9 16h7"/></svg>Facturamos</span>
     </div>
   </div>
 </div>
@@ -640,8 +696,8 @@ details[open]>summary .dchev{transform:rotate(180deg)}
 
 <footer>
   <div class="wrap">
-    <div><span class="flogo"><img src="marca/logo-construmart.png" alt="Construmart. Tu proyecto, nuestro compromiso." width="240" height="81"></span><p>Cotiza en línea y recoge en tienda.</p></div>
-    <div><strong>Visítanos</strong><p>Matriz · C. Río Suchiate 616</p><p>Sucursal Armadillo · Palomas 636</p><p><a href="#recoge" style="color:inherit">Ver mapas y horarios</a></p><p><a href="#dudas" style="color:inherit">Pregúntale a Mart</a></p></div>
+    <div><span class="flogo"><img src="marca/logo-construmart.png" alt="Construmart. Tu proyecto, nuestro compromiso." width="240" height="81"></span><p>Cotiza en línea y recoge en tienda.</p><p class="f-act" id="fAct"></p></div>
+    <div><strong>Visítanos</strong><p>Matriz · C. Río Suchiate 616</p><p>Sucursal Armadillo · Palomas 636</p><p><a href="#recoge" style="color:inherit">Ver mapas y horarios</a></p><p><a href="#dudas" style="color:inherit">Pregúntale a Mart</a></p><p>Envío a domicilio</p><p>Emitimos factura electrónica (CFDI)</p></div>
     <div class="fphones" id="fphones"><strong>Contacto</strong></div>
   </div>
 </footer>
@@ -1081,7 +1137,7 @@ function updateBadge(){$("#badge").textContent=quote.reduce((a,i)=>a+1,0)}
 
 // ===== ⚡ Entrega inmediata (se marca en el Catálogo con el rayo verde) =====
 const RAYO=`<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>`;
-const rapBadge=p=>p.rapido?`<span class="rapido">${RAYO}Entrega inmediata</span>`:"";
+const rapBadge=p=>(p.rapido?`<span class="rapido">${RAYO}Entrega inmediata</span>`:"")+nuevoBadge(p);
 const RAPIDOS=()=>P.filter(p=>p.rapido&&!p.hidden);
 // ===== Tarjetas =====
 function cardSmall(p){ // estilo "Productos destacados" de la maqueta
@@ -1123,6 +1179,8 @@ function viewHome(){
     <button class="arrow r" type="button" data-slide="1" aria-label="Siguiente"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="m9 6 6 6-6 6"/></svg></button>
     <div class="dots">${SLIDES.map((_,i)=>`<button type="button" data-dot="${i}" class="${i===slideIx?"on":""}" aria-label="Ir a la imagen ${i+1}"></button>`).join("")}</div>
   </section>
+  <a class="envio-strip" href="#cotizacion" data-envio="1"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 6h11v10H2zM13 9h4l4 4v3h-8z"/><circle cx="6" cy="17.5" r="1.8"/><circle cx="17" cy="17.5" r="1.8"/></svg><span><b>Envío a domicilio</b><small>Te llevamos tu material a tu casa u obra. Pídelo al cotizar.</small></span><em>Cotizar con envío ›</em></a>
+  ${nuevosStrip()}
   <section class="mcats" aria-label="Categorías">
     <div class="mcats-head"><h2>Categorías</h2><a href="#categorias">Ver todas ›</a></div>
     <div class="mcats-grid">${RAPIDOS().length?`<a class="rap" href="#entrega-inmediata"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg><span>Entrega inmediata</span></a>`:""}${CATS.map(c=>`<a href="#${c.slug}">${cIcon(c.slug,"")}<span>${c.slug==="impermeabilizantes"?"Impermea&shy;bilizantes":c.name}</span></a>`).join("")}<a class="mq" href="#dudas">${QSVG}<span>Pregúntale a Mart</span></a></div>
@@ -1130,6 +1188,7 @@ function viewHome(){
   <div class="perks">
     <a class="perk perk-link" href="#recoge"><svg width="34" height="30" viewBox="0 0 34 30" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 13 17 3l14 10v14H3z"/><path d="M12 27v-8h10v8"/></svg><div><strong>Recoge en tienda</strong><small>Tu pedido listo en mostrador</small></div></a>
     <div class="perk"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"/><path d="m9 12 2 2 4-4"/></svg><div><strong>Cotiza sin compromiso</strong><small>Precio y existencia por WhatsApp</small></div></div>
+    <div class="perk perk-fac"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4M9 12h7M9 16h7"/></svg><div><strong>Facturamos tu compra</strong><small>Factura electrónica (CFDI)</small></div></div>
     <div class="perk"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="9" r="6"/><path d="m9 14-2 7 5-3 5 3-2-7"/></svg><div><strong>Productos originales</strong><small>Garantía de fábrica</small></div></div>
     <div class="perk"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 14v-2a8 8 0 0 1 16 0v2"/><rect x="3" y="14" width="4" height="6" rx="1"/><rect x="17" y="14" width="4" height="6" rx="1"/></svg><div><strong>Asesoría personalizada</strong><small>Estamos para ayudarte</small></div></div>
   </div>
@@ -1261,10 +1320,10 @@ function msg(){
     return [p.name,v].filter(Boolean).join(" de ").replace(/ de (\d)/," de $1")+(p.brand&&p.brand!=="Material"?` (${p.brand})`:"")+(cod?` · Cód. ${cod}`:"")};
   const prods=quote.filter(i=>!i.custom), extra=quote.filter(i=>i.custom);
   const L=[CLI?"*NUEVO PEDIDO DE CLIENTE · CONSTRUMART*":"*NUEVA COTIZACIÓN · CONSTRUMART*",`*Folio:* ${folio}`,""];
-  L.push(`*Cliente:* ${form.name||"(sin nombre)"}`);if(CLI)L.push(`*Cliente de mayoreo:* ${CLI.nombre} (usuario: ${CLI.usuario})`);
+  L.push(`*Cliente:* ${form.name||"(sin nombre)"}`);if(CLI)L.push(`*Cliente de mayoreo:* ${CLI.nombre} (usuario: ${CLI.usuario})`);if(form.factura)L.push("*Requiere factura:* Sí (te envío mis datos fiscales)");
   if(form.phone)L.push(`*Teléfono:* ${form.phone}`);
   L.push(`*Sucursal:* ${(SUCURSALES.find(b=>b.id===form.branch)||SUCURSALES[0]).nombre}`);
-  L.push(`*Recoge:* ${form.pick}`);
+  if(form.entrega==="envio"){L.push("*Entrega:* 🚚 Envío a domicilio");L.push(`*Dirección:* ${form.dir||"(te la mando por aquí)"}`);L.push(`*Lo necesito:* ${form.pick}`)}else if(form.entrega==="recoger")L.push(`*Recoge:* ${form.pick}`);else L.push("*Entrega:* Solo quiero cotizar por ahora");
   if(prods.length){L.push("",`*PRODUCTOS (${prods.length})*`);prods.forEach(it=>{const p=byId(it.id);L.push(`▪ *${qtyTxt(p,it.qty)}* — ${detail(p,it)}${cliLinea(it)}`)})}
   if(extra.length){L.push("",`*POR CONSEGUIR (${extra.length})*`,"_No están en la página, ¿los pueden conseguir?_");extra.forEach(it=>L.push(`▪ *${qtyTxt(prodOf(it),it.qty)}* — ${it.name}`))}
   if(form.notes)L.push("",`*Comentarios:* ${form.notes}`);
@@ -1300,8 +1359,11 @@ function viewQuote(){
     <form class="panel form" id="qform"><h2>Tus datos</h2>
       <label for="fname">Nombre<input id="fname" placeholder="Ej. Juan Pérez" value="${esc(form.name)}"></label>
       <label for="fphone">Teléfono<input id="fphone" inputmode="tel" placeholder="Ej. 311 123 4567" value="${esc(form.phone)}"></label>
-      <label for="fbranch">¿En qué sucursal recoges?<select id="fbranch">${SUCURSALES.map(b=>`<option value="${b.id}"${b.id===form.branch?" selected":""}>${esc(b.nombre)} · ${esc(b.direccion)}</option>`).join("")}</select></label>
-      <label for="fpick">¿Cuándo pasarías por tu pedido?<select id="fpick">${["Solo quiero precio por ahora","Hoy","Mañana","Esta semana"].map(o=>`<option${o===form.pick?" selected":""}>${o}</option>`).join("")}</select></label>
+      <fieldset class="fent"><legend>¿Qué necesitas?</legend><label><input type="radio" name="fent" value="cotizar"${form.entrega!=="envio"&&form.entrega!=="recoger"?" checked":""}><span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4M9 12h7M9 16h5"/></svg>Solo cotizar</span></label><label><input type="radio" name="fent" value="recoger"${form.entrega==="recoger"?" checked":""}><span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 10 12 3l9 7v10H3z"/><path d="M9 20v-6h6v6"/></svg>Recoger en sucursal</span></label><label><input type="radio" name="fent" value="envio"${form.entrega==="envio"?" checked":""}><span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 6h11v10H2zM13 9h4l4 4v3h-8z"/><circle cx="6" cy="17.5" r="1.8"/><circle cx="17" cy="17.5" r="1.8"/></svg>Envío a domicilio</span></label></fieldset>
+      <label for="fdir" id="fdirBox"${form.entrega==="envio"?"":" hidden"}>Dirección de entrega<textarea id="fdir" placeholder="Calle y número, colonia, ciudad y una referencia">${esc(form.dir||"")}</textarea><small class="fdir-n">Te confirmamos el costo y el día de entrega por WhatsApp.</small></label>
+      <label for="fbranch"><span id="lbBranch">${form.entrega==="envio"?"¿De qué sucursal te lo enviamos?":form.entrega==="recoger"?"¿En qué sucursal recoges?":"¿Qué sucursal te queda mejor?"}</span><select id="fbranch">${SUCURSALES.map(b=>`<option value="${b.id}"${b.id===form.branch?" selected":""}>${esc(b.nombre)} · ${esc(b.direccion)}</option>`).join("")}</select></label>
+      <label for="fpick" id="fpickBox"${form.entrega==="envio"||form.entrega==="recoger"?"":" hidden"}><span id="lbPick">${form.entrega==="envio"?"¿Cuándo lo necesitas?":"¿Cuándo pasarías por tu pedido?"}</span><select id="fpick">${["Solo quiero precio por ahora","Hoy","Mañana","Esta semana"].map(o=>`<option${o===form.pick?" selected":""}>${o}</option>`).join("")}</select></label>
+<label class="fchk" for="ffact"><input type="checkbox" id="ffact"${form.factura?" checked":""}><span><b>Necesito factura</b><small>Te pediremos tus datos fiscales por WhatsApp.</small></span></label>
       <label for="fnotes">Comentarios (opcional)<textarea id="fnotes" placeholder="Ej. Lo necesito para un techo de 60 m²">${esc(form.notes)}</textarea></label>
       <a class="btn btn-primary" id="waBtn" href="#" target="_blank" rel="noopener">${ICON_WA}Enviar por WhatsApp</a>
       <small class="wanote" id="waNote"></small>
@@ -1327,7 +1389,7 @@ function renderQuote(){
   $("#preview").textContent=m;
   $("#waBtn").setAttribute("aria-disabled",String(!ok));
   $("#waBtn").href=ok?`https://wa.me/52${digits(RECIBE_COTIZACIONES||branchOf(form.branch).wa[0])}?text=${encodeURIComponent(m)}`:"#";
-  const wn=$("#waNote");if(wn)wn.textContent=RECIBE_COTIZACIONES?`Tu cotización llegará al WhatsApp de Construmart para recoger en ${branchOf(form.branch).nombre}.`:`Se enviará al WhatsApp de ${branchOf(form.branch).nombre}: ${branchOf(form.branch).wa[0]}`;
+  const wn=$("#waNote");if(wn)wn.textContent=RECIBE_COTIZACIONES?(form.entrega==="envio"?`Tu cotización llegará al WhatsApp de Construmart, con envío a domicilio desde ${branchOf(form.branch).nombre}.`:form.entrega==="recoger"?`Tu cotización llegará al WhatsApp de Construmart para recoger en ${branchOf(form.branch).nombre}.`:`Tu cotización llegará al WhatsApp de Construmart (${branchOf(form.branch).nombre}). Sin compromiso de compra.`):`Se enviará al WhatsApp de ${branchOf(form.branch).nombre}: ${branchOf(form.branch).wa[0]}`;
   updateBadge();save();
 }
 
@@ -1350,7 +1412,7 @@ function recordSend(){
   if(!quote.length)return;
   hist.unshift({folio,date:Date.now(),items:JSON.parse(JSON.stringify(quote)),notes:form.notes||""});
   hist=hist.slice(0,20);saveHist();cotizGuardar(hist[0]);
-  try{localStorage.setItem("cm-form",JSON.stringify({name:form.name,phone:form.phone,pick:form.pick,branch:form.branch}))}catch(e){}
+  try{localStorage.setItem("cm-form",JSON.stringify({name:form.name,phone:form.phone,pick:form.pick,branch:form.branch,entrega:form.entrega,dir:form.dir}))}catch(e){}
   const sent=folio, br=branchOf(form.branch).nombre;
   setTimeout(()=>{
     // Se limpia la lista para la siguiente cotización (queda guardada en "Mis cotizaciones anteriores")
@@ -1361,7 +1423,7 @@ function recordSend(){
     if(box){box.innerHTML=`<img class="sent-mart" src="marca/mart-gracias.png" alt="Mart con el pulgar arriba y la cotización palomeada" width="520" height="396">
       <div><h2>¡Cotización enviada con éxito!</h2><p class="sent-lead">¡Gracias por confiar en Construmart!</p>
       <p>Recibimos tu cotización <b>${esc(sent)}</b>. En <b>15 a 30 minutos</b> te enviamos por WhatsApp el precio y la existencia (en horario de tienda).</p>
-      <p class="sent-sub">Para recoger en ${esc(br)}. Si necesitas algo más, puedes armar una nueva lista abajo.</p></div>
+      <p class="sent-sub">${form.entrega==="envio"?"Con envío a domicilio desde "+esc(br)+". Te confirmamos el costo y el día de entrega":form.entrega==="recoger"?"Para recoger en "+esc(br):"Cotización de "+esc(br)+", sin compromiso de compra"}. Si necesitas algo más, puedes armar una nueva lista abajo.</p></div>
       <button type="button" class="sent-x" id="sentClose" aria-label="Cerrar mensaje">✕</button>`;box.hidden=false;box.scrollIntoView({behavior:"smooth",block:"start"})}
   },400);
 }
@@ -1437,6 +1499,8 @@ function renderSide(active){
 // ===== Pregúntale a Mart (dudas frecuentes) =====
 // Cada duda: área, pregunta, respuesta corta, búsqueda de productos y a qué productos se le pone el enlace.
 const DUDAS=[
+ {id:"envio",cat:"compras",q:"¿Tienen envío a domicilio?",a:"Sí, te llevamos tu pedido a tu casa u obra. Al cotizar, elige <b>Envío a domicilio</b> y escribe tu dirección. Te confirmamos por WhatsApp el <b>costo y el día de entrega</b> según tu zona."},
+ {id:"factura",cat:"compras",q:"¿Necesitas factura?",a:"¡Con gusto! Emitimos <b>factura electrónica (CFDI 4.0)</b> de tu compra. Para hacerla necesitamos tu <b>RFC</b>, <b>nombre o razón social</b>, <b>régimen fiscal</b>, <b>código postal</b> y el <b>uso del CFDI</b>.<br>Lo más fácil: mándanos por WhatsApp una foto o PDF de tu <b>Constancia de Situación Fiscal</b>. Al cotizar, marca la casilla <b>Necesito factura</b>."},
  {id:"truper-pretul",cat:"marcas",tambien:["herramientas-manuales","herramientas-electricas","seguridad-industrial","pintura","jardineria"],q:"¿Qué diferencia hay entre Truper y Pretul?",a:"Las dos son de la misma empresa, el <b>Grupo Truper</b>. La diferencia está en la calidad y el precio. <b>Pretul</b> es la línea económica, pensada para usarse en casa o de vez en cuando. <b>Truper</b> es más resistente y está hecha para trabajo frecuente.",ver:["Pretul","","Ver productos Pretul"]},
  {id:"truper-expert",cat:"marcas",tambien:["herramientas-manuales","herramientas-electricas","seguridad-industrial"],q:"¿Qué es Truper Expert?",a:"Es la línea más alta de Truper, hecha para uso profesional e intensivo: todos los días, en la obra, el taller o la planta. Si lo vas a usar a diario en tu trabajo, conviene Expert. Aquí la encuentras, por ejemplo, en chalecos, respiradores e impermeables.",ver:["Expert","","Ver productos Truper Expert"]},
  {id:"cual-marca",cat:"marcas",tambien:["herramientas-manuales","herramientas-electricas"],q:"Pretul, Truper o Truper Expert: ¿cuál me llevo?",a:"Depende de qué tanto lo vas a usar:<br><b>En casa, de vez en cuando:</b> Pretul.<br><b>Trabajo frecuente:</b> Truper.<br><b>Uso diario e intensivo:</b> Truper Expert.<br>Si tienes duda, dinos para qué lo necesitas en tu cotización y te recomendamos."},
@@ -1463,7 +1527,7 @@ function dudaHTML(d){
     <div class="duda-a"><p>${d.a}</p>${nVer(d)?`<a href="#buscar" class="duda-ver" data-buscar="${esc(d.ver[0])}" data-scope="${d.ver[1]||""}">${esc(d.ver[2])} <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8"><path d="m9 6 6 6-6 6"/></svg></a>`:""}</div></details>`;
 }
 function viewDudas(){
-  const cats=[{slug:"marcas",name:"Nuestras marcas"},...CATS].filter(c=>DUDAS.some(d=>d.cat===c.slug));
+  const cats=[{slug:"compras",name:"Compras y facturas"},{slug:"marcas",name:"Nuestras marcas"},...CATS].filter(c=>DUDAS.some(d=>d.cat===c.slug));
   $("#view").innerHTML=`<div class="crumbs"><a href="#inicio">Inicio</a><span>›</span><span>Pregúntale a Mart</span></div>
   <div class="dudas-head"><img src="marca/mart-pensando-v2.png" alt="Mart pensando" width="300" height="292"><div><span class="mart-tag">Dudas frecuentes</span><h1>Pregúntale a Mart</h1><p>Lo que más nos preguntan en mostrador, explicado fácil. Toca una pregunta para ver la respuesta.</p></div></div>
   <div class="dfil" role="group" aria-label="Filtrar por área"><button type="button" class="on" data-dfil="">Todas</button>${cats.map(c=>`<button type="button" data-dfil="${c.slug}">${esc(c.name)}</button>`).join("")}</div>
@@ -1596,7 +1660,7 @@ let SRV=false,RESP={},respHora=0;
 function cotizGuardar(h){
   if(!SRV||!h||!h.items||!h.items.length)return;
   const items=h.items.map(it=>{const p=prodOf(it)||{};return {id:it.custom?"":it.id,v:it.custom?"":(it.variant||""),n:it.custom?it.name:p.name,b:it.custom||p.brand==="Material"?"":(p.brand||""),q:it.qty,u:unitOf(p,it.qty),cod:it.custom?"":codeOf(p,it.variant),custom:!!it.custom}});
-  const body={folio:h.folio,nombre:form.name||"",telefono:form.phone||"",sucursal:branchOf(form.branch).nombre,recoge:form.pick||"",notas:h.notes||"",items};
+  const body={folio:h.folio,nombre:form.name||"",telefono:form.phone||"",sucursal:branchOf(form.branch).nombre,recoge:form.pick||"",notas:h.notes||"",factura:!!form.factura,entrega:form.entrega==="envio"?"envio":form.entrega==="recoger"?"recoger":"cotizar",direccion:form.entrega==="envio"?(form.dir||""):"",items};
   fetch("/api/cotizaciones",{method:"POST",credentials:"same-origin",keepalive:true,headers:{"content-type":"application/json"},body:JSON.stringify(body)})
     .then(r=>r.json()).then(j=>{if(j&&j.ok){h.rid=j.id;h.tok=j.token;saveHist();cotizPintar()}}).catch(()=>{});
 }
@@ -1613,7 +1677,7 @@ function cotizPintar(){
     const valid=h.items;
     const html=`<b>Respuesta de Construmart</b><ul>${valid.map((it,k)=>{const l=lista.lineas[k]||{};const p=prodOf(it);if(!p)return "";
       return `<li><span>${it.qty} ${unitOf(p,it.qty)} · ${esc(p.name)}${it.variant&&!it.custom?" "+esc(it.variant):""}</span><span class="hr-p">${l.existe==="no"?`<em class="no">No hay</em>`:`${l.precio?pesos(l.precio)+" c/u":"Sin precio"}${l.existe==="parcial"?` <em class="pa">Parcial</em>`:""}`}</span></li>`}).join("")}</ul>
-      <div class="hr-tot"><span>Total</span><strong>${pesos(lista.total||0)}</strong></div>${lista.notas?`<p class="hr-n">${esc(lista.notas)}</p>`:""}`;
+      ${lista.envio?`<div class="hr-env"><span>🚚 Envío a domicilio</span><b>${pesos(lista.envio)}</b></div>`:""}<div class="hr-tot"><span>Total</span><strong>${pesos(lista.total||0)}</strong></div>${lista.notas?`<p class="hr-n">${esc(lista.notas)}</p>`:""}`;
     if(!box){const ul=d.querySelector("ul");(ul||d.querySelector("summary")).insertAdjacentHTML("afterend",`<div class="hist-resp"></div>`);box=d.querySelector(".hist-resp")}
     if(box.dataset.h!==html){box.innerHTML=html;box.dataset.h=html}
   });
@@ -1621,10 +1685,34 @@ function cotizPintar(){
 function cotizHist(){
   if(!SRV)return;cotizPintar();
   const pares=hist.filter(h=>h.rid&&h.tok).map(h=>[h.rid,h.tok]).slice(0,25);
-  if(!pares.length||Date.now()-respHora<20000)return;respHora=Date.now();
+  if(!pares.length||Date.now()-respHora<8000)return;respHora=Date.now();
   fetch("/api/mis-cotizaciones",{method:"POST",credentials:"same-origin",headers:{"content-type":"application/json"},body:JSON.stringify({pares})})
     .then(r=>r.json()).then(j=>{if(j&&j.ok){(j.cotizaciones||[]).forEach(c=>RESP[c.id]=c);cotizPintar()}}).catch(()=>{});
 }
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"&&$("#histPanel"))cotizHist()});
+// Factura: casilla en la cotización
+document.addEventListener("change",e=>{if(e.target.id==="ffact"){form.factura=e.target.checked;renderQuote()}});
+// Envío a domicilio: opción en la cotización y accesos directos
+document.addEventListener("change",e=>{if(e.target.name==="fent"){form.entrega=e.target.value;const env=form.entrega==="envio";
+  const rec=form.entrega==="recoger",d=$("#fdirBox");if(d)d.hidden=!env;const lb=$("#lbBranch");if(lb)lb.textContent=env?"¿De qué sucursal te lo enviamos?":rec?"¿En qué sucursal recoges?":"¿Qué sucursal te queda mejor?";const pb=$("#fpickBox");if(pb)pb.hidden=!(env||rec);
+  if(!(env||rec)){form.pick="Solo quiero precio por ahora";const ps=$("#fpick");if(ps)ps.value=form.pick}else if(form.pick==="Solo quiero precio por ahora"){form.pick=env?"Esta semana":"Hoy";const ps=$("#fpick");if(ps)ps.value=form.pick}
+  const lp=$("#lbPick");if(lp)lp.textContent=env?"¿Cuándo lo necesitas?":"¿Cuándo pasarías por tu pedido?";renderQuote();if(env&&d)setTimeout(()=>$("#fdir").focus(),30)}});
+document.addEventListener("click",e=>{const a=e.target.closest("[data-envio]");if(a){form.entrega="envio";try{const f=JSON.parse(localStorage.getItem("cm-form")||"{}");f.entrega="envio";localStorage.setItem("cm-form",JSON.stringify(f))}catch(err){}}});
+// ===== Lo nuevo: Mart acomodó productos nuevos (se calcula solo con la fecha de alta de cada producto) =====
+const ACTUALIZADO=1793922374269,DIA=864e5;
+function fechaAlta(p){if(!p||!/^p[0-9a-z]{7,10}$/.test(p.id))return 0;const t=parseInt(p.id.slice(1),36);return t>1.6e12&&t<Date.now()+DIA?t:0}
+const NUEVOS=(dias=7)=>P.filter(p=>!p.hidden&&fechaAlta(p)>=Date.now()-dias*DIA).sort((a,b)=>fechaAlta(b)-fechaAlta(a));
+function nuevoBadge(p){return fechaAlta(p)>=Date.now()-7*DIA?`<span class="nuevo-tag">Nuevo</span>`:""}
+function nuevosStrip(){const n=NUEVOS(7).length;if(!n)return "";
+  return `<a class="nuevos-strip" href="#nuevos"><img src="marca/mart-feliz-v2.png" alt="" width="289" height="300"><span><b>Mart acomodó ${n} producto${n===1?"":"s"} nuevo${n===1?"":"s"} esta semana</b><small>Seguimos agregando productos a la página todo el tiempo.</small></span><em>Ver lo nuevo ›</em></a>`}
+function viewNuevos(){
+  const list=NUEVOS(7),cats=CATS.map(c=>[c,list.filter(p=>p.cat===c.slug)]).filter(x=>x[1].length);
+  $("#view").innerHTML=`<div class="crumbs"><a href="#inicio">Inicio</a><span>›</span><span>Recién llegados</span></div>
+  <div class="nuevos-head"><img src="marca/mart-feliz-v2.png" alt="Mart feliz" width="289" height="300"><div><span class="mart-tag">Lo nuevo</span><h1>Recién llegados</h1><p>Lo que Mart acomodó en los anaqueles en los últimos 7 días: ${list.length} producto${list.length===1?"":"s"}.</p></div></div>
+  ${cats.length?cats.map(([c,ps])=>`<section class="subsec"><h2 class="sub-band">${esc(c.name)}</h2><div class="grid5">${ps.map(cardFull).join("")}</div></section>`).join(""):`<div class="mart-empty"><img src="marca/mart-pensando-v2.png" alt="" width="300" height="292"><p><strong>¡Mart está acomodando los anaqueles!</strong><br>Muy pronto verás aquí los productos nuevos. Mientras tanto, revisa nuestras <a href="#categorias" style="color:var(--accent);font-weight:700">categorías</a>.</p></div>`}`;
+  $("#below").innerHTML="";
+}
+(()=>{const f=document.getElementById("fAct");if(f)f.textContent="Catálogo actualizado el "+new Date(ACTUALIZADO).toLocaleDateString("es-MX",{day:"numeric",month:"long",year:"numeric"})})();
 let search=null;
 function route(){
   showHero(null);
@@ -1638,6 +1726,7 @@ function route(){
   else if(h==="cotizacion") viewQuote();
   else if(h==="recoge") viewPickup();
   else if(h==="dudas") viewDudas();
+  else if(h==="nuevos") viewNuevos();
   else viewHome();
   if(h!=="inicio")window.scrollTo({top:0});
 }
@@ -1695,7 +1784,7 @@ document.addEventListener("click",e=>{
 });
 document.addEventListener("input",e=>{
   if(e.target.id==="qa-q"){qaSel=null;qaActive=-1;$("#qa-v").hidden=true;$("#qa-msg").textContent="";qaRender();return}
-  const map={fname:"name",fphone:"phone",fpick:"pick",fnotes:"notes"};
+  const map={fname:"name",fphone:"phone",fpick:"pick",fnotes:"notes",fdir:"dir"};
   if(map[e.target.id]){form[map[e.target.id]]=e.target.value;renderQuote()}
 });
 document.addEventListener("change",e=>{
