@@ -80,19 +80,41 @@ textarea{min-height:90px;resize:vertical}
 .foto .box{width:110px;height:110px;border:1.5px dashed var(--line);border-radius:10px;background:#fff;display:grid;place-items:center;overflow:hidden;color:var(--muted);font-size:12px;text-align:center}
 .foto .box img{width:100%;height:100%;object-fit:contain}
 .foto .bts{display:flex;gap:8px;flex-wrap:wrap}
-.med{border:1.5px solid var(--line);border-radius:10px;overflow:hidden;background:var(--panel)}
-.mh,.mr{display:grid;grid-template-columns:44px minmax(0,1.2fr) minmax(0,1fr) 62px 32px;align-items:center}
-.mh{background:var(--cream);font-size:10.5px;text-transform:uppercase;letter-spacing:.5px;font-weight:800;color:var(--muted)}
-.mh span{padding:6px 8px}
-.mr{border-top:1px solid var(--line)}
-.mr input{border:0;border-radius:0;border-left:1px solid var(--line);padding:9px 8px}
-.mr .mf{width:44px;height:42px;border:0;background:#fff;padding:3px;display:grid;place-items:center;color:var(--muted)}
-.mr .mf img{width:34px;height:34px;object-fit:contain}
-.mr label{display:flex;align-items:center;justify-content:center;gap:3px;font-size:10.5px;font-weight:700;border-left:1px solid var(--line);height:100%;color:var(--muted)}
-.mr label input{width:15px;height:15px;border:0;padding:0}
-.mr .x{border:0;background:none;color:var(--muted);font-size:15px;height:100%;border-left:1px solid var(--line)}
-.madd{justify-self:start;background:none;border:0;color:var(--accent);font-weight:800;padding:4px 0}
+.pastez{border:1.5px dashed #f7c7a6;background:var(--accent-soft);border-radius:8px;padding:8px 10px;font-size:12px;line-height:1.3;cursor:text;max-width:280px;caret-color:transparent;outline:none}
+.pastez span{color:var(--muted);font-size:11px}
+.pastez:focus{border-color:var(--accent);box-shadow:0 0 0 2px #FF6A0033}
+.draft{display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:var(--accent-soft);border:1px solid #f7c7a6;border-radius:8px;padding:10px 12px;font-size:13px}
+.draft span{flex:1 1 180px}
+.mtable{border:1.5px solid var(--line);border-radius:10px;overflow:hidden;background:var(--panel)}
+.mhead,.mrow{display:grid;grid-template-columns:46px 56px minmax(0,1fr) minmax(0,1fr) 84px 30px;align-items:center}
+.mhead{background:var(--cream);font-size:10.5px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);font-weight:800}
+.mhead span{padding:7px 8px}
+.mrow{border-top:1px solid var(--line)}
+.mrow input{border:0;border-radius:0;padding:9px 8px;min-width:0;background:var(--panel)}
+.mrow input+input{border-left:1px solid var(--line)}
+.mrow input:focus{outline:2px solid var(--accent);outline-offset:-2px}
+.mrow select.mt{border:0;border-left:1px solid var(--line);border-radius:0;padding:9px 4px;background:var(--panel);font-size:12.5px;min-width:0;height:100%}
+.mrow select.mt.int{color:var(--accent);font-weight:700}
+.mpz{height:100%;min-height:42px;display:grid;place-items:center;text-align:center;border-right:1px solid var(--line);background:var(--accent-soft);color:var(--accent);font-size:10.5px;font-weight:700;line-height:1.15;cursor:text;caret-color:transparent;outline:none;user-select:none;padding:2px}
+.mpz:focus{box-shadow:inset 0 0 0 2px var(--accent);background:#fff}
+.mphw{position:relative;height:100%;display:grid;place-items:center;border-right:1px solid var(--line)}
+.mph{width:36px;height:36px;border:1px dashed var(--line);border-radius:6px;background:#fff;color:var(--muted);display:grid;place-items:center;padding:0;overflow:hidden}
+.mph img{width:100%;height:100%;object-fit:contain}
+.mph.busy{opacity:.5}
+.mphx{position:absolute;top:1px;right:1px;width:16px;height:16px;border-radius:50%;border:0;background:var(--ink);color:#fff;font-size:9px;line-height:16px;padding:0}
+.mdel{border:0;background:none;color:var(--muted);font-size:15px;height:100%;border-left:1px solid var(--line)}
+.mdel:hover{color:var(--danger)}
+.madd{justify-self:start;background:none;border:0;color:var(--accent);font-weight:800;font-size:13px;padding:4px 0}
+.mfill{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.mseq{background:var(--accent-soft);border:1px solid #f7c7a6;color:var(--accent);font-weight:700;font-size:12.5px;border-radius:20px;padding:4px 12px}
+.mseqn{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--muted)}
+.mseqn select{padding:3px 6px;font-size:12.5px;width:auto}
+.bulk{border-color:var(--ok);color:var(--ok)}
+.bulk.off{border-color:var(--line);color:var(--muted)}
+.bulk.sure{background:var(--ok);color:#fff}
+.bulk.off.sure{background:var(--ink);border-color:var(--ink);color:#fff}
 .chk{display:flex;align-items:center;gap:10px;font-weight:700;border:1.5px solid #16a34a55;background:#16a34a12;border-radius:10px;padding:10px 12px}
+.chk svg{color:var(--ok);flex:none}
 .chk input{width:20px;height:20px;accent-color:var(--ok)}
 .bar{display:flex;gap:8px;flex-wrap:wrap}
 .bar .grow{flex:1}
@@ -107,7 +129,8 @@ textarea{min-height:90px;resize:vertical}
   .row{grid-template-columns:48px minmax(0,1fr)}
   .row img,.row .nof{width:48px;height:48px}
   .row .acts{grid-column:1 / -1;justify-content:flex-end}
-  .mh,.mr{grid-template-columns:40px minmax(0,1fr) minmax(0,.9fr) 52px 28px}
+  .mhead,.mrow{grid-template-columns:40px 48px minmax(0,1fr) minmax(0,1fr) 66px 26px}
+  .mrow select.mt{font-size:11.5px}
 }
 </style>
 </head>
@@ -136,6 +159,7 @@ textarea{min-height:90px;resize:vertical}
     <input id="q" type="search" placeholder="Buscar producto, marca, código o medida…" aria-label="Buscar">
     <select id="fcat" aria-label="Categoría"><option value="">Todas las categorías</option></select>
     <select id="fver" aria-label="Filtro"><option value="">Todos</option><option value="sin">Sin foto</option><option value="rap">⚡ Entrega inmediata</option></select>
+    <button class="btn bulk" id="bulkOn" type="button" hidden></button><button class="btn bulk off" id="bulkOff" type="button" hidden></button>
     <button class="btn pri" id="nuevo" type="button">+ Agregar producto</button>
     <button class="btn" id="bajar" type="button" title="Descarga todos tus productos en un archivo para revisarlos o mandárselos a Claude">Descargar lista</button>
   </div></div>
@@ -148,12 +172,14 @@ textarea{min-height:90px;resize:vertical}
 <div class="veil" id="veil" hidden>
   <form class="sheet" id="ed" role="dialog" aria-modal="true" aria-labelledby="edT">
     <h2 id="edT">Agregar producto</h2>
+    <div class="draft" id="draftBar" hidden><span id="draftTxt">Tienes un borrador sin guardar.</span><button class="btn sm pri" type="button" id="draftYes">Recuperar</button><button class="btn sm" type="button" id="draftNo">Descartar</button></div>
     <div class="foto">
       <div class="box" id="fbox">Sin foto</div>
-      <div style="display:grid;gap:8px">
+      <div style="display:grid;gap:8px;justify-items:start">
         <b style="font-size:12.5px">Foto del producto</b>
         <div class="bts"><button class="btn sm" type="button" id="fpick">Elegir foto</button><button class="btn sm" type="button" id="fquit" hidden>Quitar</button></div>
-        <small style="color:var(--muted)">De preferencia con fondo blanco. Se achica sola para que cargue rápido.</small>
+        <div class="pastez" id="pasteZone" contenteditable="true" role="textbox" aria-label="Pegar foto copiada" inputmode="none" spellcheck="false">📋 <b>Pega aquí la foto</b><br><span>Copia la imagen (clic derecho o mantén presionado → “Copiar imagen”) y aquí: Ctrl+V o mantén presionado → Pegar</span></div>
+        <small style="color:var(--muted)">De preferencia con fondo blanco y el producto completo. Se achica sola para que cargue rápido.</small>
       </div>
     </div>
     <input type="file" id="ffile" accept="image/png,image/jpeg,image/webp" hidden>
@@ -164,22 +190,23 @@ textarea{min-height:90px;resize:vertical}
     </div>
     <datalist id="marcas"></datalist>
     <datalist id="units"><option value="pieza"><option value="metro"><option value="kg"><option value="bulto"><option value="caja"><option value="rollo"><option value="litro"><option value="kit"><option value="bolsa"></datalist>
-    <div class="two">
-      <label class="l">Categoría<select id="e-cat"></select></label>
-      <label class="l">Subcategoría <small>(opcional)</small><input id="e-sub" list="subs" spellcheck="true" lang="es" placeholder="Ej. CPVC"></label>
-    </div>
+    <label class="l">Categoría <small>Al elegirla se pone sola la marca principal (Plomería: Foset · Material eléctrico: Volteck · Limpieza: Klintek · las demás: Truper); puedes cambiarla.</small><select id="e-cat"></select></label>
+    <label class="l">Subcategoría <small>(opcional) Agrupa productos dentro de la categoría. Ej. “CPVC” o “Cementos y morteros”. Escríbela igual en todos los del grupo.</small><input id="e-sub" list="subs" spellcheck="true" lang="es" placeholder="Ej. Cementos y morteros"></label>
     <datalist id="subs"></datalist>
-    <label class="chk"><input type="checkbox" id="e-rap"><span>⚡ Entrega inmediata<small style="display:block;font-weight:500;color:var(--muted)">Lo tenemos en físico en la tienda.</small></span></label>
+    <label class="chk"><input type="checkbox" id="e-rap"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13 2 4 18h7l-1 8 9-12h-7z"/></svg><span>Entrega inmediata<small style="display:block;font-weight:500;color:var(--muted)">Lo tenemos en físico en la tienda. En la página sale con el rayo verde.</small></span></label>
     <div style="display:grid;gap:6px">
-      <b style="font-size:12.5px">Medidas, colores y códigos <small style="font-weight:500;color:var(--muted)">Uno por renglón. La foto de cada medida es opcional.</small></b>
-      <div class="med"><div class="mh"><span>Foto</span><span>Medida / color</span><span>Código</span><span>Interno</span><span></span></div><div id="mrows"></div></div>
-      <button class="madd" type="button" id="madd">+ Agregar medida</button>
+      <b style="font-size:12.5px">Códigos y medidas <small style="font-weight:500;color:var(--muted)">Una medida o color por renglón. Para la foto de cada medida: copia la imagen en Truper, da clic en “📋 Pega aquí” de ese renglón y Ctrl+V; o usa la cámara para elegir un archivo. El código es opcional. Enter pasa al siguiente. Si escribes 1/2 o 3/4 sin comillas, se las ponemos al guardar.</small></b>
+      <div class="mtable"><div class="mhead"><span title="Foto de la medida">Foto</span><span title="Clic aquí y Ctrl+V para pegar la foto de esta medida">Pegar</span><span>Código</span><span>Medida</span><span>Tipo</span><span></span></div><div id="mrows"></div></div>
+      <div class="mfill"><button class="madd" type="button" id="madd">+ Agregar medida</button><button class="mseq" type="button" id="mseq" title="Sigue la secuencia de medidas y códigos">⚡ Rellenar en secuencia</button><label class="mseqn">agregar <select id="mseqN" aria-label="Cuántas medidas agregar"><option>0</option><option>1</option><option selected>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>8</option><option>10</option></select> más</label></div>
+      <small style="color:var(--muted);font-size:11.5px">Escribe el primer código y su medida (ej. 10001 y 1/2") y toca ⚡: llena los renglones vacíos y agrega los que elijas siguiendo la secuencia (3/4", 1"… y 10002, 10003…). Revisa los códigos que Truper no tenga seguidos.</small>
     </div>
-    <label class="l">Frase para elegir medida <small>(opcional) Ej. “Escoge la medida de tu brocha”</small><input id="e-elige" spellcheck="true" lang="es"></label>
-    <label class="l">Descripción <small>(opcional) Un punto por renglón, empezando con •</small><textarea id="e-desc" spellcheck="true" lang="es"></textarea></label>
+    <label class="l">Frase para elegir medida/color <small>(opcional) Aparece en naranja arriba del menú de medidas. Ej. “Escoge el color de tu pintura”</small><input id="e-elige" spellcheck="true" lang="es" placeholder="Ej. Escoge el color de tu pintura"></label>
+    <label class="l">Descripción <small>(opcional) Para hacer una lista usa “• Agregar punto”: en un renglón con texto le pone el punto adelante; en un punto agrega otro abajo. También puedes seleccionar varios renglones. Con Enter sigue el siguiente punto y con Enter en un punto vacío terminas la lista.</small><textarea id="e-desc" spellcheck="true" lang="es"></textarea></label>
+    <button class="madd" type="button" id="punto" style="margin-top:-8px">• Agregar punto</button>
     <p class="err" id="eerr"></p>
+    <small style="color:var(--muted);font-size:11.5px">Lo que escribes se guarda como borrador en este aparato hasta que toques Guardar.</small>
     <div class="bar"><button class="btn pri grow" type="submit" id="gsave">Guardar</button><button class="btn" type="button" id="gcancel">Cancelar</button></div>
-    <div class="bar" id="extra" hidden><button class="btn sm" type="button" id="gdup">⧉ Duplicar</button><button class="btn sm danger" type="button" id="gdel">Borrar producto</button><a class="btn sm" id="gver" target="_blank" rel="noopener">Ver en la página</a></div>
+    <div class="bar" id="extra" hidden><button class="btn sm" type="button" id="gdup">⧉ Duplicar este producto</button><button class="btn sm danger" type="button" id="gdel">Borrar producto</button><a class="btn sm" id="gver" target="_blank" rel="noopener">Ver en la página</a></div>
   </form>
 </div>
 <input type="file" id="mfile" accept="image/png,image/jpeg,image/webp" hidden>
@@ -228,10 +255,11 @@ function pintar(){
   const q=norm($("#q").value.trim()),c=$("#fcat").value,v=$("#fver").value;
   const L=P.filter(p=>(!c||p.cat===c)&&(v!=="sin"||!tieneFoto(p))&&(v!=="rap"||p.rapido)&&(!q||norm([p.name,p.brand,p.spec,p.code,(p.variants||[]).join(" "),(p.codes||[]).join(" "),p.sub].join(" ")).includes(q)));
   $("#cuenta").textContent=`${L.length} de ${P.length} productos`+(L.length>300?" · se muestran los primeros 300":"");
+  pintarBulk();
   $("#lista").innerHTML=L.length?L.slice(0,300).map(p=>{const f=fotoDe(p);const med=p.variants?p.variants.length+" medidas":p.spec||"";
     return `<div class="row"><div>${f?`<img src="${esc(src(f))}" alt="" loading="lazy">`:`<div class="nof">Sin foto</div>`}</div>
     <div><span class="marca">${esc(p.brand==="Material"?"":p.brand)}</span><b>${esc(p.name)}</b><small>${esc(catName(p.cat))}${p.sub?" › "+esc(p.sub):""}${med?" · "+esc(med):""}</small></div>
-    <div class="acts"><button class="rayo${p.rapido?" on":""}" type="button" data-rayo="${esc(p.id)}" title="${p.rapido?"Quitar entrega inmediata":"Marcar entrega inmediata"}" aria-pressed="${p.rapido?"true":"false"}"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg></button><button class="btn sm" type="button" data-edit="${esc(p.id)}">Editar</button></div></div>`}).join(""):`<div class="vacio">Ningún producto coincide.</div>`;
+    <div class="acts"><button class="rayo${p.rapido?" on":""}" type="button" data-rayo="${esc(p.id)}" title="${p.rapido?"Quitar entrega inmediata":"Marcar entrega inmediata"}" aria-pressed="${p.rapido?"true":"false"}"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg></button><button class="btn sm" type="button" data-dup="${esc(p.id)}" title="Hacer una copia para un producto parecido">Duplicar</button><button class="btn sm" type="button" data-edit="${esc(p.id)}">Editar</button></div></div>`}).join(""):`<div class="vacio">Ningún producto coincide.</div>`;
 }
 ["#q","#fcat","#fver"].forEach(s=>$(s).addEventListener(s==="#q"?"input":"change",pintar));
 
@@ -244,6 +272,7 @@ async function guardarP(p){
 }
 $("#lista").addEventListener("click",async e=>{
   const ed=e.target.closest("[data-edit]");if(ed){abrir(P.find(p=>p.id===ed.dataset.edit));return}
+  const du=e.target.closest("[data-dup]");if(du){duplicar(P.find(p=>p.id===du.dataset.dup));return}
   const r=e.target.closest("[data-rayo]");if(!r)return;
   const p=P.find(x=>x.id===r.dataset.rayo);if(!p)return;r.disabled=true;
   try{const n={...p};if(n.rapido)delete n.rapido;else n.rapido=true;await guardarP(n);pintar();toast(n.rapido?"⚡ Entrega inmediata: "+p.name:"Se quitó el ⚡ de "+p.name)}
@@ -251,23 +280,80 @@ $("#lista").addEventListener("click",async e=>{
 });
 
 // ===== Editor =====
+const MARCA_DEF="Truper";
+const PRINCIPALES=new Set([MARCA_DEF,...Object.values(MARCA_CAT)].map(m=>m.toLowerCase()));
 const quitaInt=c=>String(c||"").replace(/\s*\(interno\)$/,"");
 function filasDe(p){
   if(!p)return [];
-  if(p.variants&&p.variants.length>1)return p.variants.map((m,i)=>{const c=(p.codes||[])[i]||"";return {m,c:quitaInt(c),t:/\(interno\)$/.test(c),f:(p.photos||[])[i]||""}});
-  if(p.spec||p.code)return [{m:p.spec||"",c:quitaInt(p.code),t:/\(interno\)$/.test(p.code||""),f:""}];
+  if(p.variants&&p.variants.length>1)return p.variants.map((m,i)=>{const c=(p.codes||[])[i]||"";return {m,c:quitaInt(c),t:/\(interno\)$/.test(c)?"interno":"truper",f:(p.photos||[])[i]||""}});
+  if(p.spec||p.code)return [{m:p.spec||"",c:quitaInt(p.code),t:/\(interno\)$/.test(p.code||"")?"interno":"truper",f:""}];
   return [];
 }
-function filaHTML(r){return `<div class="mr" data-f="${esc(r.f||"")}"><button class="mf" type="button" title="Foto de esta medida">${r.f?`<img src="${esc(src(r.f))}" alt="">`:`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7h3l2-3h8l2 3h3v13H3z"/><circle cx="12" cy="13" r="4"/></svg>`}</button><input class="m" spellcheck="true" lang="es" value="${esc(r.m)}" placeholder="Ej. 1/2&quot;" aria-label="Medida"><input class="c" value="${esc(r.c)}" placeholder="Código" aria-label="Código"><label><input type="checkbox" class="t"${r.t?" checked":""}>Int.</label><button class="x" type="button" aria-label="Quitar renglón">×</button></div>`}
-function setFilas(rs){$("#mrows").innerHTML=(rs.length?rs:[{m:"",c:"",t:false,f:""}]).map(filaHTML).join("")}
-function leerFilas(){return [...document.querySelectorAll("#mrows .mr")].map(d=>({m:d.querySelector(".m").value.trim().replace(/^\d+(?:\s\d+)?\/\d+$/,s=>s+'"'),c:d.querySelector(".c").value.trim(),t:d.querySelector(".t").checked,f:d.dataset.f||""})).filter(r=>r.m||r.c||r.f)}
+const CAM=`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>`;
+const MPZ_TXT="📋 Pega aquí";
+const MPZ=`<div class="mpz" contenteditable="true" inputmode="none" spellcheck="false" role="textbox" aria-label="Pegar foto de esta medida" title="Clic aquí y Ctrl+V (o mantén presionado → Pegar)">${MPZ_TXT}</div>`;
+function mphHTML(f){return f?`<img src="${esc(src(f))}" alt="">`:CAM}
+function filaHTML(r){return `<div class="mrow" data-f="${esc(r.f||"")}"><div class="mphw"><button type="button" class="mph" title="Foto de esta medida" aria-label="Foto de esta medida">${mphHTML(r.f)}</button><button type="button" class="mphx" aria-label="Quitar foto de esta medida"${r.f?"":" hidden"}>✕</button></div>${MPZ}<input class="mc" value="${esc(r.c)}" placeholder="Ej. 14502" autocomplete="off" enterkeyhint="next" aria-label="Código"><input class="mm" value="${esc(r.m)}" placeholder='Ej. 2"' autocapitalize="sentences" spellcheck="true" lang="es" enterkeyhint="next" aria-label="Medida"><select class="mt${r.t==="interno"?" int":""}" aria-label="Tipo de código"><option value="truper">Truper</option><option value="interno"${r.t==="interno"?" selected":""}>Interno</option></select><button type="button" class="mdel" aria-label="Quitar esta medida">✕</button></div>`}
+function setFilas(fs){$("#mrows").innerHTML=(fs.length?fs:[{m:"",c:""}]).map(filaHTML).join("")}
+// Si la medida es solo pulgadas (1/2, 3/4, 1 1/2, 2…) y le faltan las comillas, se las pone
+const PUL=/^(\d+(?: \d+\/\d+)?|\d+\/\d+)(?!["”'])(\s*(?:\(.*\))?)$/;
+const pulgadas=m=>{const r=m.match(/^(.+?)\s+a\s+(.+)$/i);if(r&&PUL.test(r[1].replace(/["”]$/,""))&&PUL.test(r[2].replace(/["”]$/,"")))return pulgadas(r[1].replace(/["”]$/,""))+" a "+pulgadas(r[2].replace(/["”]$/,""));return m.replace(PUL,'$1"$2')};
+function leerFilas(){return [...document.querySelectorAll("#mrows .mrow")].map(r=>({m:pulgadas(r.querySelector(".mm").value.trim()),c:r.querySelector(".mc").value.trim(),t:r.querySelector(".mt").value,f:r.dataset.f||""})).filter(r=>r.m||r.c||r.f)}
+$("#mrows").addEventListener("change",e=>{if(e.target.classList.contains("mt"))e.target.classList.toggle("int",e.target.value==="interno")});
+function nuevaFila(){$("#mrows").insertAdjacentHTML("beforeend",filaHTML({m:"",c:""}));const r=$("#mrows").lastElementChild;r.querySelector(".mc").focus();return r}
+function enterFila(t){
+  const row=t.closest(".mrow"),last=row===$("#mrows").lastElementChild,mm=row.querySelector(".mm"),mc=row.querySelector(".mc");
+  if(t===mc){
+    if(!mm.value.trim()&&!mc.value.trim()){if(last&&$("#mrows").children.length>1)row.remove();$("#e-elige").focus();return}
+    mm.focus();mm.select();return
+  }
+  if(last){if(mm.value.trim()||mc.value.trim())nuevaFila();else $("#e-elige").focus()}
+  else{const n=row.nextElementSibling.querySelector(".mc");n.focus();n.select()}
+}
+$("#madd").onclick=()=>nuevaFila();
+// Rellenar en secuencia: medidas en pulgadas y códigos +1
+const SEQ_PUL=["1/8","1/4","3/8","1/2","3/4","1","1 1/4","1 1/2","2","2 1/2","3","4","5","6","8","10","12"];
+function sigMedida(m){
+  const t=String(m||"").trim();if(!t)return "";
+  const q=/["”]$/.test(t),base=t.replace(/\s*["”]$/,"").replace(/-/g," ").replace(/\s+/g," ");
+  const k=SEQ_PUL.indexOf(base);if(k>=0&&k<SEQ_PUL.length-1)return SEQ_PUL[k+1]+'"';
+  const n=t.match(/^(\d+)(\s*\D.*)?$/);
+  if(n&&!q)return (parseInt(n[1],10)+1)+(n[2]||"");
+  return "";
+}
+function sigCodigo(c){const m=String(c||"").trim().match(/^(.*?)(\d+)(\D*)$/);if(!m)return "";const n=String(parseInt(m[2],10)+1).padStart(m[2].length,"0");return m[1]+n+m[3]}
+$("#mseq").onclick=()=>{
+  const extra=parseInt($("#mseqN").value,10)||0;
+  for(let k=0;k<extra;k++)$("#mrows").insertAdjacentHTML("beforeend",filaHTML({m:"",c:""}));
+  const rows=[...document.querySelectorAll("#mrows .mrow")];
+  let prevM="",prevC="",prevT="truper",llenos=0;
+  rows.forEach(r=>{
+    const mm=r.querySelector(".mm"),mc=r.querySelector(".mc"),mt=r.querySelector(".mt");
+    if(!mm.value.trim()&&prevM){const v=sigMedida(prevM);if(v){mm.value=v;llenos++}}
+    if(!mc.value.trim()&&prevC){const v=sigCodigo(prevC);if(v){mc.value=v;mt.value=prevT;mt.classList.toggle("int",prevT==="interno");llenos++}}
+    if(mm.value.trim())prevM=mm.value.trim();
+    if(mc.value.trim()){prevC=mc.value.trim();prevT=mt.value}
+  });
+  if(extra)[...document.querySelectorAll("#mrows .mrow")].slice(-extra).forEach(r=>{if(!r.querySelector(".mm").value.trim()&&!r.querySelector(".mc").value.trim()&&!r.dataset.f&&$("#mrows").children.length>1)r.remove()});
+  marcarCambio();toast(llenos?"Listo: revisa las medidas y códigos":"Escribe primero una medida o un código");
+};
+$("#mrows").addEventListener("click",e=>{
+  const b=e.target.closest(".mph");if(b){filaFoto=b.closest(".mrow");$("#mfile").click();return}
+  const x=e.target.closest(".mphx");if(x){const r=x.closest(".mrow");r.dataset.f="";r.querySelector(".mph").innerHTML=CAM;x.hidden=true;marcarCambio();return}
+  const d=e.target.closest(".mdel");if(d){const row=d.closest(".mrow");if($("#mrows").children.length>1)row.remove();else{row.querySelector(".mm").value="";row.querySelector(".mc").value="";row.dataset.f="";row.querySelector(".mph").innerHTML=CAM;row.querySelector(".mphx").hidden=true}marcarCambio()}
+});
 function verFoto(){$("#fbox").innerHTML=fotoMain?`<img src="${esc(src(fotoMain))}" alt="Foto del producto">`:"Sin foto";$("#fquit").hidden=!fotoMain;$("#fpick").textContent=fotoMain?"Cambiar foto":"Elegir foto"}
-function abrir(p,copia){
-  editing=copia?null:(p||null);
-  $("#edT").textContent=editing?"Editar producto":copia?"Copia de producto":"Agregar producto";
+function pintarSubs(){const c=$("#e-cat").value;$("#subs").innerHTML=[...new Set(P.filter(p=>p.cat===c&&p.sub).map(p=>p.sub))].sort().map(s=>`<option value="${esc(s)}">`).join("")}
+// Marca principal según la categoría (si escribiste otra marca, la respeta)
+$("#e-cat").addEventListener("change",()=>{pintarSubs();const m=$("#e-brand"),actual=m.value.trim().toLowerCase(),nueva=MARCA_CAT[$("#e-cat").value]||MARCA_DEF;
+  if((!actual||PRINCIPALES.has(actual))&&m.value!==nueva){m.value=nueva;toast("Marca: "+nueva)}});
+function abrir(p){
+  if(ocupado){toast("Un momento, se está subiendo una foto…");return}
+  editing=p||null;
+  $("#edT").textContent=editing?"Editar producto":"Agregar producto";
   const cat=p?p.cat:($("#fcat").value||"ferreteria");
-  $("#e-name").value=p?(copia?p.name+" (copia)":p.name):"";
-  $("#e-brand").value=p?(p.brand==="Material"?"":p.brand):(MARCA_CAT[cat]||"Truper");
+  $("#e-name").value=p?p.name:"";
+  $("#e-brand").value=p?(p.brand==="Material"?"":p.brand):(MARCA_CAT[cat]||MARCA_DEF);
   $("#e-unit").value=p?p.unit||"pieza":"pieza";
   $("#e-cat").value=cat;pintarSubs();
   $("#e-sub").value=p&&p.sub||"";$("#e-elige").value=p&&p.elige||"";$("#e-desc").value=p&&p.desc||"";
@@ -275,11 +361,12 @@ function abrir(p,copia){
   fotoMain=p&&p.photo||"";verFoto();setFilas(filasDe(p));
   $("#extra").hidden=!editing;$("#eerr").textContent="";
   if(editing){$("#gver").href="/#"+editing.cat;$("#gdel").textContent="Borrar producto";$("#gdel").classList.remove("sure")}
+  sucio=false;mostrarBorrador();
   $("#veil").hidden=false;setTimeout(()=>$("#e-name").focus(),50);
 }
-function pintarSubs(){const c=$("#e-cat").value;$("#subs").innerHTML=[...new Set(P.filter(p=>p.cat===c&&p.sub).map(p=>p.sub))].sort().map(s=>`<option value="${esc(s)}">`).join("")}
-$("#e-cat").addEventListener("change",()=>{pintarSubs();if(!editing&&MARCA_CAT[$("#e-cat").value])$("#e-brand").value=MARCA_CAT[$("#e-cat").value]});
-function cerrar(){if(ocupado){toast("Espera, se está subiendo la foto…");return}$("#veil").hidden=true;editing=null;if(volver&&history.length>1){volver=false;history.back()}}
+function cerrar(){if(ocupado){toast("Espera, se está subiendo la foto…");return}
+  if(sucio){guardarBorrador();toast("Se guardó un borrador. Ábrelo otra vez para recuperarlo.")}sucio=false;
+  $("#veil").hidden=true;editing=null;if(volver&&history.length>1){volver=false;history.back()}}
 $("#gcancel").onclick=cerrar;$("#nuevo").onclick=()=>abrir(null);
 // Descarga la lista completa (para revisar ortografía con Claude o guardar un respaldo)
 $("#bajar").onclick=()=>{
@@ -290,15 +377,13 @@ $("#bajar").onclick=()=>{
   const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="productos-construmart-"+new Date().toISOString().slice(0,10)+".csv";document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500);
   toast("Lista descargada. Mándasela a Claude para revisarla.");
 };
-$("#veil").addEventListener("click",e=>{if(e.target.id==="veil")cerrar()});
+// Solo se cierra si el clic empieza y termina en lo oscuro
+let downOnVeil=false;
+$("#veil").addEventListener("pointerdown",e=>{downOnVeil=e.target.id==="veil"});
+$("#veil").addEventListener("click",e=>{if(e.target.id==="veil"&&downOnVeil)cerrar();downOnVeil=false});
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("#veil").hidden)cerrar()});
-$("#madd").onclick=()=>{$("#mrows").insertAdjacentHTML("beforeend",filaHTML({m:"",c:"",t:false,f:""}));$("#mrows .mr:last-child .m").focus()};
-$("#mrows").addEventListener("click",e=>{
-  const x=e.target.closest(".x");if(x){x.closest(".mr").remove();if(!$("#mrows .mr"))setFilas([]);return}
-  const f=e.target.closest(".mf");if(f){filaFoto=f.closest(".mr");$("#mfile").click()}
-});
 
-// Fotos: se achican a 1000 px y se suben a la tienda
+// ===== Fotos: se achican a 1000 px y se suben a la tienda =====
 function achicar(file){return new Promise(res=>{const img=new Image(),u=URL.createObjectURL(file);
   img.onload=()=>{const s=Math.min(1,1000/Math.max(img.width,img.height));const c=document.createElement("canvas");c.width=Math.round(img.width*s);c.height=Math.round(img.height*s);
     const x=c.getContext("2d");x.fillStyle="#fff";x.fillRect(0,0,c.width,c.height);x.drawImage(img,0,0,c.width,c.height);URL.revokeObjectURL(u);c.toBlob(b=>res(b),"image/jpeg",.85)};
@@ -310,13 +395,131 @@ async function subir(file){
   const j=await r.json().catch(()=>({}));if(!j.ok)throw new Error("foto");return j.ruta;
 }
 let filaFoto=null;
+async function fotoProducto(f){ocupado++;$("#eerr").textContent="";$("#fbox").textContent="Subiendo…";
+  try{fotoMain=await subir(f);verFoto();marcarCambio();toast("Foto lista. Toca Guardar.")}catch(err){verFoto();if(err.message!=="sin_sesion")$("#eerr").textContent="No se pudo subir la foto. Prueba con otra (JPG o PNG)."}finally{ocupado--}}
+async function fotoFila(row,f){const b=row.querySelector(".mph");ocupado++;b.classList.add("busy");$("#eerr").textContent="";
+  try{const ruta=await subir(f);row.dataset.f=ruta;b.innerHTML=mphHTML(ruta);row.querySelector(".mphx").hidden=false;marcarCambio()}catch(err){if(err.message!=="sin_sesion")$("#eerr").textContent="No se pudo subir la foto de la medida."}finally{b.classList.remove("busy");ocupado--}}
 $("#fpick").onclick=()=>$("#ffile").click();
-$("#fquit").onclick=()=>{fotoMain="";verFoto()};
-$("#ffile").addEventListener("change",async e=>{const f=e.target.files[0];e.target.value="";if(!f)return;
-  ocupado++;$("#fbox").textContent="Subiendo…";try{fotoMain=await subir(f);verFoto();toast("Foto lista. Toca Guardar.")}catch(err){verFoto();$("#eerr").textContent="No se pudo subir la foto. Prueba con otra (JPG o PNG)."}finally{ocupado--}});
-$("#mfile").addEventListener("change",async e=>{const f=e.target.files[0];e.target.value="";const row=filaFoto;if(!f||!row)return;
-  const bt=row.querySelector(".mf");ocupado++;bt.style.opacity=.5;
-  try{const ruta=await subir(f);row.dataset.f=ruta;bt.innerHTML=`<img src="${esc(ruta)}" alt="">`}catch(err){$("#eerr").textContent="No se pudo subir la foto de la medida."}finally{bt.style.opacity=1;ocupado--}});
+$("#fquit").onclick=()=>{fotoMain="";verFoto();marcarCambio()};
+$("#ffile").addEventListener("change",async e=>{const f=e.target.files[0];e.target.value="";if(f)await fotoProducto(f)});
+$("#mfile").addEventListener("change",async e=>{const f=e.target.files[0];e.target.value="";const row=filaFoto;filaFoto=null;if(f&&row)await fotoFila(row,f)});
+// Pegar foto copiada (de la página de Truper u otra)
+const PASTE_HTML=$("#pasteZone").innerHTML;
+function imgDePortapapeles(cd){if(!cd)return null;
+  for(const it of cd.items||[]){if(it.kind==="file"&&/^image\//.test(it.type)){const f=it.getAsFile();if(f)return f}}
+  for(const f of cd.files||[]){if(/^image\//.test(f.type))return f}return null}
+document.addEventListener("paste",async e=>{
+  if($("#veil").hidden)return;
+  const t=e.target,enZona=t.closest&&t.closest("#pasteZone"),enMpz=t.closest&&t.closest(".mpz");
+  const f=imgDePortapapeles(e.clipboardData);
+  if(!f){if(enZona||enMpz){e.preventDefault();$("#eerr").textContent="Eso no es una imagen. En la página de Truper usa “Copiar imagen”, no “Copiar dirección de la imagen”."}return}
+  e.preventDefault();
+  const row=t.closest&&t.closest("#mrows .mrow");
+  if(row&&!enZona)await fotoFila(row,f);else await fotoProducto(f);
+  $("#pasteZone").innerHTML=PASTE_HTML;if(enMpz)enMpz.textContent=MPZ_TXT;
+});
+$("#pasteZone").addEventListener("beforeinput",e=>{if(e.inputType!=="insertFromPaste")e.preventDefault()});
+$("#pasteZone").addEventListener("dragover",e=>e.preventDefault());
+$("#pasteZone").addEventListener("drop",async e=>{e.preventDefault();const f=[...(e.dataTransfer.files||[])].find(x=>/^image\//.test(x.type));if(f)await fotoProducto(f)});
+$("#pasteZone").addEventListener("blur",()=>{$("#pasteZone").innerHTML=PASTE_HTML});
+$("#mrows").addEventListener("beforeinput",e=>{if(e.target.closest&&e.target.closest(".mpz")&&e.inputType!=="insertFromPaste")e.preventDefault()});
+$("#mrows").addEventListener("focusout",e=>{const z=e.target.closest&&e.target.closest(".mpz");if(z)z.textContent=MPZ_TXT});
+$("#mrows").addEventListener("dragover",e=>{if(e.target.closest&&e.target.closest(".mpz"))e.preventDefault()});
+$("#mrows").addEventListener("drop",async e=>{const z=e.target.closest&&e.target.closest(".mpz");if(!z)return;e.preventDefault();const f=[...(e.dataTransfer.files||[])].find(x=>/^image\//.test(x.type));if(f)await fotoFila(z.closest(".mrow"),f);z.textContent=MPZ_TXT});
+
+// ===== Puntos (•) en la descripción =====
+const BUL="• ";
+function lineaActual(ta){const v=ta.value,p=ta.selectionStart,ini=v.lastIndexOf("\n",p-1)+1;let fin=v.indexOf("\n",p);if(fin<0)fin=v.length;return {v,p,ini,fin,txt:v.slice(ini,fin)}}
+function meter(ta,txt,desde,hasta){ta.setRangeText(txt,desde,hasta,"end");ta.dispatchEvent(new Event("input",{bubbles:true}))}
+$("#punto").addEventListener("pointerdown",e=>e.preventDefault());
+$("#punto").onclick=()=>{const ta=$("#e-desc");ta.focus();const v=ta.value,a=ta.selectionStart,b=ta.selectionEnd;
+  const esPunto=t=>/^[•\-*]\s/.test(t);
+  if(v.slice(a,b).includes("\n")){const ini=v.lastIndexOf("\n",a-1)+1;let fin=v.indexOf("\n",b);if(fin<0)fin=v.length;
+    const txt=v.slice(ini,fin).split("\n").map(t=>t.trim()&&!esPunto(t)?BUL+t:t).join("\n");meter(ta,txt,ini,fin);return}
+  const l=lineaActual(ta);
+  if(!l.txt.trim())meter(ta,BUL,l.ini,l.fin);
+  else if(!esPunto(l.txt)){meter(ta,BUL,l.ini,l.ini);ta.setSelectionRange(l.fin+BUL.length,l.fin+BUL.length)}
+  else{ta.setSelectionRange(l.fin,l.fin);meter(ta,"\n"+BUL,l.fin,l.fin)}};
+$("#e-desc").addEventListener("keydown",e=>{
+  if(e.key!=="Enter"||e.isComposing||e.shiftKey)return;const ta=e.target,l=lineaActual(ta);
+  if(!/^[•\-*]\s/.test(l.txt))return;e.preventDefault();
+  if(!l.txt.replace(/^[•\-*]\s*/,"").trim()){meter(ta,"",l.ini,l.fin);return}
+  meter(ta,"\n"+BUL,ta.selectionStart,ta.selectionEnd)});
+$("#e-desc").addEventListener("input",e=>{const ta=e.target,v=ta.value;
+  const n=v.replace(/^([•\-*] )(\p{Ll})/gmu,(m,a,b)=>a+b.toLocaleUpperCase("es-MX"));
+  if(n!==v){const s=ta.selectionStart,f=ta.selectionEnd;ta.value=n;try{ta.setSelectionRange(s,f)}catch(_){}}});
+
+// ===== Enter pasa al siguiente cuadro y primera letra en mayúscula =====
+const ORDEN=["e-name","e-brand","e-unit","e-cat","e-sub","MEDIDAS","e-elige","e-desc"];
+const SIN_MAYUS=["e-unit"];
+ORDEN.filter(id=>id!=="MEDIDAS").forEach((id,i)=>{const el=$("#"+id);el.setAttribute("enterkeyhint",i<ORDEN.length-1?"next":"enter");if(!SIN_MAYUS.includes(id))el.setAttribute("autocapitalize","sentences")});
+$("#ed").addEventListener("keydown",e=>{
+  if(e.key!=="Enter"||e.isComposing)return;
+  const t=e.target;if(t.tagName==="TEXTAREA"||t.tagName==="BUTTON"||t.closest(".mpz,#pasteZone"))return;
+  e.preventDefault();
+  if(t.closest("#mrows")){enterFila(t);return}
+  const sig=ORDEN[ORDEN.indexOf(t.id)+1];
+  if(sig==="MEDIDAS"){const f=$("#mrows .mc");f.focus();f.select();return}
+  if(sig){const el=$("#"+sig);el.focus();if(el.tagName==="INPUT")el.select()}
+});
+$("#ed").addEventListener("input",e=>{
+  const t=e.target;if(!(ORDEN.includes(t.id)||t.classList.contains("mm"))||SIN_MAYUS.includes(t.id)||t.tagName==="SELECT")return;
+  const v=t.value;if(!v)return;const c=v[0].toLocaleUpperCase("es-MX");
+  if(c!==v[0]){const s=t.selectionStart,f=t.selectionEnd;t.value=c+v.slice(1);try{t.setSelectionRange(s,f)}catch(_){}}
+});
+
+// ===== Borrador: lo que escribes se guarda en este aparato hasta que toques Guardar =====
+let sucio=false,tBorr=null;
+const claveBorrador=()=>"cm-panel-borrador-"+(editing?editing.id:"nuevo");
+function leerForm(){return {name:$("#e-name").value,brand:$("#e-brand").value,unit:$("#e-unit").value,cat:$("#e-cat").value,sub:$("#e-sub").value,elige:$("#e-elige").value,desc:$("#e-desc").value,rap:$("#e-rap").checked,filas:leerFilas(),foto:fotoMain}}
+function guardarBorrador(){try{localStorage.setItem(claveBorrador(),JSON.stringify({t:Date.now(),d:leerForm()}))}catch(e){}}
+function borrarBorrador(k){try{localStorage.removeItem(k)}catch(e){}}
+function leerBorrador(){try{const v=JSON.parse(localStorage.getItem(claveBorrador())||"null");return v&&v.d?v:null}catch(e){return null}}
+function mostrarBorrador(){const b=leerBorrador();$("#draftBar").hidden=!b;if(!b)return;
+  const h=new Date(b.t).toLocaleString("es-MX",{day:"numeric",month:"short",hour:"numeric",minute:"2-digit"});
+  $("#draftTxt").textContent=`Tienes un borrador sin guardar${b.d.name?` de “${b.d.name}”`:""} (${h}).`}
+function marcarCambio(){if($("#veil").hidden)return;sucio=true;clearTimeout(tBorr);tBorr=setTimeout(guardarBorrador,400)}
+$("#ed").addEventListener("input",marcarCambio);
+$("#ed").addEventListener("change",marcarCambio);
+$("#ed").addEventListener("click",e=>{if(e.target.closest("#madd,#punto"))setTimeout(marcarCambio,0)});
+$("#draftYes").onclick=()=>{const b=leerBorrador();if(!b)return;const d=b.d;
+  $("#e-name").value=d.name||"";$("#e-brand").value=d.brand||"";$("#e-unit").value=d.unit||"pieza";if(d.cat)$("#e-cat").value=d.cat;pintarSubs();
+  $("#e-sub").value=d.sub||"";$("#e-elige").value=d.elige||"";$("#e-desc").value=d.desc||"";$("#e-rap").checked=!!d.rap;
+  setFilas((d.filas||[]).map(r=>({m:r.m||"",c:r.c||"",t:r.t==="interno"?"interno":"truper",f:r.f||""})));
+  fotoMain=d.foto||"";verFoto();$("#draftBar").hidden=true;sucio=true;toast("Borrador recuperado. Revisa y toca Guardar.")};
+$("#draftNo").onclick=()=>{borrarBorrador(claveBorrador());$("#draftBar").hidden=true};
+
+// ===== Duplicar: copia nombre, categoría, marca, subcategoría y se vende por =====
+function duplicar(p){
+  if(!p)return;if(sucio&&!$("#veil").hidden)guardarBorrador();
+  abrir(null);if(editing)return;
+  $("#e-name").value=p.name;$("#e-brand").value=p.brand==="Material"?"":p.brand;$("#e-cat").value=p.cat;pintarSubs();$("#e-sub").value=p.sub||"";$("#e-unit").value=p.unit||"pieza";
+  $("#edT").textContent="Duplicar producto";$("#draftBar").hidden=true;sucio=true;guardarBorrador();
+  const n=$("#e-name");n.focus();n.select();toast("Copia lista: cambia el nombre y agrega lo demás");
+}
+
+// ===== ⚡ a toda una categoría: elige la categoría arriba; primer toque pide confirmar, segundo aplica =====
+let bulkBusy=false;
+function pintarBulk(){
+  const c=$("#fcat").value,on=$("#bulkOn"),off=$("#bulkOff");if(bulkBusy)return;
+  if(!c){on.hidden=off.hidden=true;return}
+  const de=P.filter(p=>p.cat===c),faltan=de.filter(p=>!p.rapido).length,tienen=de.length-faltan;
+  on.hidden=!faltan;off.hidden=!tienen;[on,off].forEach(b=>{b.classList.remove("sure");clearTimeout(b._t)});
+  on.textContent=`⚡ Marcar toda la categoría (${faltan})`;off.textContent=`Quitar ⚡ a la categoría (${tienen})`;
+}
+async function bulkRayo(b,v){
+  if(bulkBusy)return;const c=$("#fcat").value;if(!c)return;
+  const lista=P.filter(p=>p.cat===c&&!!p.rapido!==v);if(!lista.length){pintarBulk();return}
+  if(!b.classList.contains("sure")){b.classList.add("sure");b.textContent=v?`¿Marcar ${lista.length} con ⚡? Toca otra vez`:`¿Quitar ⚡ a ${lista.length}? Toca otra vez`;
+    clearTimeout(b._t);b._t=setTimeout(()=>{if(!bulkBusy)pintarBulk()},4000);return}
+  clearTimeout(b._t);bulkBusy=true;$("#bulkOn").disabled=$("#bulkOff").disabled=true;
+  let bien=0,mal=0;const paso=()=>{b.textContent=`Guardando… ${bien+mal} de ${lista.length}`};paso();
+  for(const p of lista){try{const n={...p};if(v)n.rapido=true;else delete n.rapido;await guardarP(n);bien++}catch(e){mal++;if(e.message==="sin_sesion")break}paso()}
+  bulkBusy=false;$("#bulkOn").disabled=$("#bulkOff").disabled=false;pintar();
+  toast((v?`⚡ Entrega inmediata en ${bien} productos de ${catName(c)}`:`Se quitó ⚡ a ${bien} productos de ${catName(c)}`)+(mal?` · ${mal} no se pudieron, inténtalo otra vez`:""));
+}
+$("#bulkOn").onclick=e=>bulkRayo(e.currentTarget,true);
+$("#bulkOff").onclick=e=>bulkRayo(e.currentTarget,false);
 
 function armar(){
   const name=$("#e-name").value.trim();if(!name)return null;
@@ -324,10 +527,11 @@ function armar(){
   const d=$("#e-desc").value.trim();if(d)p.desc=d;
   const el=$("#e-elige").value.trim();if(el)p.elige=el;
   const sb=$("#e-sub").value.trim();if(sb)p.sub=sb;
-  const rs=leerFilas();
-  if(rs.length>1){p.variants=rs.map(r=>r.m||r.c);if(rs.some(r=>r.c))p.codes=rs.map(r=>r.c?r.c+(r.t?" (interno)":""):"");if(rs.some(r=>r.f))p.photos=rs.map(r=>r.f)}
-  else if(rs.length===1){const r=rs[0];if(r.m)p.spec=r.m;if(r.c)p.code=r.c+(r.t?" (interno)":"");if(!fotoMain&&r.f)fotoMain=r.f}
-  if(fotoMain)p.photo=fotoMain;
+  const rs=leerFilas();let foto=fotoMain;
+  const cod=r=>r.c?r.c+(r.t==="interno"?" (interno)":""):"";
+  if(rs.length>1){p.variants=rs.map(r=>r.m||r.c);if(rs.some(r=>r.c))p.codes=rs.map(cod);if(rs.some(r=>r.f))p.photos=rs.map(r=>r.f)}
+  else if(rs.length===1){const r=rs[0];if(r.m)p.spec=r.m;if(r.c)p.code=cod(r);if(!foto&&r.f)foto=r.f}
+  if(foto)p.photo=foto;
   if($("#e-rap").checked)p.rapido=true;
   return p;
 }
@@ -335,10 +539,10 @@ $("#ed").addEventListener("submit",async e=>{e.preventDefault();
   if(ocupado){$("#eerr").textContent="Espera a que termine de subir la foto.";return}
   const p=armar();if(!p){$("#eerr").textContent="Escribe el nombre del producto.";return}
   const b=$("#gsave");b.disabled=true;b.textContent="Guardando…";$("#eerr").textContent="";
-  try{const j=await guardarP(p);llenar();pintar();$("#veil").hidden=true;editing=null;toast(j.nuevo?"Producto agregado. Ya sale en la página.":"Cambios guardados. Ya salen en la página.");if(volver&&history.length>1){volver=false;setTimeout(()=>history.back(),900)}}
+  try{const kAntes=claveBorrador();const j=await guardarP(p);borrarBorrador(kAntes);borrarBorrador("cm-panel-borrador-"+p.id);sucio=false;llenar();pintar();$("#veil").hidden=true;editing=null;toast(j.nuevo?"Producto agregado. Ya sale en la página.":"Cambios guardados. Ya salen en la página.");if(volver&&history.length>1){volver=false;setTimeout(()=>history.back(),900)}}
   catch(err){if(err.message!=="sin_sesion")$("#eerr").textContent="No se pudo guardar. Revisa tu conexión e inténtalo otra vez."}
   finally{b.disabled=false;b.textContent="Guardar"}});
-$("#gdup").onclick=()=>{const p=editing;if(p)abrir(p,true)};
+$("#gdup").onclick=()=>{const p=editing;if(p)duplicar(p)};
 $("#gdel").onclick=async()=>{const b=$("#gdel");if(!editing)return;
   if(!b.classList.contains("sure")){b.classList.add("sure");b.textContent="¿Seguro? Toca otra vez para borrar";return}
   b.disabled=true;try{const j=await api("/api/dueno/productos",{accion:"borrar",id:editing.id});if(!j.ok)throw 0;const n=editing.name;P=P.filter(x=>x.id!==editing.id);llenar();pintar();$("#veil").hidden=true;editing=null;toast("Borrado: "+n)}
