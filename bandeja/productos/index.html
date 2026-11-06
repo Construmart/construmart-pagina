@@ -137,6 +137,7 @@ textarea{min-height:90px;resize:vertical}
     <select id="fcat" aria-label="Categoría"><option value="">Todas las categorías</option></select>
     <select id="fver" aria-label="Filtro"><option value="">Todos</option><option value="sin">Sin foto</option><option value="rap">⚡ Entrega inmediata</option></select>
     <button class="btn pri" id="nuevo" type="button">+ Agregar producto</button>
+    <button class="btn" id="bajar" type="button" title="Descarga todos tus productos en un archivo para revisarlos o mandárselos a Claude">Descargar lista</button>
   </div></div>
   <div class="wrap">
     <p class="cuenta" id="cuenta">Cargando productos…</p>
@@ -156,7 +157,7 @@ textarea{min-height:90px;resize:vertical}
       </div>
     </div>
     <input type="file" id="ffile" accept="image/png,image/jpeg,image/webp" hidden>
-    <label class="l">Nombre del producto<input id="e-name" required placeholder="Ej. Martillo uña curva"></label>
+    <label class="l">Nombre del producto<input id="e-name" required spellcheck="true" lang="es" placeholder="Ej. Martillo uña curva"></label>
     <div class="two">
       <label class="l">Marca<input id="e-brand" list="marcas" placeholder="Truper"></label>
       <label class="l">Se vende por<input id="e-unit" list="units" placeholder="pieza"></label>
@@ -165,7 +166,7 @@ textarea{min-height:90px;resize:vertical}
     <datalist id="units"><option value="pieza"><option value="metro"><option value="kg"><option value="bulto"><option value="caja"><option value="rollo"><option value="litro"><option value="kit"><option value="bolsa"></datalist>
     <div class="two">
       <label class="l">Categoría<select id="e-cat"></select></label>
-      <label class="l">Subcategoría <small>(opcional)</small><input id="e-sub" list="subs" placeholder="Ej. CPVC"></label>
+      <label class="l">Subcategoría <small>(opcional)</small><input id="e-sub" list="subs" spellcheck="true" lang="es" placeholder="Ej. CPVC"></label>
     </div>
     <datalist id="subs"></datalist>
     <label class="chk"><input type="checkbox" id="e-rap"><span>⚡ Entrega inmediata<small style="display:block;font-weight:500;color:var(--muted)">Lo tenemos en físico en la tienda.</small></span></label>
@@ -174,8 +175,8 @@ textarea{min-height:90px;resize:vertical}
       <div class="med"><div class="mh"><span>Foto</span><span>Medida / color</span><span>Código</span><span>Interno</span><span></span></div><div id="mrows"></div></div>
       <button class="madd" type="button" id="madd">+ Agregar medida</button>
     </div>
-    <label class="l">Frase para elegir medida <small>(opcional) Ej. “Escoge la medida de tu brocha”</small><input id="e-elige"></label>
-    <label class="l">Descripción <small>(opcional) Un punto por renglón, empezando con •</small><textarea id="e-desc"></textarea></label>
+    <label class="l">Frase para elegir medida <small>(opcional) Ej. “Escoge la medida de tu brocha”</small><input id="e-elige" spellcheck="true" lang="es"></label>
+    <label class="l">Descripción <small>(opcional) Un punto por renglón, empezando con •</small><textarea id="e-desc" spellcheck="true" lang="es"></textarea></label>
     <p class="err" id="eerr"></p>
     <div class="bar"><button class="btn pri grow" type="submit" id="gsave">Guardar</button><button class="btn" type="button" id="gcancel">Cancelar</button></div>
     <div class="bar" id="extra" hidden><button class="btn sm" type="button" id="gdup">⧉ Duplicar</button><button class="btn sm danger" type="button" id="gdel">Borrar producto</button><a class="btn sm" id="gver" target="_blank" rel="noopener">Ver en la página</a></div>
@@ -257,7 +258,7 @@ function filasDe(p){
   if(p.spec||p.code)return [{m:p.spec||"",c:quitaInt(p.code),t:/\(interno\)$/.test(p.code||""),f:""}];
   return [];
 }
-function filaHTML(r){return `<div class="mr" data-f="${esc(r.f||"")}"><button class="mf" type="button" title="Foto de esta medida">${r.f?`<img src="${esc(src(r.f))}" alt="">`:`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7h3l2-3h8l2 3h3v13H3z"/><circle cx="12" cy="13" r="4"/></svg>`}</button><input class="m" value="${esc(r.m)}" placeholder="Ej. 1/2&quot;" aria-label="Medida"><input class="c" value="${esc(r.c)}" placeholder="Código" aria-label="Código"><label><input type="checkbox" class="t"${r.t?" checked":""}>Int.</label><button class="x" type="button" aria-label="Quitar renglón">×</button></div>`}
+function filaHTML(r){return `<div class="mr" data-f="${esc(r.f||"")}"><button class="mf" type="button" title="Foto de esta medida">${r.f?`<img src="${esc(src(r.f))}" alt="">`:`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7h3l2-3h8l2 3h3v13H3z"/><circle cx="12" cy="13" r="4"/></svg>`}</button><input class="m" spellcheck="true" lang="es" value="${esc(r.m)}" placeholder="Ej. 1/2&quot;" aria-label="Medida"><input class="c" value="${esc(r.c)}" placeholder="Código" aria-label="Código"><label><input type="checkbox" class="t"${r.t?" checked":""}>Int.</label><button class="x" type="button" aria-label="Quitar renglón">×</button></div>`}
 function setFilas(rs){$("#mrows").innerHTML=(rs.length?rs:[{m:"",c:"",t:false,f:""}]).map(filaHTML).join("")}
 function leerFilas(){return [...document.querySelectorAll("#mrows .mr")].map(d=>({m:d.querySelector(".m").value.trim().replace(/^\d+(?:\s\d+)?\/\d+$/,s=>s+'"'),c:d.querySelector(".c").value.trim(),t:d.querySelector(".t").checked,f:d.dataset.f||""})).filter(r=>r.m||r.c||r.f)}
 function verFoto(){$("#fbox").innerHTML=fotoMain?`<img src="${esc(src(fotoMain))}" alt="Foto del producto">`:"Sin foto";$("#fquit").hidden=!fotoMain;$("#fpick").textContent=fotoMain?"Cambiar foto":"Elegir foto"}
@@ -280,6 +281,15 @@ function pintarSubs(){const c=$("#e-cat").value;$("#subs").innerHTML=[...new Set
 $("#e-cat").addEventListener("change",()=>{pintarSubs();if(!editing&&MARCA_CAT[$("#e-cat").value])$("#e-brand").value=MARCA_CAT[$("#e-cat").value]});
 function cerrar(){if(ocupado){toast("Espera, se está subiendo la foto…");return}$("#veil").hidden=true;editing=null;if(volver&&history.length>1){volver=false;history.back()}}
 $("#gcancel").onclick=cerrar;$("#nuevo").onclick=()=>abrir(null);
+// Descarga la lista completa (para revisar ortografía con Claude o guardar un respaldo)
+$("#bajar").onclick=()=>{
+  const q=v=>'"'+String(v??"").replace(/"/g,'""')+'"';
+  const H=["ID","Nombre","Marca","Categoría","Subcategoría","Se vende por","Medidas / colores","Códigos","Frase para elegir","Descripción","Entrega inmediata"];
+  const rows=P.map(p=>[p.id,p.name,p.brand==="Material"?"":p.brand,catName(p.cat),p.sub,p.unit,(p.variants||[p.spec||""]).join(" | "),(p.codes||[p.code||""]).join(" | "),p.elige,p.desc,p.rapido?"Sí":""].map(q).join(","));
+  const blob=new Blob(["\uFEFF"+[H.map(q).join(","),...rows].join("\r\n")],{type:"text/csv"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="productos-construmart-"+new Date().toISOString().slice(0,10)+".csv";document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500);
+  toast("Lista descargada. Mándasela a Claude para revisarla.");
+};
 $("#veil").addEventListener("click",e=>{if(e.target.id==="veil")cerrar()});
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("#veil").hidden)cerrar()});
 $("#madd").onclick=()=>{$("#mrows").insertAdjacentHTML("beforeend",filaHTML({m:"",c:"",t:false,f:""}));$("#mrows .mr:last-child .m").focus()};
