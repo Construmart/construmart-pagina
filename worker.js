@@ -2,6 +2,7 @@
 // 1) Clientes de mayoreo: revisa usuario y clave y entrega a cada uno solo sus precios.
 // 2) Bandeja de cotizaciones: guarda las cotizaciones que mandan los clientes y deja que
 //    el dueño las conteste con su clave. El cliente ve la respuesta en "Mis cotizaciones".
+// 3) Productos: la página los lee de aquí y el dueño los edita desde su panel (con fotos).
 // Todo lo demás (la página, fotos) lo sirve Cloudflare directo desde la carpeta.
 import { DurableObject } from "cloudflare:workers";
 import DATOS from "./privado/clientes.json";
@@ -106,6 +107,76 @@ export class Bandeja extends DurableObject {
     return q;
   }
   async borrar(id) { await this.ctx.storage.delete("q:" + id); return true; }
+
+  // ===== Productos de la página (el dueño los edita desde su panel) =====
+  sqlFotos() {
+    if (!this._sql) {
+      this.ctx.storage.sql.exec("CREATE TABLE IF NOT EXISTS fotos (id TEXT PRIMARY KEY, tipo TEXT, datos BLOB, fecha INTEGER)");
+      this._sql = true;
+    }
+    return this.ctx.storage.sql;
+  }
+  async productosTodos() {
+    if (this._cache) return this._cache;
+    const v = await this.ctx.storage.get("pv");
+    if (!v) return { vacio: true };
+    const m = await this.ctx.storage.list({ prefix: "p:" });
+    const lista = [...m.values()].sort((a, b) => a.ord - b.ord || String(a.p.id).localeCompare(b.p.id)).map((x) => x.p);
+    this._cache = { v: v.v, actualizado: v.t, productos: lista, texto: JSON.stringify({ ok: true, v: v.v, actualizado: v.t, productos: lista }) };
+    return this._cache;
+  }
+  async marcar() {
+    const v = (await this.ctx.storage.get("pv")) || { v: 0 };
+    const nv = { v: v.v + 1, t: Date.now() };
+    await this.ctx.storage.put("pv", nv);
+    this._cache = null;
+    return nv;
+  }
+  async sembrar(lista) {
+    if (await this.ctx.storage.get("pv")) return false;
+    const ent = {};
+    lista.forEach((p, i) => { if (p && p.id) ent["p:" + p.id] = { ord: (i + 1) * 10, p }; });
+    const claves = Object.keys(ent);
+    for (let i = 0; i < claves.length; i += 100) {
+      const lote = {};
+      claves.slice(i, i + 100).forEach((k) => (lote[k] = ent[k]));
+      await this.ctx.storage.put(lote);
+    }
+    await this.ctx.storage.put("pv", { v: 1, t: Date.now() });
+    this._cache = null;
+    return true;
+  }
+  async guardarProducto(p, nuevo) {
+    const k = "p:" + p.id;
+    const prev = await this.ctx.storage.get(k);
+    let ord;
+    if (prev) ord = prev.ord;
+    else {
+      // Va al final de su categoría
+      const m = await this.ctx.storage.list({ prefix: "p:" });
+      const xs = [...m.values()].sort((a, b) => a.ord - b.ord);
+      const mismos = xs.filter((x) => x.p.cat === p.cat);
+      const ult = mismos.length ? mismos[mismos.length - 1] : xs[xs.length - 1];
+      const sig = ult ? xs[xs.indexOf(ult) + 1] : null;
+      ord = ult ? (sig ? (ult.ord + sig.ord) / 2 : ult.ord + 10) : 10;
+    }
+    await this.ctx.storage.put(k, { ord, p });
+    await this.marcar();
+    return { ok: true, nuevo: !prev };
+  }
+  async borrarProducto(id) {
+    await this.ctx.storage.delete("p:" + id);
+    await this.marcar();
+    return true;
+  }
+  async guardarFoto(id, tipo, datos) {
+    this.sqlFotos().exec("INSERT OR REPLACE INTO fotos (id, tipo, datos, fecha) VALUES (?, ?, ?, ?)", id, tipo, datos, Date.now());
+    return true;
+  }
+  async foto(id) {
+    const r = this.sqlFotos().exec("SELECT tipo, datos FROM fotos WHERE id = ?", id).toArray();
+    return r.length ? { tipo: r[0].tipo, datos: r[0].datos } : null;
+  }
   async porTokens(pares) {
     const out = [];
     for (const [id, tok] of pares) {
@@ -144,6 +215,56 @@ async function recibirCotizacion(request, env) {
   return json({ ok: true, id: q.id, token: q.token });
 }
 
+
+// ===== Productos =====
+const CATS_OK = ["herramientas-manuales","herramientas-electricas","ferreteria","material-electrico","plomeria","pintura","construccion","metal","mallas","impermeabilizantes","jardineria","seguridad-industrial","limpieza"];
+const ICONOS = { plomeria: "fitting", pintura: "roller", limpieza: "bucket", "material-electrico": "spool" };
+const lista = (v, n, max) => (Array.isArray(v) ? v.slice(0, n).map((x) => txt(x, max)) : null);
+const rutaFoto = (v) => { const t = txt(v, 200); return /^(fotos\/[\w./-]+|\/api\/foto\/[a-z0-9]{8,40})$/i.test(t) ? t : ""; };
+function limpiarProducto(b, previo) {
+  const id = txt(b.id, 20);
+  if (!/^[a-z0-9]{1,20}$/i.test(id)) return null;
+  const cat = CATS_OK.includes(b.cat) ? b.cat : null;
+  if (!cat) return null;
+  const nombre = txt(b.name, 160).trim();
+  if (!nombre) return null;
+  // Se conservan los datos de diseño que no se editan aquí (icono, color, grupo)
+  const p = { id, cat, brand: txt(b.brand, 40).trim() || "Material", name: nombre };
+  const base = previo || {};
+  for (const k of ["icon", "label", "color", "group", "hidden"]) if (base[k] !== undefined) p[k] = base[k];
+  if (!p.icon) { p.icon = ICONOS[cat] || "bag"; if (p.icon === "bag") { p.label = p.brand.toUpperCase().slice(0, 10); p.color = "#8b8f94"; } }
+  const desc = txt(b.desc, 3000).trim(); if (desc) p.desc = desc;
+  const vars = lista(b.variants, 80, 80);
+  if (vars && vars.length > 1) {
+    p.variants = vars;
+    const codes = lista(b.codes, 80, 60); if (codes && codes.some((c) => c)) p.codes = vars.map((_, i) => codes[i] || "");
+    const fotos = Array.isArray(b.photos) ? vars.map((_, i) => rutaFoto(b.photos[i])) : null; if (fotos && fotos.some((f) => f)) p.photos = fotos;
+  } else {
+    const spec = txt(b.spec, 80).trim(); if (spec) p.spec = spec;
+    const code = txt(b.code, 60).trim(); if (code) p.code = code;
+  }
+  p.unit = txt(b.unit, 30).trim() || "pieza";
+  const elige = txt(b.elige, 120).trim(); if (elige) p.elige = elige;
+  const sub = txt(b.sub, 60).trim(); if (sub) p.sub = sub;
+  const foto = rutaFoto(b.photo); if (foto) p.photo = foto;
+  if (b.rapido) p.rapido = true;
+  return p;
+}
+async function productosPublicos(request, env, url) {
+  const stub = bandeja(env);
+  let r = await stub.productosTodos();
+  if (r.vacio) {
+    // Primera vez: se carga la lista que viene con la página
+    const res = await env.ASSETS.fetch(new Request(url.origin + "/productos.json"));
+    if (!res.ok) return json({ ok: false, error: "sin_productos" }, 503);
+    await stub.sembrar(await res.json());
+    r = await stub.productosTodos();
+  }
+  const etag = `"p${r.v}"`;
+  if (request.headers.get("if-none-match") === etag) return new Response(null, { status: 304, headers: { etag, "cache-control": "no-cache" } });
+  return new Response(r.texto, { headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-cache", etag } });
+}
+
 async function api(request, env, url) {
   const ruta = url.pathname, metodo = request.method;
 
@@ -166,6 +287,15 @@ async function api(request, env, url) {
   }
   if (ruta === "/api/salir" && metodo === "POST") {
     return json({ ok: true }, 200, { "set-cookie": cookie(COOKIE, "", 0) });
+  }
+
+  // --- Productos (los lee la página) ---
+  if (ruta === "/api/productos" && metodo === "GET") return productosPublicos(request, env, url);
+  const mf = ruta.match(/^\/api\/foto\/([a-z0-9]{8,40})$/);
+  if (mf && metodo === "GET") {
+    const f = await bandeja(env).foto(mf[1]);
+    if (!f) return new Response("No encontrada", { status: 404 });
+    return new Response(f.datos, { headers: { "content-type": f.tipo, "cache-control": "public, max-age=31536000, immutable" } });
   }
 
   // --- Cotizaciones que mandan los clientes ---
@@ -193,6 +323,29 @@ async function api(request, env, url) {
   if (ruta.startsWith("/api/dueno/")) {
     if (!(await sesionDueno(request, env))) return json({ ok: false, error: "sin_sesion" }, 401);
     if (ruta === "/api/dueno/sesion") return json({ ok: true });
+    // --- Dueño: productos ---
+    if (ruta === "/api/dueno/productos" && metodo === "POST") {
+      let b = {};
+      try { b = await request.json(); } catch (e) {}
+      const stub = bandeja(env);
+      const todos = await stub.productosTodos();
+      if (todos.vacio) return json({ ok: false, error: "sin_productos" }, 409);
+      if (b.accion === "borrar") { await stub.borrarProducto(txt(b.id, 20)); return json({ ok: true }); }
+      const previo = todos.productos.find((x) => x.id === b.producto?.id) || null;
+      const p = limpiarProducto(b.producto || {}, previo);
+      if (!p) return json({ ok: false, error: "datos" }, 400);
+      const r = await stub.guardarProducto(p);
+      return json({ ok: true, producto: p, nuevo: r.nuevo });
+    }
+    if (ruta === "/api/dueno/fotos" && metodo === "POST") {
+      const tipo = (request.headers.get("content-type") || "").split(";")[0];
+      if (!["image/jpeg", "image/png", "image/webp"].includes(tipo)) return json({ ok: false, error: "tipo" }, 415);
+      const datos = await request.arrayBuffer();
+      if (!datos.byteLength || datos.byteLength > 1500000) return json({ ok: false, error: "tamano" }, 413);
+      const id = "u" + Date.now().toString(36) + hex(crypto.getRandomValues(new Uint8Array(5)));
+      await bandeja(env).guardarFoto(id, tipo, datos);
+      return json({ ok: true, ruta: "/api/foto/" + id });
+    }
     if (ruta === "/api/dueno/cotizaciones" && metodo === "GET") {
       return json({ ok: true, cotizaciones: await bandeja(env).listar(300) });
     }

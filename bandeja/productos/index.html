@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Productos · Panel Construmart</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800;900&display=swap">
+<link rel="icon" href="/marca/mart-lentes-v2.png">
+<style>
+/* Panel del dueño, pestaña Productos: barra para buscar/filtrar, lista de productos y panel lateral para editar uno. */
+:root{
+  --bg:#FBF6EE; --panel:#ffffff; --ink:#343639; --muted:#6d6862; --line:#eadfcf; --cream:#F5EBDD;
+  --accent:#FF6A00; --accent-soft:#FFF1E4; --ok:#16a34a; --danger:#c0392b;
+  --display:"Montserrat","Segoe UI",Arial,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 var(--display)}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+[hidden]{display:none!important}
+img{max-width:100%;height:auto}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+h1,h2,h3{margin:0;text-wrap:balance}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header{background:var(--ink);color:var(--cream);position:sticky;top:0;z-index:5}
+header .wrap{display:flex;align-items:center;gap:12px;padding-block:12px;flex-wrap:wrap}
+header img{width:40px;height:auto}
+header h1{font-weight:900;font-size:19px;flex:1;min-width:0}
+header h1 span{color:var(--accent)}
+.nav{display:flex;gap:4px;background:#ffffff14;border-radius:30px;padding:3px}
+.nav a{color:var(--cream);text-decoration:none;font-weight:800;font-size:12.5px;padding:6px 12px;border-radius:30px}
+.nav a.on{background:var(--accent);color:#fff}
+.hbtn{border:1px solid #ffffff55;background:transparent;color:#fff;border-radius:8px;padding:6px 12px;font-weight:700;font-size:12.5px}
+.login{min-height:70vh;display:grid;place-items:center;padding:24px 16px}
+.login form{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:24px 22px;width:min(360px,100%);display:grid;gap:12px;text-align:center}
+.login img{width:96px;justify-self:center}
+.login h2{font-weight:900;font-size:22px}
+.login p{margin:0;color:var(--muted);font-size:13px}
+input,select,textarea{border:1.5px solid var(--line);border-radius:8px;padding:10px 12px;background:var(--panel);font-size:14px;min-width:0;width:100%}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent)}
+.go{background:var(--accent);color:#fff;border:0;border-radius:8px;padding:12px;font-weight:800;font-size:15px}
+.err{color:var(--danger);font-weight:700;font-size:13px;min-height:1em;margin:0}
+/* Barra */
+.tools{position:sticky;top:64px;z-index:4;background:var(--bg);padding-block:12px;border-bottom:1px solid var(--line)}
+.tw{display:flex;gap:8px;flex-wrap:wrap}
+.tools input{flex:1 1 220px;width:auto}
+.tools select{flex:0 1 210px;width:auto}
+.btn{border:1.5px solid var(--ink);background:transparent;border-radius:8px;padding:9px 14px;font-weight:800;font-size:13px;color:var(--ink);display:inline-flex;align-items:center;justify-content:center;gap:7px;white-space:nowrap}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.sm{padding:6px 10px;font-size:12px}
+.btn.danger{border-color:var(--danger);color:var(--danger)}
+.btn.sure{background:var(--danger);color:#fff}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.cuenta{font-size:12.5px;color:var(--muted);margin:10px 0}
+/* Lista */
+.lista{display:grid;gap:8px;padding-bottom:40px}
+.row{display:grid;grid-template-columns:56px minmax(0,1fr) auto;gap:12px;align-items:center;background:var(--panel);border:1.5px solid var(--line);border-radius:10px;padding:8px 10px}
+.row img,.row .nof{width:56px;height:56px;border-radius:8px;object-fit:contain;background:#fff;border:1px solid var(--line)}
+.row .nof{display:grid;place-items:center;font-size:10px;color:var(--muted);text-align:center;border-style:dashed}
+.row b{display:block;font-weight:800;overflow-wrap:anywhere}
+.row small{color:var(--muted);font-size:12px}
+.marca{font-size:11px;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:.3px}
+.row .acts{display:flex;gap:6px;align-items:center}
+.rayo{border:1.5px solid var(--line);background:var(--panel);border-radius:8px;padding:6px 8px;color:var(--muted);display:inline-flex}
+.rayo.on{background:var(--ok);border-color:var(--ok);color:#fff}
+.vacio{background:var(--panel);border:1.5px dashed var(--line);border-radius:10px;padding:26px 16px;text-align:center;color:var(--muted)}
+/* Editor */
+.veil{position:fixed;inset:0;background:#0007;z-index:20;display:flex;justify-content:flex-end}
+.sheet{background:var(--bg);width:min(560px,100%);height:100%;overflow-y:auto;overscroll-behavior:contain;padding:18px max(18px,env(safe-area-inset-right,0px)) calc(24px + env(safe-area-inset-bottom,0px)) 18px;display:grid;gap:14px;align-content:start}
+.sheet h2{font-weight:900;font-size:22px}
+label.l{display:grid;gap:4px;font-size:12.5px;font-weight:700}
+label.l small{font-weight:500;color:var(--muted)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+textarea{min-height:90px;resize:vertical}
+.foto{display:grid;grid-template-columns:110px minmax(0,1fr);gap:12px;align-items:center}
+.foto .box{width:110px;height:110px;border:1.5px dashed var(--line);border-radius:10px;background:#fff;display:grid;place-items:center;overflow:hidden;color:var(--muted);font-size:12px;text-align:center}
+.foto .box img{width:100%;height:100%;object-fit:contain}
+.foto .bts{display:flex;gap:8px;flex-wrap:wrap}
+.med{border:1.5px solid var(--line);border-radius:10px;overflow:hidden;background:var(--panel)}
+.mh,.mr{display:grid;grid-template-columns:44px minmax(0,1.2fr) minmax(0,1fr) 62px 32px;align-items:center}
+.mh{background:var(--cream);font-size:10.5px;text-transform:uppercase;letter-spacing:.5px;font-weight:800;color:var(--muted)}
+.mh span{padding:6px 8px}
+.mr{border-top:1px solid var(--line)}
+.mr input{border:0;border-radius:0;border-left:1px solid var(--line);padding:9px 8px}
+.mr .mf{width:44px;height:42px;border:0;background:#fff;padding:3px;display:grid;place-items:center;color:var(--muted)}
+.mr .mf img{width:34px;height:34px;object-fit:contain}
+.mr label{display:flex;align-items:center;justify-content:center;gap:3px;font-size:10.5px;font-weight:700;border-left:1px solid var(--line);height:100%;color:var(--muted)}
+.mr label input{width:15px;height:15px;border:0;padding:0}
+.mr .x{border:0;background:none;color:var(--muted);font-size:15px;height:100%;border-left:1px solid var(--line)}
+.madd{justify-self:start;background:none;border:0;color:var(--accent);font-weight:800;padding:4px 0}
+.chk{display:flex;align-items:center;gap:10px;font-weight:700;border:1.5px solid #16a34a55;background:#16a34a12;border-radius:10px;padding:10px 12px}
+.chk input{width:20px;height:20px;accent-color:var(--ok)}
+.bar{display:flex;gap:8px;flex-wrap:wrap}
+.bar .grow{flex:1}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--cream);padding:10px 18px;border-radius:30px;font-size:13px;z-index:30;max-width:calc(100% - 32px)}
+@media (max-width:600px){
+  header h1{font-size:16px}
+  header .hm{display:none}
+  header img{width:32px}
+  .tools{position:static}
+  .tw select{flex:1 1 140px}
+  .tw .btn{flex:1 1 100%}
+  .row{grid-template-columns:48px minmax(0,1fr)}
+  .row img,.row .nof{width:48px;height:48px}
+  .row .acts{grid-column:1 / -1;justify-content:flex-end}
+  .mh,.mr{grid-template-columns:40px minmax(0,1fr) minmax(0,.9fr) 52px 28px}
+}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <img src="/marca/mart-lentes-v2.png" alt="" width="295" height="300">
+  <h1><b class="hm">Construmart · </b><span>Panel del dueño</span></h1>
+  <nav class="nav" id="nav" hidden><a href="/bandeja/">Cotizaciones</a><a href="/bandeja/productos/" class="on">Productos</a></nav>
+  <button class="hbtn" id="salir" type="button" hidden>Salir</button>
+</div></header>
+
+<section class="login" id="login" hidden>
+  <form id="fLogin" autocomplete="on">
+    <img src="/marca/mart-lentes-v2.png" alt="" width="295" height="300">
+    <h2>Panel del dueño</h2>
+    <p>Entra con tu clave para agregar y cambiar los productos de la página.</p>
+    <input type="text" name="username" value="dueño" autocomplete="username" hidden>
+    <input type="password" id="clave" name="password" autocomplete="current-password" placeholder="Tu clave de dueño" required aria-label="Clave de dueño">
+    <p class="err" id="lerr" role="alert"></p>
+    <button class="go" type="submit" id="lgo">Entrar</button>
+  </form>
+</section>
+
+<main id="app" hidden>
+  <div class="tools"><div class="wrap tw">
+    <input id="q" type="search" placeholder="Buscar producto, marca, código o medida…" aria-label="Buscar">
+    <select id="fcat" aria-label="Categoría"><option value="">Todas las categorías</option></select>
+    <select id="fver" aria-label="Filtro"><option value="">Todos</option><option value="sin">Sin foto</option><option value="rap">⚡ Entrega inmediata</option></select>
+    <button class="btn pri" id="nuevo" type="button">+ Agregar producto</button>
+  </div></div>
+  <div class="wrap">
+    <p class="cuenta" id="cuenta">Cargando productos…</p>
+    <div class="lista" id="lista"></div>
+  </div>
+</main>
+
+<div class="veil" id="veil" hidden>
+  <form class="sheet" id="ed" role="dialog" aria-modal="true" aria-labelledby="edT">
+    <h2 id="edT">Agregar producto</h2>
+    <div class="foto">
+      <div class="box" id="fbox">Sin foto</div>
+      <div style="display:grid;gap:8px">
+        <b style="font-size:12.5px">Foto del producto</b>
+        <div class="bts"><button class="btn sm" type="button" id="fpick">Elegir foto</button><button class="btn sm" type="button" id="fquit" hidden>Quitar</button></div>
+        <small style="color:var(--muted)">De preferencia con fondo blanco. Se achica sola para que cargue rápido.</small>
+      </div>
+    </div>
+    <input type="file" id="ffile" accept="image/png,image/jpeg,image/webp" hidden>
+    <label class="l">Nombre del producto<input id="e-name" required placeholder="Ej. Martillo uña curva"></label>
+    <div class="two">
+      <label class="l">Marca<input id="e-brand" list="marcas" placeholder="Truper"></label>
+      <label class="l">Se vende por<input id="e-unit" list="units" placeholder="pieza"></label>
+    </div>
+    <datalist id="marcas"></datalist>
+    <datalist id="units"><option value="pieza"><option value="metro"><option value="kg"><option value="bulto"><option value="caja"><option value="rollo"><option value="litro"><option value="kit"><option value="bolsa"></datalist>
+    <div class="two">
+      <label class="l">Categoría<select id="e-cat"></select></label>
+      <label class="l">Subcategoría <small>(opcional)</small><input id="e-sub" list="subs" placeholder="Ej. CPVC"></label>
+    </div>
+    <datalist id="subs"></datalist>
+    <label class="chk"><input type="checkbox" id="e-rap"><span>⚡ Entrega inmediata<small style="display:block;font-weight:500;color:var(--muted)">Lo tenemos en físico en la tienda.</small></span></label>
+    <div style="display:grid;gap:6px">
+      <b style="font-size:12.5px">Medidas, colores y códigos <small style="font-weight:500;color:var(--muted)">Uno por renglón. La foto de cada medida es opcional.</small></b>
+      <div class="med"><div class="mh"><span>Foto</span><span>Medida / color</span><span>Código</span><span>Interno</span><span></span></div><div id="mrows"></div></div>
+      <button class="madd" type="button" id="madd">+ Agregar medida</button>
+    </div>
+    <label class="l">Frase para elegir medida <small>(opcional) Ej. “Escoge la medida de tu brocha”</small><input id="e-elige"></label>
+    <label class="l">Descripción <small>(opcional) Un punto por renglón, empezando con •</small><textarea id="e-desc"></textarea></label>
+    <p class="err" id="eerr"></p>
+    <div class="bar"><button class="btn pri grow" type="submit" id="gsave">Guardar</button><button class="btn" type="button" id="gcancel">Cancelar</button></div>
+    <div class="bar" id="extra" hidden><button class="btn sm" type="button" id="gdup">⧉ Duplicar</button><button class="btn sm danger" type="button" id="gdel">Borrar producto</button><a class="btn sm" id="gver" target="_blank" rel="noopener">Ver en la página</a></div>
+  </form>
+</div>
+<input type="file" id="mfile" accept="image/png,image/jpeg,image/webp" hidden>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+const CATS=[["herramientas-manuales","Herramientas manuales"],["herramientas-electricas","Herramientas eléctricas"],["ferreteria","Ferretería"],["material-electrico","Material eléctrico"],["plomeria","Plomería"],["pintura","Pintura"],["construccion","Construcción"],["metal","Metal"],["mallas","Mallas"],["impermeabilizantes","Impermeabilizantes y selladores"],["jardineria","Jardinería"],["seguridad-industrial","Seguridad industrial"],["limpieza","Limpieza"]];
+const MARCA_CAT={"plomeria":"Foset","material-electrico":"Volteck","limpieza":"Klintek"};
+const catName=s=>(CATS.find(c=>c[0]===s)||[s,s])[1];
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const norm=s=>String(s||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+function toast(t){const el=$("#toast");el.textContent=t;el.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>el.hidden=true,2600)}
+const src=f=>!f?"":f.startsWith("/")?f:"/"+f;
+async function api(path,body){const r=await fetch(path,body?{method:"POST",credentials:"same-origin",headers:{"content-type":"application/json"},body:JSON.stringify(body)}:{credentials:"same-origin",cache:"no-store"});
+  const j=await r.json().catch(()=>({}));if(r.status===401&&!path.endsWith("/entrar")){verLogin();throw new Error("sin_sesion")}return j}
+
+let P=[],editing=null,fotoMain="",ocupado=0;
+function verLogin(){$("#login").hidden=false;$("#app").hidden=true;$("#nav").hidden=$("#salir").hidden=true;setTimeout(()=>$("#clave").focus(),50)}
+function verApp(){$("#login").hidden=true;$("#app").hidden=false;$("#nav").hidden=$("#salir").hidden=false;cargar()}
+$("#fLogin").addEventListener("submit",async e=>{e.preventDefault();const b=$("#lgo");b.disabled=true;b.textContent="Revisando…";$("#lerr").textContent="";
+  try{const j=await api("/api/dueno/entrar",{clave:$("#clave").value});if(j.ok){$("#clave").value="";verApp()}else $("#lerr").textContent="Clave incorrecta. Revísala e intenta otra vez."}
+  catch(err){$("#lerr").textContent="No se pudo entrar. Revisa tu conexión."}finally{b.disabled=false;b.textContent="Entrar"}});
+$("#salir").onclick=async()=>{try{await api("/api/dueno/salir",{})}catch(e){}verLogin()};
+
+async function cargar(){
+  try{const r=await fetch("/api/productos",{cache:"no-store"});const j=await r.json();if(!j.ok)throw 0;P=j.productos;llenar();pintar()}
+  catch(e){$("#cuenta").textContent="No se pudieron cargar los productos. Revisa tu conexión y recarga la página."}
+}
+function llenar(){
+  const cur=$("#fcat").value;
+  $("#fcat").innerHTML='<option value="">Todas las categorías</option>'+CATS.map(([s,n])=>`<option value="${s}">${esc(n)} (${P.filter(p=>p.cat===s).length})</option>`).join("");$("#fcat").value=cur;
+  $("#e-cat").innerHTML=CATS.map(([s,n])=>`<option value="${s}">${esc(n)}</option>`).join("");
+  $("#marcas").innerHTML=[...new Set(P.map(p=>p.brand).filter(b=>b&&b!=="Material"))].sort().map(b=>`<option value="${esc(b)}">`).join("");
+}
+const tieneFoto=p=>!!(p.photo||(p.photos||[]).some(Boolean));
+const fotoDe=p=>p.photo||(p.photos||[]).find(Boolean)||"";
+function pintar(){
+  const q=norm($("#q").value.trim()),c=$("#fcat").value,v=$("#fver").value;
+  const L=P.filter(p=>(!c||p.cat===c)&&(v!=="sin"||!tieneFoto(p))&&(v!=="rap"||p.rapido)&&(!q||norm([p.name,p.brand,p.spec,p.code,(p.variants||[]).join(" "),(p.codes||[]).join(" "),p.sub].join(" ")).includes(q)));
+  $("#cuenta").textContent=`${L.length} de ${P.length} productos`+(L.length>300?" · se muestran los primeros 300":"");
+  $("#lista").innerHTML=L.length?L.slice(0,300).map(p=>{const f=fotoDe(p);const med=p.variants?p.variants.length+" medidas":p.spec||"";
+    return `<div class="row"><div>${f?`<img src="${esc(src(f))}" alt="" loading="lazy">`:`<div class="nof">Sin foto</div>`}</div>
+    <div><span class="marca">${esc(p.brand==="Material"?"":p.brand)}</span><b>${esc(p.name)}</b><small>${esc(catName(p.cat))}${p.sub?" › "+esc(p.sub):""}${med?" · "+esc(med):""}</small></div>
+    <div class="acts"><button class="rayo${p.rapido?" on":""}" type="button" data-rayo="${esc(p.id)}" title="${p.rapido?"Quitar entrega inmediata":"Marcar entrega inmediata"}" aria-pressed="${p.rapido?"true":"false"}"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg></button><button class="btn sm" type="button" data-edit="${esc(p.id)}">Editar</button></div></div>`}).join(""):`<div class="vacio">Ningún producto coincide.</div>`;
+}
+["#q","#fcat","#fver"].forEach(s=>$(s).addEventListener(s==="#q"?"input":"change",pintar));
+
+async function guardarP(p){
+  const j=await api("/api/dueno/productos",{producto:p});
+  if(!j.ok)throw new Error(j.error||"error");
+  const i=P.findIndex(x=>x.id===j.producto.id);
+  if(i>=0)P[i]=j.producto;else{const k=P.map(x=>x.cat).lastIndexOf(j.producto.cat);P.splice(k>=0?k+1:P.length,0,j.producto)}
+  return j;
+}
+$("#lista").addEventListener("click",async e=>{
+  const ed=e.target.closest("[data-edit]");if(ed){abrir(P.find(p=>p.id===ed.dataset.edit));return}
+  const r=e.target.closest("[data-rayo]");if(!r)return;
+  const p=P.find(x=>x.id===r.dataset.rayo);if(!p)return;r.disabled=true;
+  try{const n={...p};if(n.rapido)delete n.rapido;else n.rapido=true;await guardarP(n);pintar();toast(n.rapido?"⚡ Entrega inmediata: "+p.name:"Se quitó el ⚡ de "+p.name)}
+  catch(err){if(err.message!=="sin_sesion")toast("No se pudo guardar. Inténtalo otra vez.");r.disabled=false}
+});
+
+// ===== Editor =====
+const quitaInt=c=>String(c||"").replace(/\s*\(interno\)$/,"");
+function filasDe(p){
+  if(!p)return [];
+  if(p.variants&&p.variants.length>1)return p.variants.map((m,i)=>{const c=(p.codes||[])[i]||"";return {m,c:quitaInt(c),t:/\(interno\)$/.test(c),f:(p.photos||[])[i]||""}});
+  if(p.spec||p.code)return [{m:p.spec||"",c:quitaInt(p.code),t:/\(interno\)$/.test(p.code||""),f:""}];
+  return [];
+}
+function filaHTML(r){return `<div class="mr" data-f="${esc(r.f||"")}"><button class="mf" type="button" title="Foto de esta medida">${r.f?`<img src="${esc(src(r.f))}" alt="">`:`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7h3l2-3h8l2 3h3v13H3z"/><circle cx="12" cy="13" r="4"/></svg>`}</button><input class="m" value="${esc(r.m)}" placeholder="Ej. 1/2&quot;" aria-label="Medida"><input class="c" value="${esc(r.c)}" placeholder="Código" aria-label="Código"><label><input type="checkbox" class="t"${r.t?" checked":""}>Int.</label><button class="x" type="button" aria-label="Quitar renglón">×</button></div>`}
+function setFilas(rs){$("#mrows").innerHTML=(rs.length?rs:[{m:"",c:"",t:false,f:""}]).map(filaHTML).join("")}
+function leerFilas(){return [...document.querySelectorAll("#mrows .mr")].map(d=>({m:d.querySelector(".m").value.trim().replace(/^\d+(?:\s\d+)?\/\d+$/,s=>s+'"'),c:d.querySelector(".c").value.trim(),t:d.querySelector(".t").checked,f:d.dataset.f||""})).filter(r=>r.m||r.c||r.f)}
+function verFoto(){$("#fbox").innerHTML=fotoMain?`<img src="${esc(src(fotoMain))}" alt="Foto del producto">`:"Sin foto";$("#fquit").hidden=!fotoMain;$("#fpick").textContent=fotoMain?"Cambiar foto":"Elegir foto"}
+function abrir(p,copia){
+  editing=copia?null:(p||null);
+  $("#edT").textContent=editing?"Editar producto":copia?"Copia de producto":"Agregar producto";
+  const cat=p?p.cat:($("#fcat").value||"ferreteria");
+  $("#e-name").value=p?(copia?p.name+" (copia)":p.name):"";
+  $("#e-brand").value=p?(p.brand==="Material"?"":p.brand):(MARCA_CAT[cat]||"Truper");
+  $("#e-unit").value=p?p.unit||"pieza":"pieza";
+  $("#e-cat").value=cat;pintarSubs();
+  $("#e-sub").value=p&&p.sub||"";$("#e-elige").value=p&&p.elige||"";$("#e-desc").value=p&&p.desc||"";
+  $("#e-rap").checked=!!(p&&p.rapido);
+  fotoMain=p&&p.photo||"";verFoto();setFilas(filasDe(p));
+  $("#extra").hidden=!editing;$("#eerr").textContent="";
+  if(editing){$("#gver").href="/#"+editing.cat;$("#gdel").textContent="Borrar producto";$("#gdel").classList.remove("sure")}
+  $("#veil").hidden=false;setTimeout(()=>$("#e-name").focus(),50);
+}
+function pintarSubs(){const c=$("#e-cat").value;$("#subs").innerHTML=[...new Set(P.filter(p=>p.cat===c&&p.sub).map(p=>p.sub))].sort().map(s=>`<option value="${esc(s)}">`).join("")}
+$("#e-cat").addEventListener("change",()=>{pintarSubs();if(!editing&&MARCA_CAT[$("#e-cat").value])$("#e-brand").value=MARCA_CAT[$("#e-cat").value]});
+function cerrar(){if(ocupado){toast("Espera, se está subiendo la foto…");return}$("#veil").hidden=true;editing=null}
+$("#gcancel").onclick=cerrar;$("#nuevo").onclick=()=>abrir(null);
+$("#veil").addEventListener("click",e=>{if(e.target.id==="veil")cerrar()});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("#veil").hidden)cerrar()});
+$("#madd").onclick=()=>{$("#mrows").insertAdjacentHTML("beforeend",filaHTML({m:"",c:"",t:false,f:""}));$("#mrows .mr:last-child .m").focus()};
+$("#mrows").addEventListener("click",e=>{
+  const x=e.target.closest(".x");if(x){x.closest(".mr").remove();if(!$("#mrows .mr"))setFilas([]);return}
+  const f=e.target.closest(".mf");if(f){filaFoto=f.closest(".mr");$("#mfile").click()}
+});
+
+// Fotos: se achican a 1000 px y se suben a la tienda
+function achicar(file){return new Promise(res=>{const img=new Image(),u=URL.createObjectURL(file);
+  img.onload=()=>{const s=Math.min(1,1000/Math.max(img.width,img.height));const c=document.createElement("canvas");c.width=Math.round(img.width*s);c.height=Math.round(img.height*s);
+    const x=c.getContext("2d");x.fillStyle="#fff";x.fillRect(0,0,c.width,c.height);x.drawImage(img,0,0,c.width,c.height);URL.revokeObjectURL(u);c.toBlob(b=>res(b),"image/jpeg",.85)};
+  img.onerror=()=>{URL.revokeObjectURL(u);res(null)};img.src=u})}
+async function subir(file){
+  const b=await achicar(file);if(!b)throw new Error("foto");
+  const r=await fetch("/api/dueno/fotos",{method:"POST",credentials:"same-origin",headers:{"content-type":"image/jpeg"},body:b});
+  if(r.status===401){verLogin();throw new Error("sin_sesion")}
+  const j=await r.json().catch(()=>({}));if(!j.ok)throw new Error("foto");return j.ruta;
+}
+let filaFoto=null;
+$("#fpick").onclick=()=>$("#ffile").click();
+$("#fquit").onclick=()=>{fotoMain="";verFoto()};
+$("#ffile").addEventListener("change",async e=>{const f=e.target.files[0];e.target.value="";if(!f)return;
+  ocupado++;$("#fbox").textContent="Subiendo…";try{fotoMain=await subir(f);verFoto();toast("Foto lista. Toca Guardar.")}catch(err){verFoto();$("#eerr").textContent="No se pudo subir la foto. Prueba con otra (JPG o PNG)."}finally{ocupado--}});
+$("#mfile").addEventListener("change",async e=>{const f=e.target.files[0];e.target.value="";const row=filaFoto;if(!f||!row)return;
+  const bt=row.querySelector(".mf");ocupado++;bt.style.opacity=.5;
+  try{const ruta=await subir(f);row.dataset.f=ruta;bt.innerHTML=`<img src="${esc(ruta)}" alt="">`}catch(err){$("#eerr").textContent="No se pudo subir la foto de la medida."}finally{bt.style.opacity=1;ocupado--}});
+
+function armar(){
+  const name=$("#e-name").value.trim();if(!name)return null;
+  const p={id:editing?editing.id:"p"+Date.now().toString(36),cat:$("#e-cat").value,brand:$("#e-brand").value.trim()||"Material",name,unit:$("#e-unit").value.trim()||"pieza"};
+  const d=$("#e-desc").value.trim();if(d)p.desc=d;
+  const el=$("#e-elige").value.trim();if(el)p.elige=el;
+  const sb=$("#e-sub").value.trim();if(sb)p.sub=sb;
+  const rs=leerFilas();
+  if(rs.length>1){p.variants=rs.map(r=>r.m||r.c);if(rs.some(r=>r.c))p.codes=rs.map(r=>r.c?r.c+(r.t?" (interno)":""):"");if(rs.some(r=>r.f))p.photos=rs.map(r=>r.f)}
+  else if(rs.length===1){const r=rs[0];if(r.m)p.spec=r.m;if(r.c)p.code=r.c+(r.t?" (interno)":"");if(!fotoMain&&r.f)fotoMain=r.f}
+  if(fotoMain)p.photo=fotoMain;
+  if($("#e-rap").checked)p.rapido=true;
+  return p;
+}
+$("#ed").addEventListener("submit",async e=>{e.preventDefault();
+  if(ocupado){$("#eerr").textContent="Espera a que termine de subir la foto.";return}
+  const p=armar();if(!p){$("#eerr").textContent="Escribe el nombre del producto.";return}
+  const b=$("#gsave");b.disabled=true;b.textContent="Guardando…";$("#eerr").textContent="";
+  try{const j=await guardarP(p);llenar();pintar();$("#veil").hidden=true;editing=null;toast(j.nuevo?"Producto agregado. Ya sale en la página.":"Cambios guardados. Ya salen en la página.")}
+  catch(err){if(err.message!=="sin_sesion")$("#eerr").textContent="No se pudo guardar. Revisa tu conexión e inténtalo otra vez."}
+  finally{b.disabled=false;b.textContent="Guardar"}});
+$("#gdup").onclick=()=>{const p=editing;if(p)abrir(p,true)};
+$("#gdel").onclick=async()=>{const b=$("#gdel");if(!editing)return;
+  if(!b.classList.contains("sure")){b.classList.add("sure");b.textContent="¿Seguro? Toca otra vez para borrar";return}
+  b.disabled=true;try{const j=await api("/api/dueno/productos",{accion:"borrar",id:editing.id});if(!j.ok)throw 0;const n=editing.name;P=P.filter(x=>x.id!==editing.id);llenar();pintar();$("#veil").hidden=true;editing=null;toast("Borrado: "+n)}
+  catch(err){$("#eerr").textContent="No se pudo borrar. Inténtalo otra vez."}finally{b.disabled=false}};
+
+(async()=>{try{const r=await fetch("/api/dueno/sesion",{credentials:"same-origin",cache:"no-store"});r.ok?verApp():verLogin()}catch(e){verLogin()}})();
+</script>
+</body>
+</html>

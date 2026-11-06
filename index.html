@@ -1674,7 +1674,19 @@ document.addEventListener("click",async e=>{
   if(e.target.closest("#cliSalir")){try{await fetch("/api/salir",{method:"POST",credentials:"same-origin"})}catch(err){}cliSet(null);toast("Saliste de tu sesión de cliente.")}
 });
 (async()=>{try{const r=await fetch("/api/sesion",{credentials:"same-origin",cache:"no-store"});if(!r.ok)return;const j=await r.json();if(!j||j.ok!==true)return;
-  $("#cliBtn").hidden=false;SRV=true;cotizHist();if(j.cliente)cliSet(j.cliente)}catch(e){}})();
+  $("#cliBtn").hidden=false;SRV=true;cotizHist();prodServidor();if(j.cliente)cliSet(j.cliente)}catch(e){}})();
+// ===== Productos al día: en internet la página pide la lista que el dueño edita en su panel =====
+async function prodServidor(){
+  try{const r=await fetch("/api/productos",{credentials:"same-origin"});if(!r.ok)return;const j=await r.json();
+    if(!j||!j.ok||!Array.isArray(j.productos)||!j.productos.length)return;
+    if(j.actualizado)ACTUALIZADO=j.actualizado;
+    const f=document.getElementById("fAct");if(f)f.textContent="Catálogo actualizado el "+new Date(ACTUALIZADO).toLocaleDateString("es-MX",{day:"numeric",month:"long",year:"numeric"});
+    if(JSON.stringify(j.productos)===JSON.stringify(P))return;
+    P.splice(0,P.length,...j.productos);
+    const a=document.activeElement;if(a&&/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)&&location.hash==="#cotizacion")return;
+    const y=scrollY;route();window.scrollTo(0,y);
+  }catch(e){}
+}
 // ===== Bandeja: la cotización también se guarda en la tienda y aquí se ve la respuesta =====
 // Solo en la página de internet (Cloudflare). En las páginas de Claude no hace nada.
 let SRV=false,RESP={},respHora=0;
@@ -1720,7 +1732,7 @@ document.addEventListener("change",e=>{if(e.target.name==="fent"){form.entrega=e
   const lp=$("#lbPick");if(lp)lp.textContent=env?"¿Cuándo lo necesitas?":"¿Cuándo pasarías por tu pedido?";renderQuote();if(env&&d)setTimeout(()=>$("#fdir").focus(),30)}});
 document.addEventListener("click",e=>{const a=e.target.closest("[data-envio]");if(a){form.entrega="envio";try{const f=JSON.parse(localStorage.getItem("cm-form")||"{}");f.entrega="envio";localStorage.setItem("cm-form",JSON.stringify(f))}catch(err){}}});
 // ===== Lo nuevo: Mart acomodó productos nuevos (se calcula solo con la fecha de alta de cada producto) =====
-const ACTUALIZADO=1793984503099,DIA=864e5;
+let ACTUALIZADO=1794000540111;const DIA=864e5;
 function fechaAlta(p){if(!p||!/^p[0-9a-z]{7,10}$/.test(p.id))return 0;const t=parseInt(p.id.slice(1),36);return t>1.6e12&&t<Date.now()+DIA?t:0}
 const NUEVOS=(dias=7)=>P.filter(p=>!p.hidden&&fechaAlta(p)>=Date.now()-dias*DIA).sort((a,b)=>fechaAlta(b)-fechaAlta(a));
 function nuevoBadge(p){return fechaAlta(p)>=Date.now()-7*DIA?`<span class="nuevo-tag">Nuevo</span>`:""}

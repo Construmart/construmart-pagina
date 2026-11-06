@@ -31,6 +31,9 @@ header .wrap{display:flex;align-items:center;gap:12px;padding-block:12px;flex-wr
 header img{width:40px;height:auto}
 header h1{font-weight:900;font-size:19px;flex:1;min-width:0}
 header h1 span{color:var(--accent)}
+.nav{display:flex;gap:4px;background:#ffffff14;border-radius:30px;padding:3px}
+.nav a{color:var(--cream);text-decoration:none;font-weight:800;font-size:12.5px;padding:6px 12px;border-radius:30px}
+.nav a.on{background:var(--accent);color:#fff}
 .hbtn{border:1px solid #ffffff55;background:transparent;color:#fff;border-radius:8px;padding:6px 12px;font-weight:700;font-size:12.5px}
 /* Entrar */
 .login{min-height:70vh;display:grid;place-items:center;padding:24px 16px}
@@ -138,7 +141,8 @@ textarea{min-height:64px;resize:vertical}
 <body>
 <header><div class="wrap">
   <img src="/marca/mart-lentes-v2.png" alt="" width="295" height="300">
-  <h1><b class="hm">Construmart · </b><span>Bandeja de cotizaciones</span></h1>
+  <h1><b class="hm">Construmart · </b><span>Panel del dueño</span></h1>
+  <nav class="nav" id="nav" hidden><a href="/bandeja/" class="on">Cotizaciones</a><a href="/bandeja/productos/">Productos</a></nav>
   <button class="hbtn" id="recargar" type="button" hidden>Actualizar</button>
   <button class="hbtn" id="salir" type="button" hidden>Salir</button>
 </div></header>
@@ -183,8 +187,8 @@ async function api(path,body){const r=await fetch(path,body?{method:"POST",crede
   const j=await r.json().catch(()=>({}));if(r.status===401&&!path.endsWith("/entrar")){verLogin();throw new Error("sin_sesion")}return j}
 
 let todas=[],filtro="pendiente",abierta=null,actual=null;
-function verLogin(){$("#login").hidden=false;$("#app").hidden=true;$("#salir").hidden=$("#recargar").hidden=true;setTimeout(()=>$("#clave").focus(),50)}
-function verApp(){$("#login").hidden=true;$("#app").hidden=false;$("#salir").hidden=$("#recargar").hidden=false;cargar()}
+function verLogin(){$("#login").hidden=false;$("#app").hidden=true;$("#nav").hidden=$("#salir").hidden=$("#recargar").hidden=true;setTimeout(()=>$("#clave").focus(),50)}
+function verApp(){$("#login").hidden=true;$("#app").hidden=false;$("#nav").hidden=$("#salir").hidden=$("#recargar").hidden=false;cargar()}
 
 $("#fLogin").addEventListener("submit",async e=>{e.preventDefault();const b=$("#lgo");b.disabled=true;b.textContent="Revisando…";$("#lerr").textContent="";
   try{const j=await api("/api/dueno/entrar",{clave:$("#clave").value});if(j.ok){$("#clave").value="";verApp()}else $("#lerr").textContent="Clave incorrecta. Revísala e intenta otra vez."}
