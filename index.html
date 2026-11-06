@@ -1205,9 +1205,9 @@ function cardFull(p){ // con cantidad, para la vista de categoría
 // ===== Vistas =====
 let slideIx=0,slideTimer=null;
 const SLIDES=[
- {img:"marca/banner-inicio-v2.jpg",href:"#construccion",alt:"Construmart: tu obra empieza aquí. Cemento gris, mortero y cemento blanco Moctezuma. Cotiza ahora. Ir a Construcción"},
- {img:"marca/banner-texturas-v2.jpg",href:"#construccion",alt:"Textura, color y acabado en un solo lugar: Econotex de Niasa, Adestuk de ADE 1000 y Adeblok Plus de Cemix. Cotiza ahora. Ir a Construcción"},
- {img:"marca/banner-pegapisos-v2.jpg",href:"#construccion",alt:"Firmeza desde la base: pegapiso Unicerámica, Pegapiso ADE 1000 y Pegamix pisos y mármol gris de Cemix. Cotiza ahora. Ir a Construcción"},
+ {img:"marca/banner-inicio-v3.jpg",href:"#construccion",alt:"Construmart: tu obra empieza aquí. Cemento gris, mortero y cemento blanco Moctezuma. Cotiza ahora. Ir a Construcción"},
+ {img:"marca/banner-texturas-v3.jpg",href:"#construccion",alt:"Textura, color y acabado en un solo lugar: Econotex de Niasa, Adestuk de ADE 1000 y Adeblok Plus de Cemix. Cotiza ahora. Ir a Construcción"},
+ {img:"marca/banner-pegapisos-v3.jpg",href:"#construccion",alt:"Firmeza desde la base: pegapiso Unicerámica, Pegapiso ADE 1000 y Pegamix pisos y mármol gris de Cemix. Cotiza ahora. Ir a Construcción"},
 ];
 function heroArt(kind){
   const g=(id,x,y,s,r=0)=>`<g transform="translate(${x},${y}) rotate(${r}) scale(${s})">${typeof D[id]==="function"?D[id]({label:"CEMENTO",color:"#8b8f94"}):D[id]}</g>`;
@@ -1779,7 +1779,7 @@ document.addEventListener("change",e=>{if(e.target.name==="fent"){form.entrega=e
   const lp=$("#lbPick");if(lp)lp.textContent=env?"¿Cuándo lo necesitas?":"¿Cuándo pasarías por tu pedido?";renderQuote();if(env&&d)setTimeout(()=>$("#fdir").focus(),30)}});
 document.addEventListener("click",e=>{const a=e.target.closest("[data-envio]");if(a){form.entrega="envio";try{const f=JSON.parse(localStorage.getItem("cm-form")||"{}");f.entrega="envio";localStorage.setItem("cm-form",JSON.stringify(f))}catch(err){}}});
 // ===== Lo nuevo: Mart acomodó productos nuevos (se calcula solo con la fecha de alta de cada producto) =====
-let ACTUALIZADO=1794007310662;const DIA=864e5;
+let ACTUALIZADO=1794007422394;const DIA=864e5;
 function fechaAlta(p){if(!p||!/^p[0-9a-z]{7,10}$/.test(p.id))return 0;const t=parseInt(p.id.slice(1),36);return t>1.6e12&&t<Date.now()+DIA?t:0}
 const NUEVOS=(dias=7)=>P.filter(p=>!p.hidden&&fechaAlta(p)>=Date.now()-dias*DIA).sort((a,b)=>fechaAlta(b)-fechaAlta(a));
 function nuevoBadge(p){return fechaAlta(p)>=Date.now()-7*DIA?`<span class="nuevo-tag">Nuevo</span>`:""}
