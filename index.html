@@ -636,6 +636,10 @@ details[open]>summary .dchev{transform:rotate(180deg)}
 .dueno-bar a{color:#F5EBDD;font-weight:700;text-decoration:none;border-bottom:1px solid #ffffff44}
 .dueno-bar a:hover{color:#fff;border-color:#FF6A00}
 .dueno-bar button{margin-left:auto;background:transparent;border:1px solid #ffffff55;color:#fff;border-radius:6px;padding:3px 10px;font-weight:700;font-size:12px;cursor:pointer}
+/* La franja nunca muestra un aviso cortado: lo que no cabe se va a un segundo renglón oculto */
+.band-items{flex-wrap:wrap;height:44px;align-content:flex-start}
+.band-items>a,.band-items>span{height:44px}
+.band-items>span{order:2}.band-items>span:last-child{order:1}
 .branches{align-items:stretch!important}.branch .bbody{flex:1;display:flex;flex-direction:column}.branch .bactions{margin-top:auto!important;padding-top:12px}
 /* Tabletas (681 a 960 px): que la página no se haga más ancha que la pantalla */
 @media (max-width:960px){.shell{grid-template-columns:minmax(0,1fr)!important}.shell>*{min-width:0}}
@@ -1765,7 +1769,7 @@ document.addEventListener("change",e=>{if(e.target.name==="fent"){form.entrega=e
   const lp=$("#lbPick");if(lp)lp.textContent=env?"¿Cuándo lo necesitas?":"¿Cuándo pasarías por tu pedido?";renderQuote();if(env&&d)setTimeout(()=>$("#fdir").focus(),30)}});
 document.addEventListener("click",e=>{const a=e.target.closest("[data-envio]");if(a){form.entrega="envio";try{const f=JSON.parse(localStorage.getItem("cm-form")||"{}");f.entrega="envio";localStorage.setItem("cm-form",JSON.stringify(f))}catch(err){}}});
 // ===== Lo nuevo: Mart acomodó productos nuevos (se calcula solo con la fecha de alta de cada producto) =====
-let ACTUALIZADO=1794001068826;const DIA=864e5;
+let ACTUALIZADO=1794006714247;const DIA=864e5;
 function fechaAlta(p){if(!p||!/^p[0-9a-z]{7,10}$/.test(p.id))return 0;const t=parseInt(p.id.slice(1),36);return t>1.6e12&&t<Date.now()+DIA?t:0}
 const NUEVOS=(dias=7)=>P.filter(p=>!p.hidden&&fechaAlta(p)>=Date.now()-dias*DIA).sort((a,b)=>fechaAlta(b)-fechaAlta(a));
 function nuevoBadge(p){return fechaAlta(p)>=Date.now()-7*DIA?`<span class="nuevo-tag">Nuevo</span>`:""}
