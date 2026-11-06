@@ -627,6 +627,15 @@ details[open]>summary .dchev{transform:rotate(180deg)}
 .fent span{flex-direction:column;gap:5px;font-size:12.5px;line-height:1.2;padding:10px 4px;min-height:64px}
 .fent span svg{width:20px;height:20px}
 .fent label{height:100%}.fent span{height:100%;box-sizing:border-box}
+.modo-dueno .card[data-id]{position:relative}
+.dedit{align-self:flex-start;margin-top:10px;display:inline-flex;align-items:center;gap:4px;background:#343639;color:#fff!important;font-size:11px;font-weight:800;border-radius:20px;padding:4px 9px;text-decoration:none;box-shadow:0 2px 6px #0003}
+.dedit:hover{background:#FF6A00}
+.dueno-bar{background:#343639;color:#F5EBDD;font-size:12.5px;position:relative;z-index:60}
+.dueno-bar .wrap{display:flex;align-items:center;gap:6px 14px;flex-wrap:wrap;padding-block:7px}
+.dueno-bar b{color:#FF6A00;font-weight:800}
+.dueno-bar a{color:#F5EBDD;font-weight:700;text-decoration:none;border-bottom:1px solid #ffffff44}
+.dueno-bar a:hover{color:#fff;border-color:#FF6A00}
+.dueno-bar button{margin-left:auto;background:transparent;border:1px solid #ffffff55;color:#fff;border-radius:6px;padding:3px 10px;font-weight:700;font-size:12px;cursor:pointer}
 .branches{align-items:stretch!important}.branch .bbody{flex:1;display:flex;flex-direction:column}.branch .bactions{margin-top:auto!important;padding-top:12px}
 /* Tabletas (681 a 960 px): que la página no se haga más ancha que la pantalla */
 @media (max-width:960px){.shell{grid-template-columns:minmax(0,1fr)!important}.shell>*{min-width:0}}
@@ -1660,6 +1669,9 @@ function cliModal(){
     $("#cliPedir").addEventListener("click",e=>{if(!$("#cliPN").value.trim()){e.preventDefault();$("#cliPN").focus();$("#cliPN").placeholder="Escribe aquí el nombre de tu negocio"}else toast("Se abrió WhatsApp. Envía el mensaje y te damos tu acceso.")});
     v.addEventListener("click",e=>{if(e.target===v||e.target.id==="cliX")v.hidden=true});
     $("#cliForm").addEventListener("submit",async e=>{e.preventDefault();const go=$("#cliGo");go.disabled=true;go.textContent="Revisando…";$("#cliErr").textContent="";
+      if(/^(due[nñ]o|admin|administrador)$/i.test($("#cliU").value.trim())){try{const r=await fetch("/api/dueno/entrar",{method:"POST",credentials:"same-origin",headers:{"content-type":"application/json"},body:JSON.stringify({clave:$("#cliK").value})});const j=await r.json().catch(()=>({}));
+          if(j.ok){v.hidden=true;$("#cliK").value="";duenoSet(true);toast("Bienvenido, patrón. Ya puedes editar los productos.")}else $("#cliErr").textContent="Clave de dueño incorrecta. Revísala e intenta otra vez."}
+        catch(err){$("#cliErr").textContent="No se pudo entrar. Revisa tu conexión e intenta otra vez."}finally{go.disabled=false;go.textContent="Entrar"}return}
       try{const r=await fetch("/api/entrar",{method:"POST",credentials:"same-origin",headers:{"content-type":"application/json"},body:JSON.stringify({usuario:$("#cliU").value,clave:$("#cliK").value})});
         const j=await r.json().catch(()=>({}));
         if(j.ok&&j.cliente){v.hidden=true;$("#cliK").value="";cliSet(j.cliente);toast("Bienvenido, "+j.cliente.nombre+". Ya ves tus precios.")}
@@ -1674,7 +1686,7 @@ document.addEventListener("click",async e=>{
   if(e.target.closest("#cliSalir")){try{await fetch("/api/salir",{method:"POST",credentials:"same-origin"})}catch(err){}cliSet(null);toast("Saliste de tu sesión de cliente.")}
 });
 (async()=>{try{const r=await fetch("/api/sesion",{credentials:"same-origin",cache:"no-store"});if(!r.ok)return;const j=await r.json();if(!j||j.ok!==true)return;
-  $("#cliBtn").hidden=false;SRV=true;cotizHist();prodServidor();if(j.cliente)cliSet(j.cliente)}catch(e){}})();
+  $("#cliBtn").hidden=false;SRV=true;cotizHist();prodServidor();if(j.cliente)cliSet(j.cliente);if(j.dueno)duenoSet(true)}catch(e){}})();
 // ===== Productos al día: en internet la página pide la lista que el dueño edita en su panel =====
 async function prodServidor(){
   try{const r=await fetch("/api/productos",{credentials:"same-origin"});if(!r.ok)return;const j=await r.json();
@@ -1687,6 +1699,27 @@ async function prodServidor(){
     const y=scrollY;route();window.scrollTo(0,y);
   }catch(e){}
 }
+// ===== Modo dueño: el dueño entra desde "Clientes" con el usuario "dueño" y su clave =====
+let DUENO=false;
+function duenoSet(on){
+  DUENO=on;document.body.classList.toggle("modo-dueno",on);
+  let bar=$("#duenoBar");
+  if(on&&!bar){document.body.insertAdjacentHTML("afterbegin",`<div class="dueno-bar" id="duenoBar"><div class="wrap"><b>🛠️ Modo dueño</b><a href="/bandeja/">Cotizaciones</a><a href="/bandeja/productos/">Productos</a><a href="/bandeja/productos/#nuevo" id="duenoNuevo">+ Agregar producto</a><button type="button" id="duenoSalir">Salir</button></div></div>`);bar=$("#duenoBar")}
+  if(!on&&bar)bar.remove();
+  duenoPintar();
+}
+function duenoPintar(){
+  document.querySelectorAll(".card[data-id]").forEach(c=>{let a=c.querySelector(".dedit");
+    if(!DUENO){if(a)a.remove();return}
+    if(!a){c.insertAdjacentHTML("beforeend",`<a class="dedit" href="/bandeja/productos/#editar=${encodeURIComponent(c.dataset.id)}" title="Editar este producto"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg>Editar</a>`)}});
+}
+let duenoRaf=0;
+new MutationObserver(()=>{if(DUENO){cancelAnimationFrame(duenoRaf);duenoRaf=requestAnimationFrame(duenoPintar)}}).observe(document.body,{childList:true,subtree:true});
+document.addEventListener("click",async e=>{
+  const n=e.target.closest("#duenoNuevo");if(n){const h=location.hash.slice(1);n.href="/bandeja/productos/#nuevo="+(catBy(h)?h:"");return}
+  if(e.target.closest("#duenoSalir")){try{await fetch("/api/dueno/salir",{method:"POST",credentials:"same-origin"})}catch(err){}duenoSet(false);toast("Saliste del modo dueño.")}
+});
+window.addEventListener("pageshow",e=>{if(e.persisted&&SRV)prodServidor()});
 // ===== Bandeja: la cotización también se guarda en la tienda y aquí se ve la respuesta =====
 // Solo en la página de internet (Cloudflare). En las páginas de Claude no hace nada.
 let SRV=false,RESP={},respHora=0;
@@ -1732,7 +1765,7 @@ document.addEventListener("change",e=>{if(e.target.name==="fent"){form.entrega=e
   const lp=$("#lbPick");if(lp)lp.textContent=env?"¿Cuándo lo necesitas?":"¿Cuándo pasarías por tu pedido?";renderQuote();if(env&&d)setTimeout(()=>$("#fdir").focus(),30)}});
 document.addEventListener("click",e=>{const a=e.target.closest("[data-envio]");if(a){form.entrega="envio";try{const f=JSON.parse(localStorage.getItem("cm-form")||"{}");f.entrega="envio";localStorage.setItem("cm-form",JSON.stringify(f))}catch(err){}}});
 // ===== Lo nuevo: Mart acomodó productos nuevos (se calcula solo con la fecha de alta de cada producto) =====
-let ACTUALIZADO=1794000540111;const DIA=864e5;
+let ACTUALIZADO=1794001068826;const DIA=864e5;
 function fechaAlta(p){if(!p||!/^p[0-9a-z]{7,10}$/.test(p.id))return 0;const t=parseInt(p.id.slice(1),36);return t>1.6e12&&t<Date.now()+DIA?t:0}
 const NUEVOS=(dias=7)=>P.filter(p=>!p.hidden&&fechaAlta(p)>=Date.now()-dias*DIA).sort((a,b)=>fechaAlta(b)-fechaAlta(a));
 function nuevoBadge(p){return fechaAlta(p)>=Date.now()-7*DIA?`<span class="nuevo-tag">Nuevo</span>`:""}

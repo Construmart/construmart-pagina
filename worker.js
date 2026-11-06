@@ -271,7 +271,7 @@ async function api(request, env, url) {
   // --- Clientes de mayoreo ---
   if (ruta === "/api/sesion" && metodo === "GET") {
     const s = await sesionCliente(request, env);
-    return json({ ok: true, cliente: s ? publico(s.usuario, s.c) : null, bandeja: true });
+    return json({ ok: true, cliente: s ? publico(s.usuario, s.c) : null, bandeja: true, dueno: await sesionDueno(request, env) });
   }
   if (ruta === "/api/entrar" && metodo === "POST") {
     let body = {};

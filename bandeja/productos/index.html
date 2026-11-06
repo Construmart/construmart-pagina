@@ -115,7 +115,7 @@ textarea{min-height:90px;resize:vertical}
 <header><div class="wrap">
   <img src="/marca/mart-lentes-v2.png" alt="" width="295" height="300">
   <h1><b class="hm">Construmart · </b><span>Panel del dueño</span></h1>
-  <nav class="nav" id="nav" hidden><a href="/bandeja/">Cotizaciones</a><a href="/bandeja/productos/" class="on">Productos</a></nav>
+  <nav class="nav" id="nav" hidden><a href="/bandeja/">Cotizaciones</a><a href="/bandeja/productos/" class="on">Productos</a><a href="/">Ver página</a></nav>
   <button class="hbtn" id="salir" type="button" hidden>Salir</button>
 </div></header>
 
@@ -205,9 +205,16 @@ $("#fLogin").addEventListener("submit",async e=>{e.preventDefault();const b=$("#
 $("#salir").onclick=async()=>{try{await api("/api/dueno/salir",{})}catch(e){}verLogin()};
 
 async function cargar(){
-  try{const r=await fetch("/api/productos",{cache:"no-store"});const j=await r.json();if(!j.ok)throw 0;P=j.productos;llenar();pintar()}
+  try{const r=await fetch("/api/productos",{cache:"no-store"});const j=await r.json();if(!j.ok)throw 0;P=j.productos;llenar();pintar();desdePagina()}
   catch(e){$("#cuenta").textContent="No se pudieron cargar los productos. Revisa tu conexión y recarga la página."}
 }
+// Viene de la página con "Editar" o "+ Agregar producto"
+let volver=false;
+function desdePagina(){const h=decodeURIComponent(location.hash.slice(1));if(!h)return;
+  const m=h.match(/^editar=(.+)$/),n=h.match(/^nuevo=?(.*)$/);
+  if(m){const p=P.find(x=>x.id===m[1]);if(p){volver=true;abrir(p)}}
+  else if(n){volver=true;if(n[1]&&CATS.some(c=>c[0]===n[1]))$("#fcat").value=n[1];abrir(null)}
+  history.replaceState(null,"",location.pathname)}
 function llenar(){
   const cur=$("#fcat").value;
   $("#fcat").innerHTML='<option value="">Todas las categorías</option>'+CATS.map(([s,n])=>`<option value="${s}">${esc(n)} (${P.filter(p=>p.cat===s).length})</option>`).join("");$("#fcat").value=cur;
@@ -271,7 +278,7 @@ function abrir(p,copia){
 }
 function pintarSubs(){const c=$("#e-cat").value;$("#subs").innerHTML=[...new Set(P.filter(p=>p.cat===c&&p.sub).map(p=>p.sub))].sort().map(s=>`<option value="${esc(s)}">`).join("")}
 $("#e-cat").addEventListener("change",()=>{pintarSubs();if(!editing&&MARCA_CAT[$("#e-cat").value])$("#e-brand").value=MARCA_CAT[$("#e-cat").value]});
-function cerrar(){if(ocupado){toast("Espera, se está subiendo la foto…");return}$("#veil").hidden=true;editing=null}
+function cerrar(){if(ocupado){toast("Espera, se está subiendo la foto…");return}$("#veil").hidden=true;editing=null;if(volver&&history.length>1){volver=false;history.back()}}
 $("#gcancel").onclick=cerrar;$("#nuevo").onclick=()=>abrir(null);
 $("#veil").addEventListener("click",e=>{if(e.target.id==="veil")cerrar()});
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("#veil").hidden)cerrar()});
@@ -318,7 +325,7 @@ $("#ed").addEventListener("submit",async e=>{e.preventDefault();
   if(ocupado){$("#eerr").textContent="Espera a que termine de subir la foto.";return}
   const p=armar();if(!p){$("#eerr").textContent="Escribe el nombre del producto.";return}
   const b=$("#gsave");b.disabled=true;b.textContent="Guardando…";$("#eerr").textContent="";
-  try{const j=await guardarP(p);llenar();pintar();$("#veil").hidden=true;editing=null;toast(j.nuevo?"Producto agregado. Ya sale en la página.":"Cambios guardados. Ya salen en la página.")}
+  try{const j=await guardarP(p);llenar();pintar();$("#veil").hidden=true;editing=null;toast(j.nuevo?"Producto agregado. Ya sale en la página.":"Cambios guardados. Ya salen en la página.");if(volver&&history.length>1){volver=false;setTimeout(()=>history.back(),900)}}
   catch(err){if(err.message!=="sin_sesion")$("#eerr").textContent="No se pudo guardar. Revisa tu conexión e inténtalo otra vez."}
   finally{b.disabled=false;b.textContent="Guardar"}});
 $("#gdup").onclick=()=>{const p=editing;if(p)abrir(p,true)};
