@@ -257,7 +257,7 @@ function pintarDet(){
   <div class="tbox"><table><thead><tr><th>Cant.</th><th>Producto</th><th>Precio c/u</th><th>Existencia</th><th style="text-align:right">Subtotal</th></tr></thead><tbody id="filas">
   ${q.items.map((it,i)=>{const l=r&&r.lineas[i]||{};const pv=l.precio||it.pc||"";const ex=l.existe||"si";
     return `<tr><td class="c">${it.q} <small>${esc(it.u)}</small></td><td class="p"><strong><span class="q-cant" style="display:none">${it.q} ${esc(it.u)} · </span>${esc(it.n)}${it.custom?`<span class="tag">Por conseguir</span>`:""}</strong><small>${esc([it.v,it.b,it.cod?"Cód. "+it.cod:""].filter(Boolean).join(" · "))}</small>${it.pc?`<span class="pc">Su precio de mayoreo: ${pesos(it.pc)}</span>`:""}</td>
-    <td><div class="money"><span>$</span><input inputmode="decimal" value="${pv}" aria-label="Precio de ${esc(it.n)}"></div></td>
+    <td><div class="money"><span>$</span><input inputmode="decimal" enterkeyhint="next" value="${pv}" aria-label="Precio de ${esc(it.n)}"></div></td>
     <td><select aria-label="Existencia de ${esc(it.n)}"><option value="si"${ex==="si"?" selected":""}>Hay</option><option value="parcial"${ex==="parcial"?" selected":""}>Parcial</option><option value="no"${ex==="no"?" selected":""}>No hay</option></select></td>
     <td class="s">—</td></tr>`}).join("")}</tbody></table></div>
   ${q.entrega==="envio"?`<div class="envio-row"><span>🚚 Costo de envío</span><div class="money"><span>$</span><input inputmode="decimal" id="envio" value="${r&&r.envio?r.envio:""}" aria-label="Costo de envío"></div></div>`:""}
@@ -281,6 +281,15 @@ async function guardar(silencio){
 }
 $("#det").addEventListener("input",e=>{if(e.target.closest("#filas")||e.target.id==="notas"||e.target.id==="envio")recalcular()});
 $("#det").addEventListener("change",e=>{if(e.target.closest("#filas"))recalcular()});
+// Enter en un precio pasa al precio del siguiente producto (y al final, al envío o a las notas)
+$("#det").addEventListener("keydown",e=>{
+  if(e.key!=="Enter"||e.isComposing)return;
+  const inp=e.target.closest("#filas .money input");if(!inp)return;
+  e.preventDefault();
+  const todos=[...document.querySelectorAll("#filas .money input")];const i=todos.indexOf(inp);
+  const sig=todos[i+1]||$("#envio")||$("#notas");
+  if(sig){sig.focus();if(sig.select)sig.select()}
+});
 $("#det").addEventListener("click",async e=>{
   const t=e.target.closest("button,a");if(!t)return;
   if(t.id==="atras"){document.body.classList.remove("abierta");abierta=null;pintarLista();return}
