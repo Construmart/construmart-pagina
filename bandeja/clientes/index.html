@@ -159,13 +159,14 @@ textarea{min-height:90px;resize:vertical}
 .acceso pre{white-space:pre-wrap;margin:0;font:inherit;font-size:13px;background:#fff;border-radius:8px;padding:10px;border:1px solid var(--line)}
 .btn.wa{background:#25D366;border-color:#25D366;color:#fff}
 @media (max-width:600px){.crow{grid-template-columns:40px minmax(0,1fr)}.crow .acts{grid-column:1 / -1;justify-content:flex-end}.prow{grid-template-columns:minmax(0,1fr) 104px}}
+@media (max-width:700px){.nav{order:3;width:100%;overflow-x:auto;scrollbar-width:none;flex-wrap:nowrap}.nav::-webkit-scrollbar{display:none}.nav a{white-space:nowrap;flex:none}}
 </style>
 </head>
 <body>
 <header><div class="wrap">
   <img src="/marca/mart-lentes-v2.png" alt="" width="295" height="300">
   <h1><b class="hm">Construmart · </b><span>Panel del dueño</span></h1>
-  <nav class="nav" id="nav" hidden><a href="/bandeja/">Cotizaciones</a><a href="/bandeja/productos/">Productos</a><a href="/bandeja/clientes/" class="on">Clientes</a><a href="/">Ver página</a></nav>
+  <nav class="nav" id="nav" hidden><a href="/bandeja/">Cotizaciones</a><a href="/bandeja/productos/">Productos</a><a href="/bandeja/precios/">Precios</a><a href="/bandeja/clientes/" class="on">Clientes</a><a href="/">Ver página</a></nav>
   <button class="hbtn" id="salir" type="button" hidden>Salir</button>
 </div></header>
 
@@ -203,9 +204,10 @@ textarea{min-height:90px;resize:vertical}
     <label class="l">Usuario <small>Con el que entra. Sin espacios ni acentos.</small><input id="e-usuario" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="ej. ferrelopez"></label>
     <div class="l" style="display:grid;gap:4px;font-size:12.5px;font-weight:700"><span id="claveTit">Clave <small style="font-weight:500;color:var(--muted)">Mínimo 6 letras o números.</small></span>
       <div class="clave"><input id="e-clave" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="Escribe una o toca Generar"><button class="btn sm" type="button" id="gen">Generar</button></div></div>
+    <label class="l">Precio que le toca <small>Ve el precio de su nivel en todos los productos que ya tengan precio en la pestaña Precios.</small><select id="e-nivel"><option value="publico">Público</option><option value="medio">Medio mayoreo</option><option value="mayoreo">Mayoreo</option><option value="ferreteria">Ferretería</option><option value="">Sin nivel (solo sus precios especiales)</option></select></label>
     <label class="chk"><input type="checkbox" id="e-activo" checked><span>Puede entrar a ver sus precios<small style="display:block;font-weight:500;color:var(--muted)">Quítale la palomita para pausar su acceso sin borrarlo.</small></span></label>
     <div style="display:grid;gap:8px">
-      <b style="font-size:12.5px">Precios de este cliente <small style="font-weight:500;color:var(--muted)" id="nota">Con IVA incluido. Los productos sin precio le salen como “Precio por confirmar”.</small></b>
+      <b style="font-size:12.5px">Precios especiales <small style="font-weight:500;color:var(--muted)">(opcional) Solo si a este cliente le das un precio distinto al de su nivel; este manda sobre el de su nivel.</small> <small style="font-weight:500;color:var(--muted)" id="nota">Con IVA incluido. Los productos sin precio le salen como “Precio por confirmar”.</small></b>
       <div class="ptools">
         <input type="search" id="pq" placeholder="Buscar producto o medida…" aria-label="Buscar producto">
         <select id="pcat" aria-label="Categoría"><option value="">Todas las categorías</option></select>
@@ -240,6 +242,7 @@ const $=s=>document.querySelector(s);
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const norm=s=>String(s||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"");
 const digits=s=>String(s||"").replace(/\D/g,"");
+const NIVEL_TXT={publico:"Público",medio:"Medio mayoreo",mayoreo:"Mayoreo",ferreteria:"Ferretería"};
 const pesos=n=>Number(n||0).toLocaleString("es-MX",{style:"currency",currency:"MXN"});
 function toast(t){const el=$("#toast");el.textContent=t;el.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>el.hidden=true,2600)}
 async function api(path,body){const r=await fetch(path,body?{method:"POST",credentials:"same-origin",headers:{"content-type":"application/json"},body:JSON.stringify(body)}:{credentials:"same-origin",cache:"no-store"});
@@ -267,7 +270,7 @@ function pintar(){
   $("#cuenta").textContent=`${L.length} cliente${L.length===1?"":"s"} de mayoreo`;
   $("#lista").innerHTML=L.length?L.map(c=>{const n=Object.keys(c.precios||{}).length;
     return `<div class="crow"><div class="av">${esc((c.nombre||"?").trim()[0]||"?").toUpperCase()}</div>
-    <div><b>${esc(c.nombre)} <span class="est${c.activo?"":" off"}">${c.activo?"Activo":"Pausado"}</span></b><small>${c.persona?esc(c.persona)+" · ":""}Usuario: <b style="display:inline">${esc(c.usuario)}</b>${c.wa?" · WhatsApp "+esc(c.wa):""}</small><small>${n} precio${n===1?"":"s"} especial${n===1?"":"es"}</small></div>
+    <div><b>${esc(c.nombre)} <span class="est${c.activo?"":" off"}">${c.activo?"Activo":"Pausado"}</span></b><small>${c.persona?esc(c.persona)+" · ":""}Usuario: <b style="display:inline">${esc(c.usuario)}</b>${c.wa?" · WhatsApp "+esc(c.wa):""}</small><small>Precio: <b style="display:inline">${esc(NIVEL_TXT[c.nivel]||"sin nivel")}</b>${n?` · ${n} precio${n===1?"":"s"} especial${n===1?"":"es"}`:""}</small></div>
     <div class="acts"><button class="btn sm" type="button" data-edit="${esc(c.usuario)}">Editar</button></div></div>`}).join(""):`<div class="vacio">${C.length?"Ningún cliente coincide.":"Todavía no tienes clientes de mayoreo. Toca “+ Agregar cliente”."}</div>`;
 }
 $("#q").addEventListener("input",pintar);
@@ -285,8 +288,8 @@ function abrir(c){
   $("#e-usuario").value=c?c.usuario:"";$("#e-usuario").disabled=!!c;
   $("#e-clave").value="";$("#e-clave").placeholder=c?"Déjala vacía para no cambiarla":"Escribe una o toca Generar";
   $("#claveTit").innerHTML=c?'Cambiar clave <small style="font-weight:500;color:var(--muted)">(opcional) Si le pones una nueva, la anterior deja de servir.</small>':'Clave <small style="font-weight:500;color:var(--muted)">Mínimo 6 letras o números.</small>';
-  $("#e-activo").checked=c?c.activo:true;
-  $("#pq").value="";$("#pcat").value="";$("#psolo").checked=!!(c&&Object.keys(precios).length);
+  $("#e-activo").checked=c?c.activo:true;$("#e-nivel").value=c?(c.nivel||""):"mayoreo";
+  $("#pq").value="";$("#pcat").value="";$("#psolo").checked=true;
   $("#extra").hidden=!c;$("#eerr").textContent="";$("#gdel").textContent="Borrar cliente";$("#gdel").classList.remove("sure");
   pintarPrecios();$("#veil").hidden=false;setTimeout(()=>$(c?"#e-nombre":"#e-nombre").focus(),50);
 }
@@ -329,7 +332,7 @@ $("#ed").addEventListener("submit",async e=>{e.preventDefault();$("#eerr").textC
   if(wa&&digits(wa).length!==10){$("#eerr").textContent="El WhatsApp debe tener 10 dígitos.";return}
   const b=$("#gsave");b.disabled=true;b.textContent="Guardando…";
   try{
-    const j=await api("/api/dueno/clientes",{nuevo:!editing,cliente:{usuario,nombre,persona:$("#e-persona").value.trim(),wa,activo:$("#e-activo").checked,clave,precios}});
+    const j=await api("/api/dueno/clientes",{nuevo:!editing,cliente:{usuario,nombre,persona:$("#e-persona").value.trim(),wa,activo:$("#e-activo").checked,nivel:$("#e-nivel").value,clave,precios}});
     if(!j.ok){$("#eerr").textContent=j.error==="existe"?"Ya hay un cliente con ese usuario. Escoge otro.":j.error==="usuario"?"Ese usuario no se puede usar. Escoge otro.":"No se pudo guardar. Revisa los datos.";return}
     const nuevo=!editing;sucio=false;$("#veil").hidden=true;editing=null;await cargar();
     toast(nuevo?"Cliente agregado.":"Cambios guardados.");

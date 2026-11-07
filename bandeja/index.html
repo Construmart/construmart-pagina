@@ -136,13 +136,14 @@ textarea{min-height:64px;resize:vertical}
   .atras{display:inline-flex}
 }
 @media (prefers-reduced-motion:no-preference){.q,.tabs button{transition:border-color .15s,background .15s}}
+@media (max-width:700px){.nav{order:3;width:100%;overflow-x:auto;scrollbar-width:none;flex-wrap:nowrap}.nav::-webkit-scrollbar{display:none}.nav a{white-space:nowrap;flex:none}}
 </style>
 </head>
 <body>
 <header><div class="wrap">
   <img src="/marca/mart-lentes-v2.png" alt="" width="295" height="300">
   <h1><b class="hm">Construmart · </b><span>Panel del dueño</span></h1>
-  <nav class="nav" id="nav" hidden><a href="/bandeja/" class="on">Cotizaciones</a><a href="/bandeja/productos/">Productos</a><a href="/bandeja/clientes/">Clientes</a><a href="/">Ver página</a></nav>
+  <nav class="nav" id="nav" hidden><a href="/bandeja/" class="on">Cotizaciones</a><a href="/bandeja/productos/">Productos</a><a href="/bandeja/precios/">Precios</a><a href="/bandeja/clientes/">Clientes</a><a href="/">Ver página</a></nav>
   <button class="hbtn" id="recargar" type="button" hidden>Actualizar</button>
   <button class="hbtn" id="salir" type="button" hidden>Salir</button>
 </div></header>
@@ -186,6 +187,7 @@ const fecha=t=>new Date(t).toLocaleString("es-MX",{day:"numeric",month:"short",h
 async function api(path,body){const r=await fetch(path,body?{method:"POST",credentials:"same-origin",headers:{"content-type":"application/json"},body:JSON.stringify(body)}:{credentials:"same-origin",cache:"no-store"});
   const j=await r.json().catch(()=>({}));if(r.status===401&&!path.endsWith("/entrar")){verLogin();throw new Error("sin_sesion")}return j}
 
+const NIVEL_TXT={publico:"público",medio:"medio mayoreo",mayoreo:"mayoreo",ferreteria:"ferretería"};
 let todas=[],filtro="pendiente",abierta=null,actual=null;
 function verLogin(){$("#login").hidden=false;$("#app").hidden=true;$("#nav").hidden=$("#salir").hidden=$("#recargar").hidden=true;setTimeout(()=>$("#clave").focus(),50)}
 function verApp(){$("#login").hidden=true;$("#app").hidden=false;$("#nav").hidden=$("#salir").hidden=$("#recargar").hidden=false;cargar()}
@@ -215,7 +217,7 @@ $("#lista").addEventListener("click",e=>{const b=e.target.closest(".q");if(b)abr
 async function abrir(id){
   abierta=id;pintarLista();document.body.classList.add("abierta");
   $("#det").innerHTML=`<p class="aviso">Abriendo…</p>`;
-  try{const j=await api("/api/dueno/cotizaciones/"+id);if(!j.ok){$("#det").innerHTML=`<p class="aviso bad">Esa cotización ya no existe.</p>`;return}actual=j.cotizacion;pintarDet()}
+  try{const j=await api("/api/dueno/cotizaciones/"+id);if(!j.ok){$("#det").innerHTML=`<p class="aviso bad">Esa cotización ya no existe.</p>`;return}actual=j.cotizacion;actual._sug=j.sugeridos||[];actual._nivel=j.nivel||"publico";pintarDet()}
   catch(e){if(e.message!=="sin_sesion")$("#det").innerHTML=`<p class="aviso bad">No se pudo abrir. Revisa tu conexión.</p>`}
   window.scrollTo({top:0});
 }
@@ -255,8 +257,8 @@ function pintarDet(){
   <div class="datos"><div><span>Nombre</span><b>${esc(q.nombre||"—")}</b></div><div><span>Teléfono</span><b>${esc(q.telefono||"No lo dejó")}</b></div><div><span>Sucursal</span><b>${esc(q.sucursal||"—")}</b></div>${q.entrega==="envio"?`<div><span>Entrega</span><b>🚚 Envío a domicilio</b></div><div style="grid-column:1/-1"><span>Dirección</span><b>${esc(q.direccion||"No la escribió")}</b></div><div><span>Lo necesita</span><b>${esc(q.recoge||"—")}</b></div>`:q.entrega==="cotizar"?`<div><span>Entrega</span><b>Solo quiere cotizar</b></div>`:`<div><span>¿Cuándo pasa?</span><b>${esc(q.recoge||"—")}</b></div>`}<div><span>Factura</span><b>${q.factura?"Sí, la pidió":"No"}</b></div>${q.cliente?`<div><span>Cliente de mayoreo</span><b>${esc(q.cliente.nombre)} (${esc(q.cliente.usuario)})</b></div>`:""}</div>
   ${q.notas?`<div class="notas-c"><b>Comentarios del cliente:</b> ${esc(q.notas)}</div>`:""}
   <div class="tbox"><table><thead><tr><th>Cant.</th><th>Producto</th><th>Precio c/u</th><th>Existencia</th><th style="text-align:right">Subtotal</th></tr></thead><tbody id="filas">
-  ${q.items.map((it,i)=>{const l=r&&r.lineas[i]||{};const pv=l.precio||it.pc||"";const ex=l.existe||"si";
-    return `<tr><td class="c">${it.q} <small>${esc(it.u)}</small></td><td class="p"><strong><span class="q-cant" style="display:none">${it.q} ${esc(it.u)} · </span>${esc(it.n)}${it.custom?`<span class="tag">Por conseguir</span>`:""}</strong><small>${esc([it.v,it.b,it.cod?"Cód. "+it.cod:""].filter(Boolean).join(" · "))}</small>${it.pc?`<span class="pc">Su precio de mayoreo: ${pesos(it.pc)}</span>`:""}</td>
+  ${q.items.map((it,i)=>{const l=r&&r.lineas[i]||{};const sg=(actual._sug||[])[i];const pv=l.precio||it.pc||(!r&&sg)||"";const ex=l.existe||"si";
+    return `<tr><td class="c">${it.q} <small>${esc(it.u)}</small></td><td class="p"><strong><span class="q-cant" style="display:none">${it.q} ${esc(it.u)} · </span>${esc(it.n)}${it.custom?`<span class="tag">Por conseguir</span>`:""}</strong><small>${esc([it.v,it.b,it.cod?"Cód. "+it.cod:""].filter(Boolean).join(" · "))}</small>${it.pc?`<span class="pc">Su precio: ${pesos(it.pc)}</span>`:sg?`<span class="pc">Precio ${NIVEL_TXT[actual._nivel]||""}: ${pesos(sg)}</span>`:""}</td>
     <td><div class="money"><span>$</span><input inputmode="decimal" enterkeyhint="next" value="${pv}" aria-label="Precio de ${esc(it.n)}"></div></td>
     <td><select aria-label="Existencia de ${esc(it.n)}"><option value="si"${ex==="si"?" selected":""}>Hay</option><option value="parcial"${ex==="parcial"?" selected":""}>Parcial</option><option value="no"${ex==="no"?" selected":""}>No hay</option></select></td>
     <td class="s">—</td></tr>`}).join("")}</tbody></table></div>

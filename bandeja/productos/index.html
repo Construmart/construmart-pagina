@@ -132,13 +132,14 @@ textarea{min-height:90px;resize:vertical}
   .mhead,.mrow{grid-template-columns:40px 48px minmax(0,1fr) minmax(0,1fr) 66px 26px}
   .mrow select.mt{font-size:11.5px}
 }
+@media (max-width:700px){.nav{order:3;width:100%;overflow-x:auto;scrollbar-width:none;flex-wrap:nowrap}.nav::-webkit-scrollbar{display:none}.nav a{white-space:nowrap;flex:none}}
 </style>
 </head>
 <body>
 <header><div class="wrap">
   <img src="/marca/mart-lentes-v2.png" alt="" width="295" height="300">
   <h1><b class="hm">Construmart · </b><span>Panel del dueño</span></h1>
-  <nav class="nav" id="nav" hidden><a href="/bandeja/">Cotizaciones</a><a href="/bandeja/productos/" class="on">Productos</a><a href="/bandeja/clientes/">Clientes</a><a href="/">Ver página</a></nav>
+  <nav class="nav" id="nav" hidden><a href="/bandeja/">Cotizaciones</a><a href="/bandeja/productos/" class="on">Productos</a><a href="/bandeja/precios/">Precios</a><a href="/bandeja/clientes/">Clientes</a><a href="/">Ver página</a></nav>
   <button class="hbtn" id="salir" type="button" hidden>Salir</button>
 </div></header>
 
@@ -206,7 +207,7 @@ textarea{min-height:90px;resize:vertical}
     <p class="err" id="eerr"></p>
     <small style="color:var(--muted);font-size:11.5px">Lo que escribes se guarda como borrador en este aparato hasta que toques Guardar.</small>
     <div class="bar"><button class="btn pri grow" type="submit" id="gsave">Guardar</button><button class="btn" type="button" id="gcancel">Cancelar</button></div>
-    <div class="bar" id="extra" hidden><button class="btn sm" type="button" id="gdup">⧉ Duplicar este producto</button><button class="btn sm danger" type="button" id="gdel">Borrar producto</button><a class="btn sm" id="gver" target="_blank" rel="noopener">Ver en la página</a></div>
+    <div class="bar" id="extra" hidden><button class="btn sm" type="button" id="gdup">⧉ Duplicar este producto</button><button class="btn sm danger" type="button" id="gdel">Borrar producto</button><a class="btn sm" id="gver" target="_blank" rel="noopener">Ver en la página</a><a class="btn sm" id="gprecios">$ Precios</a></div>
   </form>
 </div>
 <input type="file" id="mfile" accept="image/png,image/jpeg,image/webp" hidden>
@@ -360,7 +361,7 @@ function abrir(p){
   $("#e-rap").checked=!!(p&&p.rapido);
   fotoMain=p&&p.photo||"";verFoto();setFilas(filasDe(p));
   $("#extra").hidden=!editing;$("#eerr").textContent="";
-  if(editing){$("#gver").href="/#"+editing.cat;$("#gdel").textContent="Borrar producto";$("#gdel").classList.remove("sure")}
+  if(editing){$("#gver").href="/#"+editing.cat;$("#gprecios").href="/bandeja/precios/#buscar="+encodeURIComponent(editing.name);$("#gdel").textContent="Borrar producto";$("#gdel").classList.remove("sure")}
   sucio=false;mostrarBorrador();
   $("#veil").hidden=false;setTimeout(()=>$("#e-name").focus(),50);
 }

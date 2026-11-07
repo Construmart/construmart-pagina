@@ -9,6 +9,7 @@ import { DurableObject } from "cloudflare:workers";
 import DATOS from "./privado/clientes.json";
 
 const COOKIE = "cm_cliente";
+const NIVELES = ["publico", "medio", "mayoreo", "ferreteria"];
 const COOKIE_ADMIN = "cm_dueno";
 const DIAS = 30;
 const enc = new TextEncoder();
@@ -88,7 +89,7 @@ async function sesionDueno(request, env) {
   return !!(s && s.quien === "dueno" && a.h.slice(0, 12) === s.huella);
 }
 
-const publico = (usuario, c) => ({ usuario, nombre: c.n, precios: c.p || {}, nota: DATOS.nota || "" });
+const publico = async (env, usuario, c) => ({ usuario, nombre: c.n, precios: await bandeja(env).preciosDe(c.nivel, c.p), nota: DATOS.nota || "" });
 
 // ===== Bandeja de cotizaciones (se guarda en Cloudflare) =====
 const txt = (v, max) => String(v ?? "").slice(0, max);
@@ -129,7 +130,7 @@ export class Bandeja extends DurableObject {
   async cliente(u) { return (await this.ctx.storage.get("c:" + u)) || null; }
   async clientes() {
     const m = await this.ctx.storage.list({ prefix: "c:" });
-    return [...m.entries()].map(([k, c]) => ({ usuario: k.slice(2), nombre: c.n, persona: c.persona || "", wa: c.wa || "", activo: c.activo !== false, precios: c.p || {}, alta: c.alta || 0 }));
+    return [...m.entries()].map(([k, c]) => ({ usuario: k.slice(2), nombre: c.n, persona: c.persona || "", wa: c.wa || "", activo: c.activo !== false, nivel: c.nivel || "", precios: c.p || {}, alta: c.alta || 0 }));
   }
   async guardarCliente(u, datos) {
     const prev = (await this.ctx.storage.get("c:" + u)) || { alta: Date.now() };
@@ -138,6 +139,40 @@ export class Bandeja extends DurableObject {
     return c;
   }
   async borrarCliente(u) { await this.ctx.storage.delete("c:" + u); return true; }
+
+  // ===== Listas de precios (Público, Medio mayoreo, Mayoreo, Ferretería). Privadas: solo dueño y clientes con cuenta =====
+  async listasTodas() {
+    if (this._lp) return this._lp;
+    const m = await this.ctx.storage.list({ prefix: "lp:" });
+    const out = {};
+    for (const [k, v] of m) out[k.slice(3)] = v;
+    this._lp = out;
+    return out;
+  }
+  async guardarListas(cambios) {
+    const todas = await this.listasTodas();
+    const lote = {}, borrar = [];
+    for (const [id, porMedida] of Object.entries(cambios)) {
+      const prev = { ...(todas[id] || {}) };
+      for (const [v, arr] of Object.entries(porMedida || {})) {
+        if (!arr || !arr.some((x) => x > 0)) delete prev[v]; else prev[v] = arr;
+      }
+      if (Object.keys(prev).length) { lote["lp:" + id] = prev; todas[id] = prev; } else { borrar.push("lp:" + id); delete todas[id]; }
+    }
+    if (Object.keys(lote).length) await this.ctx.storage.put(lote);
+    if (borrar.length) await this.ctx.storage.delete(borrar);
+    return true;
+  }
+  // Precios que ve un cliente: los de su nivel y, encima, sus precios especiales
+  async preciosDe(nivel, especiales) {
+    const i = NIVELES.indexOf(nivel);
+    const out = {};
+    if (i >= 0) {
+      const todas = await this.listasTodas();
+      for (const [id, pm] of Object.entries(todas)) for (const [v, arr] of Object.entries(pm)) if (arr[i] > 0) out[id + "|" + v] = arr[i];
+    }
+    return Object.assign(out, especiales || {});
+  }
 
   // ===== Productos de la página (el dueño los edita desde su panel) =====
   sqlFotos() {
@@ -226,7 +261,7 @@ async function recibirCotizacion(request, env) {
   const items = Array.isArray(b.items) ? b.items.slice(0, 150) : [];
   if (!items.length) return json({ ok: false, error: "vacia" }, 400);
   const s = await sesionCliente(request, env);
-  const precios = s ? s.c.p || {} : {};
+  const precios = s ? await bandeja(env).preciosDe(s.c.nivel, s.c.p) : {};
   const q = {
     id: nuevoId(), token: nuevoToken(), fecha: Date.now(), estado: "pendiente",
     folio: txt(b.folio, 30), nombre: txt(b.nombre, 80), telefono: txt(b.telefono, 30),
@@ -302,7 +337,7 @@ async function api(request, env, url) {
   // --- Clientes de mayoreo ---
   if (ruta === "/api/sesion" && metodo === "GET") {
     const s = await sesionCliente(request, env);
-    return json({ ok: true, cliente: s ? publico(s.usuario, s.c) : null, bandeja: true, dueno: await sesionDueno(request, env) });
+    return json({ ok: true, cliente: s ? await publico(env, s.usuario, s.c) : null, bandeja: true, dueno: await sesionDueno(request, env) });
   }
   if (ruta === "/api/entrar" && metodo === "POST") {
     let body = {};
@@ -314,7 +349,7 @@ async function api(request, env, url) {
     const h = await hashClave(clave, c ? c.s : "sin-usuario", DATOS.iter || 100000);
     if (!c || !igual(h, c.h)) { await espera(); return json({ ok: false, error: "datos" }, 401); }
     const sesion = await crearSesion(usuario, c.h, env);
-    return json({ ok: true, cliente: publico(usuario, c) }, 200, { "set-cookie": cookie(COOKIE, sesion, DIAS * 86400) });
+    return json({ ok: true, cliente: await publico(env, usuario, c) }, 200, { "set-cookie": cookie(COOKIE, sesion, DIAS * 86400) });
   }
   if (ruta === "/api/salir" && metodo === "POST") {
     return json({ ok: true }, 200, { "set-cookie": cookie(COOKIE, "", 0) });
@@ -373,7 +408,7 @@ async function api(request, env, url) {
       const c = b.cliente || {};
       const previo = await stub.cliente(u);
       if (b.nuevo && previo) return json({ ok: false, error: "existe" }, 409);
-      const datos = { n: txt(c.nombre, 80).trim() || u, persona: txt(c.persona, 80).trim(), wa: txt(c.wa, 20).trim(), activo: c.activo !== false };
+      const datos = { n: txt(c.nombre, 80).trim() || u, persona: txt(c.persona, 80).trim(), wa: txt(c.wa, 20).trim(), activo: c.activo !== false, nivel: NIVELES.includes(c.nivel) ? c.nivel : "" };
       const clave = String(c.clave || "");
       if (clave) {
         if (clave.length < 6 || clave.length > 60) return json({ ok: false, error: "clave" }, 400);
@@ -389,6 +424,25 @@ async function api(request, env, url) {
         datos.p = p;
       }
       await stub.guardarCliente(u, datos);
+      return json({ ok: true });
+    }
+    // --- Dueño: listas de precios ---
+    if (ruta === "/api/dueno/precios" && metodo === "GET") return json({ ok: true, niveles: NIVELES, precios: await bandeja(env).listasTodas() });
+    if (ruta === "/api/dueno/precios" && metodo === "POST") {
+      let b = {};
+      try { b = await request.json(); } catch (e) {}
+      const cambios = {};
+      let n = 0;
+      for (const [id, pm] of Object.entries(b.cambios || {})) {
+        if (!/^[a-z0-9]{1,20}$/i.test(id) || !pm || typeof pm !== "object") continue;
+        cambios[id] = {};
+        for (const [v, arr] of Object.entries(pm)) {
+          if (String(v).length > 80 || !Array.isArray(arr)) continue;
+          cambios[id][v] = [0, 1, 2, 3].map((i) => { const x = Math.round(Number(arr[i]) * 100) / 100; return x > 0 && x < 1e7 ? x : 0; });
+          if (++n > 5000) break;
+        }
+      }
+      await bandeja(env).guardarListas(cambios);
       return json({ ok: true });
     }
     // --- Dueño: productos ---
@@ -424,7 +478,13 @@ async function api(request, env, url) {
         const q = await bandeja(env).obtener(id);
         if (!q) return json({ ok: false, error: "no_encontrada" }, 404);
         const { token, ...sinToken } = q;
-        return json({ ok: true, cotizacion: sinToken });
+        // Precio sugerido por renglón: el del nivel del cliente (si tiene cuenta) o el precio público
+        const stub = bandeja(env);
+        const cli = q.cliente ? await stub.cliente(q.cliente.usuario) : null;
+        const nivel = cli && cli.nivel ? cli.nivel : "publico";
+        const lp = await stub.preciosDe(nivel, cli ? cli.p : null);
+        const sug = q.items.map((it) => (it.custom ? null : lp[`${it.id}|${it.v}`] || null));
+        return json({ ok: true, cotizacion: sinToken, sugeridos: sug, nivel });
       }
       if (metodo === "POST") {
         let b = {};
