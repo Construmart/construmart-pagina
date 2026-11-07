@@ -1,5 +1,6 @@
 // Portero de Construmart.
 // 1) Clientes de mayoreo: revisa usuario y clave y entrega a cada uno solo sus precios.
+//    El dueño los da de alta, les cambia la clave y les pone precios desde su panel.
 // 2) Bandeja de cotizaciones: guarda las cotizaciones que mandan los clientes y deja que
 //    el dueño las conteste con su clave. El cliente ve la respuesta en "Mis cotizaciones".
 // 3) Productos: la página los lee de aquí y el dueño los edita desde su panel (con fotos).
@@ -65,10 +66,18 @@ async function validarSesion(valor, env) {
   if (Number(vence) < Date.now()) return null;
   return { quien, huella };
 }
+// Los clientes viven en la base de la tienda; la primera vez se cargan los de privado/clientes.json
+async function buscarCliente(env, usuario) {
+  const stub = bandeja(env);
+  let c = await stub.cliente(usuario);
+  if (!c && (await stub.sembrarClientes(DATOS.clientes))) c = await stub.cliente(usuario);
+  if (!c || c.activo === false) return null;
+  return c;
+}
 async function sesionCliente(request, env) {
   const s = await validarSesion(leerCookie(request, COOKIE), env);
   if (!s) return null;
-  const c = DATOS.clientes[s.quien];
+  const c = await buscarCliente(env, s.quien);
   if (!c || c.h.slice(0, 12) !== s.huella) return null;
   return { usuario: s.quien, c };
 }
@@ -107,6 +116,28 @@ export class Bandeja extends DurableObject {
     return q;
   }
   async borrar(id) { await this.ctx.storage.delete("q:" + id); return true; }
+
+  // ===== Clientes de mayoreo (el dueño los da de alta desde su panel) =====
+  async sembrarClientes(base) {
+    if (await this.ctx.storage.get("cv")) return false;
+    const lote = {};
+    for (const [u, c] of Object.entries(base || {})) lote["c:" + u] = { n: c.n, persona: "", wa: "", activo: true, s: c.s, h: c.h, p: c.p || {}, alta: Date.now() };
+    if (Object.keys(lote).length) await this.ctx.storage.put(lote);
+    await this.ctx.storage.put("cv", { t: Date.now() });
+    return true;
+  }
+  async cliente(u) { return (await this.ctx.storage.get("c:" + u)) || null; }
+  async clientes() {
+    const m = await this.ctx.storage.list({ prefix: "c:" });
+    return [...m.entries()].map(([k, c]) => ({ usuario: k.slice(2), nombre: c.n, persona: c.persona || "", wa: c.wa || "", activo: c.activo !== false, precios: c.p || {}, alta: c.alta || 0 }));
+  }
+  async guardarCliente(u, datos) {
+    const prev = (await this.ctx.storage.get("c:" + u)) || { alta: Date.now() };
+    const c = { ...prev, ...datos };
+    await this.ctx.storage.put("c:" + u, c);
+    return c;
+  }
+  async borrarCliente(u) { await this.ctx.storage.delete("c:" + u); return true; }
 
   // ===== Productos de la página (el dueño los edita desde su panel) =====
   sqlFotos() {
@@ -278,7 +309,7 @@ async function api(request, env, url) {
     try { body = await request.json(); } catch (e) {}
     const usuario = normUsuario(body.usuario);
     const clave = String(body.clave || "");
-    const c = DATOS.clientes[usuario];
+    const c = usuario ? await buscarCliente(env, usuario) : null;
     // Siempre se calcula un hash, exista o no el usuario, para no dar pistas por el tiempo de respuesta
     const h = await hashClave(clave, c ? c.s : "sin-usuario", DATOS.iter || 100000);
     if (!c || !igual(h, c.h)) { await espera(); return json({ ok: false, error: "datos" }, 401); }
@@ -323,6 +354,43 @@ async function api(request, env, url) {
   if (ruta.startsWith("/api/dueno/")) {
     if (!(await sesionDueno(request, env))) return json({ ok: false, error: "sin_sesion" }, 401);
     if (ruta === "/api/dueno/sesion") return json({ ok: true });
+    // --- Dueño: clientes de mayoreo ---
+    if (ruta === "/api/dueno/clientes" && metodo === "GET") {
+      const stub = bandeja(env);
+      await stub.sembrarClientes(DATOS.clientes);
+      const lista = await stub.clientes();
+      lista.sort((a, b) => a.nombre.localeCompare(b.nombre, "es"));
+      return json({ ok: true, clientes: lista, nota: DATOS.nota || "" });
+    }
+    if (ruta === "/api/dueno/clientes" && metodo === "POST") {
+      let b = {};
+      try { b = await request.json(); } catch (e) {}
+      const stub = bandeja(env);
+      await stub.sembrarClientes(DATOS.clientes);
+      const u = normUsuario(b.usuario || (b.cliente && b.cliente.usuario));
+      if (!/^[a-z0-9._-]{3,30}$/.test(u) || /^(due[nñ]o|dueno|admin|administrador)$/.test(u)) return json({ ok: false, error: "usuario" }, 400);
+      if (b.accion === "borrar") { await stub.borrarCliente(u); return json({ ok: true }); }
+      const c = b.cliente || {};
+      const previo = await stub.cliente(u);
+      if (b.nuevo && previo) return json({ ok: false, error: "existe" }, 409);
+      const datos = { n: txt(c.nombre, 80).trim() || u, persona: txt(c.persona, 80).trim(), wa: txt(c.wa, 20).trim(), activo: c.activo !== false };
+      const clave = String(c.clave || "");
+      if (clave) {
+        if (clave.length < 6 || clave.length > 60) return json({ ok: false, error: "clave" }, 400);
+        datos.s = hex(crypto.getRandomValues(new Uint8Array(8)));
+        datos.h = await hashClave(clave, datos.s, DATOS.iter || 100000);
+      } else if (!previo) return json({ ok: false, error: "clave" }, 400);
+      if (c.precios && typeof c.precios === "object") {
+        const p = {};
+        for (const [k, v] of Object.entries(c.precios).slice(0, 3000)) {
+          const n = Math.round(Number(v) * 100) / 100;
+          if (n > 0 && k.length <= 140) p[k] = n;
+        }
+        datos.p = p;
+      }
+      await stub.guardarCliente(u, datos);
+      return json({ ok: true });
+    }
     // --- Dueño: productos ---
     if (ruta === "/api/dueno/productos" && metodo === "POST") {
       let b = {};

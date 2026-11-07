@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Clientes · Panel Construmart</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800;900&display=swap">
+<link rel="icon" href="/marca/mart-lentes-v2.png">
+<style>
+/* Panel del dueño, pestaña Productos: barra para buscar/filtrar, lista de productos y panel lateral para editar uno. */
+:root{
+  --bg:#FBF6EE; --panel:#ffffff; --ink:#343639; --muted:#6d6862; --line:#eadfcf; --cream:#F5EBDD;
+  --accent:#FF6A00; --accent-soft:#FFF1E4; --ok:#16a34a; --danger:#c0392b;
+  --display:"Montserrat","Segoe UI",Arial,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 var(--display)}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+[hidden]{display:none!important}
+img{max-width:100%;height:auto}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+h1,h2,h3{margin:0;text-wrap:balance}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header{background:var(--ink);color:var(--cream);position:sticky;top:0;z-index:5}
+header .wrap{display:flex;align-items:center;gap:12px;padding-block:12px;flex-wrap:wrap}
+header img{width:40px;height:auto}
+header h1{font-weight:900;font-size:19px;flex:1;min-width:0}
+header h1 span{color:var(--accent)}
+.nav{display:flex;gap:4px;background:#ffffff14;border-radius:30px;padding:3px}
+.nav a{color:var(--cream);text-decoration:none;font-weight:800;font-size:12.5px;padding:6px 12px;border-radius:30px}
+.nav a.on{background:var(--accent);color:#fff}
+.hbtn{border:1px solid #ffffff55;background:transparent;color:#fff;border-radius:8px;padding:6px 12px;font-weight:700;font-size:12.5px}
+.login{min-height:70vh;display:grid;place-items:center;padding:24px 16px}
+.login form{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:24px 22px;width:min(360px,100%);display:grid;gap:12px;text-align:center}
+.login img{width:96px;justify-self:center}
+.login h2{font-weight:900;font-size:22px}
+.login p{margin:0;color:var(--muted);font-size:13px}
+input,select,textarea{border:1.5px solid var(--line);border-radius:8px;padding:10px 12px;background:var(--panel);font-size:14px;min-width:0;width:100%}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent)}
+.go{background:var(--accent);color:#fff;border:0;border-radius:8px;padding:12px;font-weight:800;font-size:15px}
+.err{color:var(--danger);font-weight:700;font-size:13px;min-height:1em;margin:0}
+/* Barra */
+.tools{position:sticky;top:64px;z-index:4;background:var(--bg);padding-block:12px;border-bottom:1px solid var(--line)}
+.tw{display:flex;gap:8px;flex-wrap:wrap}
+.tools input{flex:1 1 220px;width:auto}
+.tools select{flex:0 1 210px;width:auto}
+.btn{border:1.5px solid var(--ink);background:transparent;border-radius:8px;padding:9px 14px;font-weight:800;font-size:13px;color:var(--ink);display:inline-flex;align-items:center;justify-content:center;gap:7px;white-space:nowrap}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.sm{padding:6px 10px;font-size:12px}
+.btn.danger{border-color:var(--danger);color:var(--danger)}
+.btn.sure{background:var(--danger);color:#fff}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.cuenta{font-size:12.5px;color:var(--muted);margin:10px 0}
+/* Lista */
+.lista{display:grid;gap:8px;padding-bottom:40px}
+.row{display:grid;grid-template-columns:56px minmax(0,1fr) auto;gap:12px;align-items:center;background:var(--panel);border:1.5px solid var(--line);border-radius:10px;padding:8px 10px}
+.row img,.row .nof{width:56px;height:56px;border-radius:8px;object-fit:contain;background:#fff;border:1px solid var(--line)}
+.row .nof{display:grid;place-items:center;font-size:10px;color:var(--muted);text-align:center;border-style:dashed}
+.row b{display:block;font-weight:800;overflow-wrap:anywhere}
+.row small{color:var(--muted);font-size:12px}
+.marca{font-size:11px;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:.3px}
+.row .acts{display:flex;gap:6px;align-items:center}
+.rayo{border:1.5px solid var(--line);background:var(--panel);border-radius:8px;padding:6px 8px;color:var(--muted);display:inline-flex}
+.rayo.on{background:var(--ok);border-color:var(--ok);color:#fff}
+.vacio{background:var(--panel);border:1.5px dashed var(--line);border-radius:10px;padding:26px 16px;text-align:center;color:var(--muted)}
+/* Editor */
+.veil{position:fixed;inset:0;background:#0007;z-index:20;display:flex;justify-content:flex-end}
+.sheet{background:var(--bg);width:min(560px,100%);height:100%;overflow-y:auto;overscroll-behavior:contain;padding:18px max(18px,env(safe-area-inset-right,0px)) calc(24px + env(safe-area-inset-bottom,0px)) 18px;display:grid;gap:14px;align-content:start}
+.sheet h2{font-weight:900;font-size:22px}
+label.l{display:grid;gap:4px;font-size:12.5px;font-weight:700}
+label.l small{font-weight:500;color:var(--muted)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+textarea{min-height:90px;resize:vertical}
+.foto{display:grid;grid-template-columns:110px minmax(0,1fr);gap:12px;align-items:center}
+.foto .box{width:110px;height:110px;border:1.5px dashed var(--line);border-radius:10px;background:#fff;display:grid;place-items:center;overflow:hidden;color:var(--muted);font-size:12px;text-align:center}
+.foto .box img{width:100%;height:100%;object-fit:contain}
+.foto .bts{display:flex;gap:8px;flex-wrap:wrap}
+.pastez{border:1.5px dashed #f7c7a6;background:var(--accent-soft);border-radius:8px;padding:8px 10px;font-size:12px;line-height:1.3;cursor:text;max-width:280px;caret-color:transparent;outline:none}
+.pastez span{color:var(--muted);font-size:11px}
+.pastez:focus{border-color:var(--accent);box-shadow:0 0 0 2px #FF6A0033}
+.draft{display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:var(--accent-soft);border:1px solid #f7c7a6;border-radius:8px;padding:10px 12px;font-size:13px}
+.draft span{flex:1 1 180px}
+.mtable{border:1.5px solid var(--line);border-radius:10px;overflow:hidden;background:var(--panel)}
+.mhead,.mrow{display:grid;grid-template-columns:46px 56px minmax(0,1fr) minmax(0,1fr) 84px 30px;align-items:center}
+.mhead{background:var(--cream);font-size:10.5px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);font-weight:800}
+.mhead span{padding:7px 8px}
+.mrow{border-top:1px solid var(--line)}
+.mrow input{border:0;border-radius:0;padding:9px 8px;min-width:0;background:var(--panel)}
+.mrow input+input{border-left:1px solid var(--line)}
+.mrow input:focus{outline:2px solid var(--accent);outline-offset:-2px}
+.mrow select.mt{border:0;border-left:1px solid var(--line);border-radius:0;padding:9px 4px;background:var(--panel);font-size:12.5px;min-width:0;height:100%}
+.mrow select.mt.int{color:var(--accent);font-weight:700}
+.mpz{height:100%;min-height:42px;display:grid;place-items:center;text-align:center;border-right:1px solid var(--line);background:var(--accent-soft);color:var(--accent);font-size:10.5px;font-weight:700;line-height:1.15;cursor:text;caret-color:transparent;outline:none;user-select:none;padding:2px}
+.mpz:focus{box-shadow:inset 0 0 0 2px var(--accent);background:#fff}
+.mphw{position:relative;height:100%;display:grid;place-items:center;border-right:1px solid var(--line)}
+.mph{width:36px;height:36px;border:1px dashed var(--line);border-radius:6px;background:#fff;color:var(--muted);display:grid;place-items:center;padding:0;overflow:hidden}
+.mph img{width:100%;height:100%;object-fit:contain}
+.mph.busy{opacity:.5}
+.mphx{position:absolute;top:1px;right:1px;width:16px;height:16px;border-radius:50%;border:0;background:var(--ink);color:#fff;font-size:9px;line-height:16px;padding:0}
+.mdel{border:0;background:none;color:var(--muted);font-size:15px;height:100%;border-left:1px solid var(--line)}
+.mdel:hover{color:var(--danger)}
+.madd{justify-self:start;background:none;border:0;color:var(--accent);font-weight:800;font-size:13px;padding:4px 0}
+.mfill{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.mseq{background:var(--accent-soft);border:1px solid #f7c7a6;color:var(--accent);font-weight:700;font-size:12.5px;border-radius:20px;padding:4px 12px}
+.mseqn{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--muted)}
+.mseqn select{padding:3px 6px;font-size:12.5px;width:auto}
+.bulk{border-color:var(--ok);color:var(--ok)}
+.bulk.off{border-color:var(--line);color:var(--muted)}
+.bulk.sure{background:var(--ok);color:#fff}
+.bulk.off.sure{background:var(--ink);border-color:var(--ink);color:#fff}
+.chk{display:flex;align-items:center;gap:10px;font-weight:700;border:1.5px solid #16a34a55;background:#16a34a12;border-radius:10px;padding:10px 12px}
+.chk svg{color:var(--ok);flex:none}
+.chk input{width:20px;height:20px;accent-color:var(--ok)}
+.bar{display:flex;gap:8px;flex-wrap:wrap}
+.bar .grow{flex:1}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--cream);padding:10px 18px;border-radius:30px;font-size:13px;z-index:30;max-width:calc(100% - 32px)}
+@media (max-width:600px){
+  header h1{font-size:16px}
+  header .hm{display:none}
+  header img{width:32px}
+  .tools{position:static}
+  .tw select{flex:1 1 140px}
+  .tw .btn{flex:1 1 100%}
+  .row{grid-template-columns:48px minmax(0,1fr)}
+  .row img,.row .nof{width:48px;height:48px}
+  .row .acts{grid-column:1 / -1;justify-content:flex-end}
+  .mhead,.mrow{grid-template-columns:40px 48px minmax(0,1fr) minmax(0,1fr) 66px 26px}
+  .mrow select.mt{font-size:11.5px}
+}
+/* Clientes */
+.crow{display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:12px;align-items:center;background:var(--panel);border:1.5px solid var(--line);border-radius:10px;padding:10px 12px}
+.av{width:44px;height:44px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font-weight:900;font-size:17px}
+.crow b{display:block;font-weight:800}
+.crow small{color:var(--muted);font-size:12px;display:block}
+.est{font-size:10.5px;font-weight:800;border-radius:20px;padding:2px 8px;text-transform:uppercase;letter-spacing:.4px;background:#16a34a1a;color:var(--ok)}
+.est.off{background:var(--cream);color:var(--muted)}
+.clave{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}
+.ptools{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.ptools input[type=search]{flex:1 1 200px;width:auto}
+.ptools select{flex:0 1 200px;width:auto}
+.ptools label{display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700}
+.ptools label input{width:16px;height:16px}
+.ptab{border:1.5px solid var(--line);border-radius:10px;overflow:hidden;background:var(--panel);max-height:440px;overflow-y:auto}
+.prow{display:grid;grid-template-columns:minmax(0,1fr) 120px;gap:10px;align-items:center;padding:7px 10px;border-top:1px solid var(--line)}
+.prow:first-child{border-top:0}
+.prow b{font-weight:700;font-size:13px;display:block}
+.prow small{color:var(--muted);font-size:11.5px}
+.prow.con{background:#16a34a0d}
+.money{display:flex;align-items:center;border:1.5px solid var(--line);border-radius:8px;background:var(--panel)}
+.money span{padding-left:8px;color:var(--muted);font-weight:700}
+.money input{border:0;padding:7px 6px;font-weight:700;font-variant-numeric:tabular-nums}
+.money:focus-within{border-color:var(--accent)}
+.acceso{background:#25D3661a;border:1.5px solid #25D36666;border-radius:10px;padding:12px;display:grid;gap:8px}
+.acceso pre{white-space:pre-wrap;margin:0;font:inherit;font-size:13px;background:#fff;border-radius:8px;padding:10px;border:1px solid var(--line)}
+.btn.wa{background:#25D366;border-color:#25D366;color:#fff}
+@media (max-width:600px){.crow{grid-template-columns:40px minmax(0,1fr)}.crow .acts{grid-column:1 / -1;justify-content:flex-end}.prow{grid-template-columns:minmax(0,1fr) 104px}}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <img src="/marca/mart-lentes-v2.png" alt="" width="295" height="300">
+  <h1><b class="hm">Construmart · </b><span>Panel del dueño</span></h1>
+  <nav class="nav" id="nav" hidden><a href="/bandeja/">Cotizaciones</a><a href="/bandeja/productos/">Productos</a><a href="/bandeja/clientes/" class="on">Clientes</a><a href="/">Ver página</a></nav>
+  <button class="hbtn" id="salir" type="button" hidden>Salir</button>
+</div></header>
+
+<section class="login" id="login" hidden>
+  <form id="fLogin" autocomplete="on">
+    <img src="/marca/mart-lentes-v2.png" alt="" width="295" height="300">
+    <h2>Panel del dueño</h2>
+    <p>Entra con tu clave para dar de alta clientes de mayoreo y ponerles sus precios.</p>
+    <input type="text" name="username" value="dueño" autocomplete="username" hidden>
+    <input type="password" id="clave" name="password" autocomplete="current-password" placeholder="Tu clave de dueño" required aria-label="Clave de dueño">
+    <p class="err" id="lerr" role="alert"></p>
+    <button class="go" type="submit" id="lgo">Entrar</button>
+  </form>
+</section>
+
+<main id="app" hidden>
+  <div class="tools"><div class="wrap tw">
+    <input id="q" type="search" placeholder="Buscar cliente, persona, usuario o WhatsApp…" aria-label="Buscar">
+    <button class="btn pri" id="nuevo" type="button">+ Agregar cliente</button>
+  </div></div>
+  <div class="wrap">
+    <p class="cuenta" id="cuenta">Cargando clientes…</p>
+    <div class="lista" id="lista"></div>
+  </div>
+</main>
+
+<div class="veil" id="veil" hidden>
+  <form class="sheet" id="ed" role="dialog" aria-modal="true" aria-labelledby="edT" autocomplete="off">
+    <h2 id="edT">Agregar cliente</h2>
+    <label class="l">Nombre del negocio <small>Así lo saluda la página: “Hola, …”</small><input id="e-nombre" required spellcheck="true" lang="es" placeholder="Ej. Ferretería López"></label>
+    <div class="two">
+      <label class="l">Persona de contacto <small>(opcional)</small><input id="e-persona" spellcheck="true" lang="es" placeholder="Ej. Juan López"></label>
+      <label class="l">WhatsApp <small>(opcional) 10 dígitos</small><input id="e-wa" inputmode="tel" placeholder="311 123 4567"></label>
+    </div>
+    <label class="l">Usuario <small>Con el que entra. Sin espacios ni acentos.</small><input id="e-usuario" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="ej. ferrelopez"></label>
+    <div class="l" style="display:grid;gap:4px;font-size:12.5px;font-weight:700"><span id="claveTit">Clave <small style="font-weight:500;color:var(--muted)">Mínimo 6 letras o números.</small></span>
+      <div class="clave"><input id="e-clave" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="Escribe una o toca Generar"><button class="btn sm" type="button" id="gen">Generar</button></div></div>
+    <label class="chk"><input type="checkbox" id="e-activo" checked><span>Puede entrar a ver sus precios<small style="display:block;font-weight:500;color:var(--muted)">Quítale la palomita para pausar su acceso sin borrarlo.</small></span></label>
+    <div style="display:grid;gap:8px">
+      <b style="font-size:12.5px">Precios de este cliente <small style="font-weight:500;color:var(--muted)" id="nota">Con IVA incluido. Los productos sin precio le salen como “Precio por confirmar”.</small></b>
+      <div class="ptools">
+        <input type="search" id="pq" placeholder="Buscar producto o medida…" aria-label="Buscar producto">
+        <select id="pcat" aria-label="Categoría"><option value="">Todas las categorías</option></select>
+        <label><input type="checkbox" id="psolo"> Solo con precio</label>
+      </div>
+      <small style="color:var(--muted)" id="pcuenta"></small>
+      <div class="ptab" id="ptab"></div>
+    </div>
+    <p class="err" id="eerr"></p>
+    <div class="bar"><button class="btn pri grow" type="submit" id="gsave">Guardar</button><button class="btn" type="button" id="gcancel">Cancelar</button></div>
+    <div class="bar" id="extra" hidden><button class="btn sm danger" type="button" id="gdel">Borrar cliente</button></div>
+  </form>
+</div>
+
+<div class="veil" id="veil2" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="acT">
+    <h2 id="acT">Mándale su acceso</h2>
+    <div class="acceso">
+      <p style="margin:0;font-size:13px">Este es el mensaje con su usuario y clave. La clave no se vuelve a mostrar, así que mándalo ahora o cópialo.</p>
+      <pre id="accTxt"></pre>
+      <div class="bar"><a class="btn wa" id="accWa" target="_blank" rel="noopener">Enviar por WhatsApp</a><button class="btn" type="button" id="accCopy">Copiar mensaje</button></div>
+    </div>
+    <div class="bar"><button class="btn pri grow" type="button" id="accOk">Listo</button></div>
+  </div>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+const CATS=[["herramientas-manuales","Herramientas manuales"],["herramientas-electricas","Herramientas eléctricas"],["ferreteria","Ferretería"],["material-electrico","Material eléctrico"],["plomeria","Plomería"],["pintura","Pintura"],["construccion","Construcción"],["metal","Metal"],["mallas","Mallas"],["impermeabilizantes","Impermeabilizantes y selladores"],["jardineria","Jardinería"],["seguridad-industrial","Seguridad industrial"],["limpieza","Limpieza"]];
+const catName=s=>(CATS.find(c=>c[0]===s)||[s,s])[1];
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const norm=s=>String(s||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"");
+const digits=s=>String(s||"").replace(/\D/g,"");
+const pesos=n=>Number(n||0).toLocaleString("es-MX",{style:"currency",currency:"MXN"});
+function toast(t){const el=$("#toast");el.textContent=t;el.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>el.hidden=true,2600)}
+async function api(path,body){const r=await fetch(path,body?{method:"POST",credentials:"same-origin",headers:{"content-type":"application/json"},body:JSON.stringify(body)}:{credentials:"same-origin",cache:"no-store"});
+  const j=await r.json().catch(()=>({}));if(r.status===401&&!path.endsWith("/entrar")){verLogin();throw new Error("sin_sesion")}return j}
+
+let C=[],P=[],editing=null,precios={},sucio=false;
+function verLogin(){$("#login").hidden=false;$("#app").hidden=true;$("#nav").hidden=$("#salir").hidden=true;setTimeout(()=>$("#clave").focus(),50)}
+function verApp(){$("#login").hidden=true;$("#app").hidden=false;$("#nav").hidden=$("#salir").hidden=false;cargar()}
+$("#fLogin").addEventListener("submit",async e=>{e.preventDefault();const b=$("#lgo");b.disabled=true;b.textContent="Revisando…";$("#lerr").textContent="";
+  try{const j=await api("/api/dueno/entrar",{clave:$("#clave").value});if(j.ok){$("#clave").value="";verApp()}else $("#lerr").textContent="Clave incorrecta. Revísala e intenta otra vez."}
+  catch(err){$("#lerr").textContent="No se pudo entrar. Revisa tu conexión."}finally{b.disabled=false;b.textContent="Entrar"}});
+$("#salir").onclick=async()=>{try{await api("/api/dueno/salir",{})}catch(e){}verLogin()};
+
+async function cargar(){
+  try{
+    const [j,r]=await Promise.all([api("/api/dueno/clientes"),fetch("/api/productos",{cache:"no-store"}).then(r=>r.json())]);
+    if(!j.ok)throw 0;C=j.clientes||[];P=(r&&r.productos)||[];if(j.nota)$("#nota").textContent=j.nota+" Los productos sin precio le salen como “Precio por confirmar”.";
+    $("#pcat").innerHTML='<option value="">Todas las categorías</option>'+CATS.map(([s,n])=>`<option value="${s}">${esc(n)}</option>`).join("");
+    pintar();
+  }catch(e){if(e.message!=="sin_sesion")$("#cuenta").textContent="No se pudieron cargar los clientes. Revisa tu conexión y recarga la página."}
+}
+function pintar(){
+  const q=norm($("#q").value.trim());
+  const L=C.filter(c=>!q||norm([c.nombre,c.persona,c.usuario,c.wa].join(" ")).includes(q));
+  $("#cuenta").textContent=`${L.length} cliente${L.length===1?"":"s"} de mayoreo`;
+  $("#lista").innerHTML=L.length?L.map(c=>{const n=Object.keys(c.precios||{}).length;
+    return `<div class="crow"><div class="av">${esc((c.nombre||"?").trim()[0]||"?").toUpperCase()}</div>
+    <div><b>${esc(c.nombre)} <span class="est${c.activo?"":" off"}">${c.activo?"Activo":"Pausado"}</span></b><small>${c.persona?esc(c.persona)+" · ":""}Usuario: <b style="display:inline">${esc(c.usuario)}</b>${c.wa?" · WhatsApp "+esc(c.wa):""}</small><small>${n} precio${n===1?"":"s"} especial${n===1?"":"es"}</small></div>
+    <div class="acts"><button class="btn sm" type="button" data-edit="${esc(c.usuario)}">Editar</button></div></div>`}).join(""):`<div class="vacio">${C.length?"Ningún cliente coincide.":"Todavía no tienes clientes de mayoreo. Toca “+ Agregar cliente”."}</div>`;
+}
+$("#q").addEventListener("input",pintar);
+$("#lista").addEventListener("click",e=>{const b=e.target.closest("[data-edit]");if(b)abrir(C.find(c=>c.usuario===b.dataset.edit))});
+$("#nuevo").onclick=()=>abrir(null);
+
+// ===== Editor =====
+const variantesDe=p=>p.variants&&p.variants.length>1?p.variants:[p.spec||(p.variants||[])[0]||""];
+const usuarioDe=s=>norm(s).replace(/[^a-z0-9]/g,"").slice(0,20);
+function genClave(){const L="abcdefghjkmnpqrstuvwxyz",N="23456789";let s="";for(let i=0;i<4;i++)s+=L[Math.floor(Math.random()*L.length)];s=s[0].toUpperCase()+s.slice(1);for(let i=0;i<4;i++)s+=N[Math.floor(Math.random()*N.length)];return s}
+function abrir(c){
+  editing=c||null;precios={...((c&&c.precios)||{})};sucio=false;
+  $("#edT").textContent=c?"Editar cliente":"Agregar cliente";
+  $("#e-nombre").value=c?c.nombre:"";$("#e-persona").value=c?c.persona:"";$("#e-wa").value=c?c.wa:"";
+  $("#e-usuario").value=c?c.usuario:"";$("#e-usuario").disabled=!!c;
+  $("#e-clave").value="";$("#e-clave").placeholder=c?"Déjala vacía para no cambiarla":"Escribe una o toca Generar";
+  $("#claveTit").innerHTML=c?'Cambiar clave <small style="font-weight:500;color:var(--muted)">(opcional) Si le pones una nueva, la anterior deja de servir.</small>':'Clave <small style="font-weight:500;color:var(--muted)">Mínimo 6 letras o números.</small>';
+  $("#e-activo").checked=c?c.activo:true;
+  $("#pq").value="";$("#pcat").value="";$("#psolo").checked=!!(c&&Object.keys(precios).length);
+  $("#extra").hidden=!c;$("#eerr").textContent="";$("#gdel").textContent="Borrar cliente";$("#gdel").classList.remove("sure");
+  pintarPrecios();$("#veil").hidden=false;setTimeout(()=>$(c?"#e-nombre":"#e-nombre").focus(),50);
+}
+$("#e-nombre").addEventListener("input",()=>{if(!editing&&!$("#e-usuario").dataset.toc)$("#e-usuario").value=usuarioDe($("#e-nombre").value)});
+$("#e-usuario").addEventListener("input",e=>{e.target.dataset.toc="1";const v=e.target.value.toLowerCase().replace(/\s+/g,"");if(v!==e.target.value)e.target.value=v});
+$("#gen").onclick=()=>{$("#e-clave").value=genClave();sucio=true};
+function pintarPrecios(){
+  const q=norm($("#pq").value.trim()),c=$("#pcat").value,solo=$("#psolo").checked;
+  const filas=[];
+  for(const p of P){if(c&&p.cat!==c)continue;
+    for(const v of variantesDe(p)){const k=p.id+"|"+v,tiene=precios[k]>0;
+      if(solo&&!tiene)continue;
+      if(q&&!norm([p.name,p.brand,v,(p.codes||[p.code]).join(" ")].join(" ")).includes(q))continue;
+      filas.push([p,v,k,tiene])}}
+  const MAX=250;
+  $("#pcuenta").textContent=filas.length?`${filas.length} producto${filas.length===1?"":"s"}/medida${filas.length===1?"":"s"}`+(filas.length>MAX?` · se muestran los primeros ${MAX}, usa el buscador para encontrar los demás`:"")+` · ${Object.keys(precios).length} con precio`:(solo?"Este cliente todavía no tiene precios. Quita “Solo con precio” para ponérselos.":"Ningún producto coincide.");
+  $("#ptab").innerHTML=filas.slice(0,MAX).map(([p,v,k,tiene])=>`<div class="prow${tiene?" con":""}"><div><b>${esc(p.name)}</b><small>${v?esc(v)+" · ":""}${esc(p.brand==="Material"?"":p.brand)} · por ${esc(p.unit||"pieza")}</small></div><div class="money"><span>$</span><input inputmode="decimal" enterkeyhint="next" data-k="${esc(k)}" value="${tiene?precios[k]:""}" aria-label="Precio de ${esc(p.name)} ${esc(v)}"></div></div>`).join("");
+}
+["#pq","#pcat","#psolo"].forEach(s=>$(s).addEventListener(s==="#pq"?"input":"change",pintarPrecios));
+$("#ptab").addEventListener("input",e=>{const i=e.target.closest("input[data-k]");if(!i)return;const v=Number(i.value.replace(/[$,\s]/g,""));
+  if(v>0)precios[i.dataset.k]=Math.round(v*100)/100;else delete precios[i.dataset.k];i.closest(".prow").classList.toggle("con",v>0);sucio=true});
+$("#ptab").addEventListener("keydown",e=>{if(e.key!=="Enter"||e.isComposing)return;const i=e.target.closest("input[data-k]");if(!i)return;e.preventDefault();
+  const t=[...document.querySelectorAll("#ptab input")];const n=t[t.indexOf(i)+1];if(n){n.focus();n.select()}});
+$("#ed").addEventListener("input",e=>{if(!e.target.closest("#ptools"))sucio=true});
+function cerrar(){if(sucio&&!confirmarSalir())return;$("#veil").hidden=true;editing=null}
+function confirmarSalir(){const b=$("#gcancel");if(b.dataset.sure){delete b.dataset.sure;b.textContent="Cancelar";return true}b.dataset.sure="1";b.textContent="¿Salir sin guardar? Toca otra vez";setTimeout(()=>{delete b.dataset.sure;b.textContent="Cancelar"},3500);return false}
+$("#gcancel").onclick=cerrar;
+let downOnVeil=false;
+$("#veil").addEventListener("pointerdown",e=>{downOnVeil=e.target.id==="veil"});
+$("#veil").addEventListener("click",e=>{if(e.target.id==="veil"&&downOnVeil)cerrar();downOnVeil=false});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("#veil").hidden)cerrar()});
+
+$("#ed").addEventListener("submit",async e=>{e.preventDefault();$("#eerr").textContent="";
+  const nombre=$("#e-nombre").value.trim(),usuario=$("#e-usuario").value.trim().toLowerCase(),clave=$("#e-clave").value.trim(),wa=$("#e-wa").value.trim();
+  if(!nombre){$("#eerr").textContent="Escribe el nombre del negocio.";return}
+  if(!/^[a-z0-9._-]{3,30}$/.test(usuario)){$("#eerr").textContent="El usuario debe tener de 3 a 30 letras o números, sin espacios ni acentos.";return}
+  if(!editing&&C.some(c=>c.usuario===usuario)){$("#eerr").textContent="Ya hay un cliente con ese usuario. Escoge otro.";return}
+  if(!editing&&!clave){$("#eerr").textContent="Ponle una clave o toca Generar.";return}
+  if(clave&&clave.length<6){$("#eerr").textContent="La clave debe tener al menos 6 letras o números.";return}
+  if(wa&&digits(wa).length!==10){$("#eerr").textContent="El WhatsApp debe tener 10 dígitos.";return}
+  const b=$("#gsave");b.disabled=true;b.textContent="Guardando…";
+  try{
+    const j=await api("/api/dueno/clientes",{nuevo:!editing,cliente:{usuario,nombre,persona:$("#e-persona").value.trim(),wa,activo:$("#e-activo").checked,clave,precios}});
+    if(!j.ok){$("#eerr").textContent=j.error==="existe"?"Ya hay un cliente con ese usuario. Escoge otro.":j.error==="usuario"?"Ese usuario no se puede usar. Escoge otro.":"No se pudo guardar. Revisa los datos.";return}
+    const nuevo=!editing;sucio=false;$("#veil").hidden=true;editing=null;await cargar();
+    toast(nuevo?"Cliente agregado.":"Cambios guardados.");
+    if(clave)mostrarAcceso(nombre,$("#e-persona").value.trim(),usuario,clave,wa,nuevo);
+  }catch(err){if(err.message!=="sin_sesion")$("#eerr").textContent="No se pudo guardar. Revisa tu conexión e inténtalo otra vez."}
+  finally{b.disabled=false;b.textContent="Guardar"}
+});
+function mostrarAcceso(nombre,persona,usuario,clave,wa,nuevo){
+  const pag=location.origin;
+  const t=`¡Hola${persona?" "+persona:""}! ${nuevo?"Ya tienes tu acceso de cliente de mayoreo":"Te actualizamos tu acceso de cliente de mayoreo"} en la página de Construmart (${nombre}).\n\n1. Entra a ${pag}\n2. Toca “Clientes”\n3. Usuario: ${usuario}\n4. Clave: ${clave}\n\nAhí verás tus precios especiales con IVA incluido y puedes mandarnos tus cotizaciones. ¡Gracias por tu preferencia!`;
+  $("#accTxt").textContent=t;
+  const d=digits(wa);$("#accWa").href=d.length===10?`https://wa.me/52${d}?text=${encodeURIComponent(t)}`:`https://wa.me/?text=${encodeURIComponent(t)}`;
+  $("#veil2").hidden=false;
+}
+$("#accCopy").onclick=async()=>{try{await navigator.clipboard.writeText($("#accTxt").textContent);toast("Mensaje copiado.")}catch(e){toast("No se pudo copiar. Selecciónalo y cópialo.")}};
+$("#accOk").onclick=()=>{$("#veil2").hidden=true};
+$("#gdel").onclick=async()=>{const b=$("#gdel");if(!editing)return;
+  if(!b.classList.contains("sure")){b.classList.add("sure");b.textContent="¿Seguro? Toca otra vez para borrar";return}
+  b.disabled=true;try{const j=await api("/api/dueno/clientes",{accion:"borrar",usuario:editing.usuario});if(!j.ok)throw 0;const n=editing.nombre;sucio=false;$("#veil").hidden=true;editing=null;await cargar();toast("Borrado: "+n)}
+  catch(err){$("#eerr").textContent="No se pudo borrar. Inténtalo otra vez."}finally{b.disabled=false}};
+
+(async()=>{try{const r=await fetch("/api/dueno/sesion",{credentials:"same-origin",cache:"no-store"});r.ok?verApp():verLogin()}catch(e){verLogin()}})();
+</script>
+</body>
+</html>
