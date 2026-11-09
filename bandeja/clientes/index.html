@@ -139,6 +139,10 @@ textarea{min-height:90px;resize:vertical}
 .crow small{color:var(--muted);font-size:12px;display:block}
 .est{font-size:10.5px;font-weight:800;border-radius:20px;padding:2px 8px;text-transform:uppercase;letter-spacing:.4px;background:#16a34a1a;color:var(--ok)}
 .est.off{background:var(--cream);color:var(--muted)}
+.ccats{display:flex;flex-wrap:wrap;gap:6px}
+.ccats label{display:flex;align-items:center;gap:6px;border:1.5px solid var(--line);border-radius:20px;padding:5px 11px;font-size:12.5px;font-weight:700;background:var(--panel);cursor:pointer}
+.ccats label:has(input:checked){border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+.ccats input{width:15px;height:15px;accent-color:var(--accent)}
 .clave{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}
 .ptools{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .ptools input[type=search]{flex:1 1 200px;width:auto}
@@ -205,6 +209,7 @@ textarea{min-height:90px;resize:vertical}
     <div class="l" style="display:grid;gap:4px;font-size:12.5px;font-weight:700"><span id="claveTit">Clave <small style="font-weight:500;color:var(--muted)">Mínimo 6 letras o números.</small></span>
       <div class="clave"><input id="e-clave" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="Escribe una o toca Generar"><button class="btn sm" type="button" id="gen">Generar</button></div></div>
     <label class="l">Precio que le toca <small>Ve el precio de su nivel en todos los productos que ya tengan precio en la pestaña Precios.</small><select id="e-nivel"><option value="publico">Público</option><option value="medio">Medio mayoreo</option><option value="mayoreo">Mayoreo</option><option value="ferreteria">Ferretería</option><option value="">Sin nivel (solo sus precios especiales)</option></select></label>
+    <div class="l" style="display:grid;gap:6px;font-size:12.5px;font-weight:700"><span>Sus categorías principales <small style="font-weight:500;color:var(--muted)">Es lo primero que ve al entrar y lo que sale en su Pedido rápido. Lo demás lo sigue teniendo a la mano.</small></span><div class="ccats" id="e-cats"></div></div>
     <label class="chk"><input type="checkbox" id="e-activo" checked><span>Puede entrar a ver sus precios<small style="display:block;font-weight:500;color:var(--muted)">Quítale la palomita para pausar su acceso sin borrarlo.</small></span></label>
     <div style="display:grid;gap:8px">
       <b style="font-size:12.5px">Precios especiales <small style="font-weight:500;color:var(--muted)">(opcional) Solo si a este cliente le das un precio distinto al de su nivel; este manda sobre el de su nivel.</small> <small style="font-weight:500;color:var(--muted)" id="nota">Con IVA incluido. Los productos sin precio le salen como “Precio por confirmar”.</small></b>
@@ -288,7 +293,7 @@ function abrir(c){
   $("#e-usuario").value=c?c.usuario:"";$("#e-usuario").disabled=!!c;
   $("#e-clave").value="";$("#e-clave").placeholder=c?"Déjala vacía para no cambiarla":"Escribe una o toca Generar";
   $("#claveTit").innerHTML=c?'Cambiar clave <small style="font-weight:500;color:var(--muted)">(opcional) Si le pones una nueva, la anterior deja de servir.</small>':'Clave <small style="font-weight:500;color:var(--muted)">Mínimo 6 letras o números.</small>';
-  $("#e-activo").checked=c?c.activo:true;$("#e-nivel").value=c?(c.nivel||""):"mayoreo";
+  $("#e-activo").checked=c?c.activo:true;const cs=c&&Array.isArray(c.cats)?c.cats:["construccion","metal"];$("#e-cats").innerHTML=CATS.map(([s,n])=>`<label><input type="checkbox" value="${s}"${cs.includes(s)?" checked":""}>${esc(n)}</label>`).join("");$("#e-nivel").value=c?(c.nivel||""):"mayoreo";
   $("#pq").value="";$("#pcat").value="";$("#psolo").checked=true;
   $("#extra").hidden=!c;$("#eerr").textContent="";$("#gdel").textContent="Borrar cliente";$("#gdel").classList.remove("sure");
   pintarPrecios();$("#veil").hidden=false;setTimeout(()=>$(c?"#e-nombre":"#e-nombre").focus(),50);
@@ -332,7 +337,7 @@ $("#ed").addEventListener("submit",async e=>{e.preventDefault();$("#eerr").textC
   if(wa&&digits(wa).length!==10){$("#eerr").textContent="El WhatsApp debe tener 10 dígitos.";return}
   const b=$("#gsave");b.disabled=true;b.textContent="Guardando…";
   try{
-    const j=await api("/api/dueno/clientes",{nuevo:!editing,cliente:{usuario,nombre,persona:$("#e-persona").value.trim(),wa,activo:$("#e-activo").checked,nivel:$("#e-nivel").value,clave,precios}});
+    const j=await api("/api/dueno/clientes",{nuevo:!editing,cliente:{usuario,nombre,persona:$("#e-persona").value.trim(),wa,activo:$("#e-activo").checked,nivel:$("#e-nivel").value,cats:[...document.querySelectorAll("#e-cats input:checked")].map(i=>i.value),clave,precios}});
     if(!j.ok){$("#eerr").textContent=j.error==="existe"?"Ya hay un cliente con ese usuario. Escoge otro.":j.error==="usuario"?"Ese usuario no se puede usar. Escoge otro.":"No se pudo guardar. Revisa los datos.";return}
     const nuevo=!editing;sucio=false;$("#veil").hidden=true;editing=null;await cargar();
     toast(nuevo?"Cliente agregado.":"Cambios guardados.");

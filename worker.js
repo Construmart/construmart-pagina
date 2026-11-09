@@ -89,7 +89,8 @@ async function sesionDueno(request, env) {
   return !!(s && s.quien === "dueno" && a.h.slice(0, 12) === s.huella);
 }
 
-const publico = async (env, usuario, c) => ({ usuario, nombre: c.n, precios: await bandeja(env).preciosDe(c.nivel, c.p), nota: DATOS.nota || "" });
+const CATS_DEF = ["construccion", "metal"];
+const publico = async (env, usuario, c) => ({ usuario, nombre: c.n, cats: Array.isArray(c.cats) ? c.cats : CATS_DEF, precios: await bandeja(env).preciosDe(c.nivel, c.p), nota: DATOS.nota || "" });
 
 // ===== Bandeja de cotizaciones (se guarda en Cloudflare) =====
 const txt = (v, max) => String(v ?? "").slice(0, max);
@@ -130,7 +131,7 @@ export class Bandeja extends DurableObject {
   async cliente(u) { return (await this.ctx.storage.get("c:" + u)) || null; }
   async clientes() {
     const m = await this.ctx.storage.list({ prefix: "c:" });
-    return [...m.entries()].map(([k, c]) => ({ usuario: k.slice(2), nombre: c.n, persona: c.persona || "", wa: c.wa || "", activo: c.activo !== false, nivel: c.nivel || "", precios: c.p || {}, alta: c.alta || 0 }));
+    return [...m.entries()].map(([k, c]) => ({ usuario: k.slice(2), nombre: c.n, persona: c.persona || "", wa: c.wa || "", activo: c.activo !== false, nivel: c.nivel || "", cats: Array.isArray(c.cats) ? c.cats : ["construccion", "metal"], precios: c.p || {}, alta: c.alta || 0 }));
   }
   async guardarCliente(u, datos) {
     const prev = (await this.ctx.storage.get("c:" + u)) || { alta: Date.now() };
@@ -408,7 +409,7 @@ async function api(request, env, url) {
       const c = b.cliente || {};
       const previo = await stub.cliente(u);
       if (b.nuevo && previo) return json({ ok: false, error: "existe" }, 409);
-      const datos = { n: txt(c.nombre, 80).trim() || u, persona: txt(c.persona, 80).trim(), wa: txt(c.wa, 20).trim(), activo: c.activo !== false, nivel: NIVELES.includes(c.nivel) ? c.nivel : "" };
+      const datos = { n: txt(c.nombre, 80).trim() || u, persona: txt(c.persona, 80).trim(), wa: txt(c.wa, 20).trim(), activo: c.activo !== false, nivel: NIVELES.includes(c.nivel) ? c.nivel : "", cats: Array.isArray(c.cats) ? c.cats.filter((x) => CATS_OK.includes(x)).slice(0, 13) : CATS_DEF };
       const clave = String(c.clave || "");
       if (clave) {
         if (clave.length < 6 || clave.length > 60) return json({ ok: false, error: "clave" }, 400);
