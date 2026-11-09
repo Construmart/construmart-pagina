@@ -175,6 +175,10 @@ export class Bandeja extends DurableObject {
     return Object.assign(out, especiales || {});
   }
 
+  // ===== Categorías =====
+  async categorias() { return (await this.ctx.storage.get("cats")) || null; }
+  async guardarCategorias(lista) { await this.ctx.storage.put("cats", lista); return true; }
+
   // ===== Banners del inicio (el dueño los cambia desde su panel) =====
   async banners() { return (await this.ctx.storage.get("banners")) || null; }
   async guardarBanners(lista) { await this.ctx.storage.put("banners", lista); return true; }
@@ -293,11 +297,28 @@ async function recibirCotizacion(request, env) {
 
 
 // ===== Productos =====
-const CATS_OK = ["herramientas-manuales","herramientas-electricas","ferreteria","material-electrico","plomeria","pintura","construccion","metal","mallas","impermeabilizantes","jardineria","seguridad-industrial","limpieza"];
+// Categorías de base; el dueño puede agregar más (ej. Tinacos), renombrarlas y ordenarlas desde su panel
+const CATS_BASE = [
+  { slug: "herramientas-manuales", name: "Herramientas manuales", blurb: "Martillos, pinzas, desarmadores, llaves y medición." },
+  { slug: "herramientas-electricas", name: "Herramientas eléctricas", blurb: "Taladros, esmeriladoras, sierras y lijadoras." },
+  { slug: "ferreteria", name: "Ferretería", blurb: "Candados, bisagras, tornillería, taquetes y brocas." },
+  { slug: "material-electrico", name: "Material eléctrico", blurb: "Cable, contactos, iluminación y extensiones." },
+  { slug: "plomeria", name: "Plomería", blurb: "Llaves, válvulas, conexiones y sellado." },
+  { slug: "pintura", name: "Pintura", blurb: "Rodillos, brochas, espátulas, lijas y aerosoles." },
+  { slug: "construccion", name: "Construcción", blurb: "Herramienta de albañilería y materiales para obra." },
+  { slug: "metal", name: "Metal", blurb: "Acero para construcción: armex, varilla, alambre y clavos." },
+  { slug: "mallas", name: "Mallas", blurb: "Malla electrosoldada, ciclónica, de gallinero, sombra y mosquitera." },
+  { slug: "impermeabilizantes", name: "Impermeabilizantes y selladores", blurb: "Impermeabilizantes, selladores y membranas para techos y muros." },
+  { slug: "jardineria", name: "Jardinería", blurb: "Riego, poda y herramienta de jardín." },
+  { slug: "seguridad-industrial", name: "Seguridad industrial", blurb: "Equipo de protección personal." },
+  { slug: "limpieza", name: "Limpieza", blurb: "Escobas, trapeadores, cubetas y jaladores." },
+];
+const ICONOS_OK = ["herramientas-manuales","herramientas-electricas","ferreteria","material-electrico","plomeria","pintura","construccion","metal","mallas","impermeabilizantes","jardineria","seguridad-industrial","limpieza","tinaco","bano","cerradura","escalera","caja","puerta","lamina","estrella"];
+async function catsOk(env) { const c = await bandeja(env).categorias(); return (c || CATS_BASE).map((x) => x.slug); }
 const ICONOS = { plomeria: "fitting", pintura: "roller", limpieza: "bucket", "material-electrico": "spool" };
 const lista = (v, n, max) => (Array.isArray(v) ? v.slice(0, n).map((x) => txt(x, max)) : null);
 const rutaFoto = (v) => { const t = txt(v, 200); return /^(fotos\/[\w./-]+|\/api\/foto\/[a-z0-9]{8,40})$/i.test(t) ? t : ""; };
-function limpiarProducto(b, previo) {
+function limpiarProducto(b, previo, CATS_OK) {
   const id = txt(b.id, 20);
   if (!/^[a-z0-9]{1,20}$/i.test(id)) return null;
   const cat = CATS_OK.includes(b.cat) ? b.cat : null;
@@ -365,6 +386,11 @@ async function api(request, env, url) {
     return json({ ok: true }, 200, { "set-cookie": cookie(COOKIE, "", 0) });
   }
 
+  // --- Categorías (las lee la página) ---
+  if (ruta === "/api/categorias" && metodo === "GET") {
+    const c = await bandeja(env).categorias();
+    return new Response(JSON.stringify({ ok: true, categorias: c || CATS_BASE, propias: !!c }), { headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-cache" } });
+  }
   // --- Banners del inicio (los lee la página) ---
   if (ruta === "/api/banners" && metodo === "GET") {
     const b = await bandeja(env).banners();
@@ -446,7 +472,8 @@ async function api(request, env, url) {
       const c = b.cliente || {};
       const previo = await stub.cliente(u);
       if (b.nuevo && previo) return json({ ok: false, error: "existe" }, 409);
-      const datos = { n: txt(c.nombre, 80).trim() || u, persona: txt(c.persona, 80).trim(), wa: txt(c.wa, 20).trim(), activo: c.activo !== false, nivel: NIVELES.includes(c.nivel) ? c.nivel : "", cats: Array.isArray(c.cats) ? c.cats.filter((x) => CATS_OK.includes(x)).slice(0, 13) : CATS_DEF };
+      const okCats = await catsOk(env);
+      const datos = { n: txt(c.nombre, 80).trim() || u, persona: txt(c.persona, 80).trim(), wa: txt(c.wa, 20).trim(), activo: c.activo !== false, nivel: NIVELES.includes(c.nivel) ? c.nivel : "", cats: Array.isArray(c.cats) ? c.cats.filter((x) => okCats.includes(x)).slice(0, 40) : CATS_DEF };
       const clave = String(c.clave || "");
       if (clave) {
         if (clave.length < 6 || clave.length > 60) return json({ ok: false, error: "clave" }, 400);
@@ -463,6 +490,24 @@ async function api(request, env, url) {
       }
       await stub.guardarCliente(u, datos);
       return json({ ok: true });
+    }
+    // --- Dueño: categorías ---
+    if (ruta === "/api/dueno/categorias" && metodo === "POST") {
+      let b = {};
+      try { b = await request.json(); } catch (e) {}
+      const vistos = new Set();
+      const lista = (Array.isArray(b.categorias) ? b.categorias : []).slice(0, 40).map((x) => ({
+        slug: String(x.slug || "").toLowerCase(), name: txt(x.name, 40).trim(), blurb: txt(x.blurb, 140).trim(),
+        icon: ICONOS_OK.includes(x.icon) ? x.icon : "caja",
+      })).filter((x) => /^[a-z0-9-]{2,40}$/.test(x.slug) && x.name && !vistos.has(x.slug) && vistos.add(x.slug));
+      if (!lista.length) return json({ ok: false, error: "vacia" }, 400);
+      // No se puede quitar una categoría que todavía tiene productos
+      const todos = await bandeja(env).productosTodos();
+      const usados = new Set((todos.productos || []).map((p) => p.cat));
+      const faltan = [...usados].filter((s) => !vistos.has(s));
+      if (faltan.length) return json({ ok: false, error: "con_productos", categorias: faltan }, 409);
+      await bandeja(env).guardarCategorias(lista);
+      return json({ ok: true, categorias: lista });
     }
     // --- Dueño: banners ---
     if (ruta === "/api/dueno/banners" && metodo === "POST") {
@@ -506,7 +551,7 @@ async function api(request, env, url) {
       if (todos.vacio) return json({ ok: false, error: "sin_productos" }, 409);
       if (b.accion === "borrar") { await stub.borrarProducto(txt(b.id, 20)); return json({ ok: true }); }
       const previo = todos.productos.find((x) => x.id === b.producto?.id) || null;
-      const p = limpiarProducto(b.producto || {}, previo);
+      const p = limpiarProducto(b.producto || {}, previo, await catsOk(env));
       if (!p) return json({ ok: false, error: "datos" }, 400);
       const r = await stub.guardarProducto(p);
       return json({ ok: true, producto: p, nuevo: r.nuevo });

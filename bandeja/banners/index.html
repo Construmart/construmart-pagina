@@ -166,7 +166,7 @@ textarea{min-height:90px;resize:vertical}
 <header><div class="wrap">
   <img src="/marca/mart-lentes-v2.png" alt="" width="295" height="300">
   <h1><b class="hm">Construmart · </b><span>Panel del dueño</span></h1>
-  <nav class="nav" id="nav" hidden><a href="/bandeja/">Cotizaciones</a><a href="/bandeja/productos/">Productos</a><a href="/bandeja/precios/">Precios</a><a href="/bandeja/clientes/">Clientes</a><a href="/bandeja/banners/" class="on">Banners</a><a href="/">Ver página</a></nav>
+  <nav class="nav" id="nav" hidden><a href="/bandeja/">Cotizaciones</a><a href="/bandeja/productos/">Productos</a><a href="/bandeja/categorias/">Categorías</a><a href="/bandeja/precios/">Precios</a><a href="/bandeja/clientes/">Clientes</a><a href="/bandeja/banners/" class="on">Banners</a><a href="/">Ver página</a></nav>
   <button class="hbtn" id="salir" type="button" hidden>Salir</button>
 </div></header>
 
@@ -212,7 +212,8 @@ $("#fLogin").addEventListener("submit",async e=>{e.preventDefault();const b=$("#
   try{const j=await api("/api/dueno/entrar",{clave:$("#clave").value});if(j.ok){$("#clave").value="";verApp()}else $("#lerr").textContent="Clave incorrecta. Revísala e intenta otra vez."}
   catch(err){$("#lerr").textContent="No se pudo entrar. Revisa tu conexión."}finally{b.disabled=false;b.textContent="Entrar"}});
 $("#salir").onclick=async()=>{try{await api("/api/dueno/salir",{})}catch(e){}verLogin()};
-async function cargar(){try{const r=await fetch("/api/banners",{cache:"no-store"});const j=await r.json();B=Array.isArray(j.banners)?j.banners:DEF.map(x=>({...x}));orig=JSON.stringify(B);pintar()}catch(e){$("#cuenta").textContent="No se pudieron cargar los banners. Recarga la página."}}
+async function cargar(){
+  try{const r=await fetch("/api/categorias",{cache:"no-store"});const j=await r.json();if(j&&j.ok&&Array.isArray(j.categorias)){const base=DEST.slice(0,6);DEST.splice(0,DEST.length,...base,...j.categorias.map(c=>["#"+c.slug,c.name]))}}catch(e){}try{const r=await fetch("/api/banners",{cache:"no-store"});const j=await r.json();B=Array.isArray(j.banners)?j.banners:DEF.map(x=>({...x}));orig=JSON.stringify(B);pintar()}catch(e){$("#cuenta").textContent="No se pudieron cargar los banners. Recarga la página."}}
 const hoy=()=>new Date().toLocaleDateString("en-CA");
 const fcorta=d=>d?new Date(d+"T12:00").toLocaleDateString("es-MX",{day:"numeric",month:"short"}):"";
 function estado(b){const h=hoy();if(b.activo===false)return ["apag","Apagado"];if(b.desde&&b.desde>h)return ["prog","Empieza el "+fcorta(b.desde)];if(b.hasta&&b.hasta<h)return ["fin","Terminó el "+fcorta(b.hasta)];return ["hoy",b.hasta?"Se ve hoy · hasta el "+fcorta(b.hasta):"Se ve hoy"]}

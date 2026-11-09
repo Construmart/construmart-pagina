@@ -139,7 +139,7 @@ textarea{min-height:90px;resize:vertical}
 <header><div class="wrap">
   <img src="/marca/mart-lentes-v2.png" alt="" width="295" height="300">
   <h1><b class="hm">Construmart · </b><span>Panel del dueño</span></h1>
-  <nav class="nav" id="nav" hidden><a href="/bandeja/">Cotizaciones</a><a href="/bandeja/productos/" class="on">Productos</a><a href="/bandeja/precios/">Precios</a><a href="/bandeja/clientes/">Clientes</a><a href="/bandeja/banners/">Banners</a><a href="/">Ver página</a></nav>
+  <nav class="nav" id="nav" hidden><a href="/bandeja/">Cotizaciones</a><a href="/bandeja/productos/" class="on">Productos</a><a href="/bandeja/categorias/">Categorías</a><a href="/bandeja/precios/">Precios</a><a href="/bandeja/clientes/">Clientes</a><a href="/bandeja/banners/">Banners</a><a href="/">Ver página</a></nav>
   <button class="hbtn" id="salir" type="button" hidden>Salir</button>
 </div></header>
 
@@ -215,6 +215,9 @@ textarea{min-height:90px;resize:vertical}
 
 <script>
 const CATS=[["herramientas-manuales","Herramientas manuales"],["herramientas-electricas","Herramientas eléctricas"],["ferreteria","Ferretería"],["material-electrico","Material eléctrico"],["plomeria","Plomería"],["pintura","Pintura"],["construccion","Construcción"],["metal","Metal"],["mallas","Mallas"],["impermeabilizantes","Impermeabilizantes y selladores"],["jardineria","Jardinería"],["seguridad-industrial","Seguridad industrial"],["limpieza","Limpieza"]];
+
+// Las categorías vienen de la tienda (el dueño puede agregar más en la pestaña Categorías)
+async function cargarCats(){try{const r=await fetch("/api/categorias",{cache:"no-store"});const j=await r.json();if(j&&j.ok&&Array.isArray(j.categorias)&&j.categorias.length)CATS.splice(0,CATS.length,...j.categorias.map(c=>[c.slug,c.name]))}catch(e){}}
 const MARCA_CAT={"plomeria":"Foset","material-electrico":"Volteck","limpieza":"Klintek"};
 const catName=s=>(CATS.find(c=>c[0]===s)||[s,s])[1];
 const $=s=>document.querySelector(s);
@@ -234,6 +237,7 @@ $("#fLogin").addEventListener("submit",async e=>{e.preventDefault();const b=$("#
 $("#salir").onclick=async()=>{try{await api("/api/dueno/salir",{})}catch(e){}verLogin()};
 
 async function cargar(){
+  await cargarCats();
   try{const r=await fetch("/api/productos",{cache:"no-store"});const j=await r.json();if(!j.ok)throw 0;P=j.productos;llenar();pintar();desdePagina()}
   catch(e){$("#cuenta").textContent="No se pudieron cargar los productos. Revisa tu conexión y recarga la página."}
 }

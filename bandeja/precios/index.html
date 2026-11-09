@@ -166,7 +166,7 @@ textarea{min-height:90px;resize:vertical}
 <header><div class="wrap">
   <img src="/marca/mart-lentes-v2.png" alt="" width="295" height="300">
   <h1><b class="hm">Construmart · </b><span>Panel del dueño</span></h1>
-  <nav class="nav" id="nav" hidden><a href="/bandeja/">Cotizaciones</a><a href="/bandeja/productos/">Productos</a><a href="/bandeja/precios/" class="on">Precios</a><a href="/bandeja/clientes/">Clientes</a><a href="/bandeja/banners/">Banners</a><a href="/">Ver página</a></nav>
+  <nav class="nav" id="nav" hidden><a href="/bandeja/">Cotizaciones</a><a href="/bandeja/productos/">Productos</a><a href="/bandeja/categorias/">Categorías</a><a href="/bandeja/precios/" class="on">Precios</a><a href="/bandeja/clientes/">Clientes</a><a href="/bandeja/banners/">Banners</a><a href="/">Ver página</a></nav>
   <button class="hbtn" id="salir" type="button" hidden>Salir</button>
 </div></header>
 
@@ -201,6 +201,9 @@ textarea{min-height:90px;resize:vertical}
 
 <script>
 const CATS=[["construccion","Construcción"],["metal","Metal"],["mallas","Mallas"],["herramientas-manuales","Herramientas manuales"],["herramientas-electricas","Herramientas eléctricas"],["ferreteria","Ferretería"],["material-electrico","Material eléctrico"],["plomeria","Plomería"],["pintura","Pintura"],["impermeabilizantes","Impermeabilizantes y selladores"],["jardineria","Jardinería"],["seguridad-industrial","Seguridad industrial"],["limpieza","Limpieza"]];
+
+// Las categorías vienen de la tienda (el dueño puede agregar más en la pestaña Categorías)
+async function cargarCats(){try{const r=await fetch("/api/categorias",{cache:"no-store"});const j=await r.json();if(j&&j.ok&&Array.isArray(j.categorias)&&j.categorias.length)CATS.splice(0,CATS.length,...j.categorias.map(c=>[c.slug,c.name]))}catch(e){}}
 const NOM=["Público","Medio mayoreo","Mayoreo","Ferretería"],NOMC=["Público","Medio may.","Mayoreo","Ferretería"];
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -216,9 +219,11 @@ $("#fLogin").addEventListener("submit",async e=>{e.preventDefault();const b=$("#
   catch(err){$("#lerr").textContent="No se pudo entrar. Revisa tu conexión."}finally{b.disabled=false;b.textContent="Entrar"}});
 $("#salir").onclick=async()=>{try{await api("/api/dueno/salir",{})}catch(e){}verLogin()};
 async function cargar(){
+  await cargarCats();
   try{const [j,r]=await Promise.all([api("/api/dueno/precios"),fetch("/api/productos",{cache:"no-store"}).then(r=>r.json())]);
     if(!j.ok)throw 0;LP=j.precios||{};P=(r&&r.productos)||[];
     $("#fcat").innerHTML=CATS.map(([s,n])=>`<option value="${s}">${esc(n)} (${P.filter(p=>p.cat===s).length})</option>`).join("")+'<option value="">Todas las categorías</option>';
+    $("#fcat").value=CATS.some(c=>c[0]==="construccion")?"construccion":CATS[0][0];
     const h=decodeURIComponent(location.hash.slice(1));const m=h.match(/^buscar=(.+)$/);if(m){$("#q").value=m[1];$("#fcat").value="";history.replaceState(null,"",location.pathname)}
     pintar()}
   catch(e){if(e.message!=="sin_sesion")$("#cuenta").textContent="No se pudieron cargar los precios. Revisa tu conexión y recarga la página."}
