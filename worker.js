@@ -179,6 +179,10 @@ export class Bandeja extends DurableObject {
   async categorias() { return (await this.ctx.storage.get("cats")) || null; }
   async guardarCategorias(lista) { await this.ctx.storage.put("cats", lista); return true; }
 
+  // ===== Preguntas frecuentes (Pregúntale a Mart) =====
+  async dudas() { return (await this.ctx.storage.get("dudas")) || null; }
+  async guardarDudas(lista) { await this.ctx.storage.put("dudas", lista); return true; }
+
   // ===== Banners del inicio (el dueño los cambia desde su panel) =====
   async banners() { return (await this.ctx.storage.get("banners")) || null; }
   async guardarBanners(lista) { await this.ctx.storage.put("banners", lista); return true; }
@@ -391,6 +395,11 @@ async function api(request, env, url) {
     const c = await bandeja(env).categorias();
     return new Response(JSON.stringify({ ok: true, categorias: c || CATS_BASE, propias: !!c }), { headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-cache" } });
   }
+  // --- Preguntas frecuentes (las lee la página) ---
+  if (ruta === "/api/dudas" && metodo === "GET") {
+    const d = await bandeja(env).dudas();
+    return new Response(JSON.stringify({ ok: true, dudas: d || [], propias: !!d }), { headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-cache" } });
+  }
   // --- Banners del inicio (los lee la página) ---
   if (ruta === "/api/banners" && metodo === "GET") {
     const b = await bandeja(env).banners();
@@ -508,6 +517,27 @@ async function api(request, env, url) {
       if (faltan.length) return json({ ok: false, error: "con_productos", categorias: faltan }, 409);
       await bandeja(env).guardarCategorias(lista);
       return json({ ok: true, categorias: lista });
+    }
+    // --- Dueño: preguntas frecuentes ---
+    if (ruta === "/api/dueno/dudas" && metodo === "POST") {
+      let b = {};
+      try { b = await request.json(); } catch (e) {}
+      const okCats = new Set(["compras", "marcas", ...(await catsOk(env))]);
+      const vistos = new Set();
+      const lista = (Array.isArray(b.dudas) ? b.dudas : []).slice(0, 200).map((x) => {
+        const o = {
+          id: String(x.id || "").toLowerCase().slice(0, 40), cat: String(x.cat || ""),
+          q: txt(x.q, 200).trim(), a: String(x.a == null ? "" : x.a).slice(0, 2000).trim(), on: x.on !== false,
+        };
+        const t = Array.isArray(x.tambien) ? x.tambien.filter((c) => okCats.has(c)).slice(0, 20) : [];
+        if (t.length) o.tambien = t;
+        const v = Array.isArray(x.ver) ? x.ver : [];
+        o.ver = [txt(v[0], 60).trim(), okCats.has(v[1]) ? v[1] : "", txt(v[2], 60).trim()];
+        if (x.match) { const m = String(x.match).slice(0, 160); try { new RegExp(m); o.match = m; } catch (e) {} }
+        return o;
+      }).filter((o) => /^[a-z0-9-]{1,40}$/.test(o.id) && okCats.has(o.cat) && o.q && o.a && !vistos.has(o.id) && vistos.add(o.id));
+      await bandeja(env).guardarDudas(lista);
+      return json({ ok: true, dudas: lista });
     }
     // --- Dueño: banners ---
     if (ruta === "/api/dueno/banners" && metodo === "POST") {

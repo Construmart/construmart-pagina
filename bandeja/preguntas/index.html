@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Preguntas · Panel Construmart</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800;900&display=swap">
+<link rel="icon" href="/favicon.ico">
+<style>
+/* Panel del dueño, pestaña Productos: barra para buscar/filtrar, lista de productos y panel lateral para editar uno. */
+:root{
+  --bg:#FBF6EE; --panel:#ffffff; --ink:#343639; --muted:#6d6862; --line:#eadfcf; --cream:#F5EBDD;
+  --accent:#FF6A00; --accent-soft:#FFF1E4; --ok:#16a34a; --danger:#c0392b;
+  --display:"Montserrat","Segoe UI",Arial,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 var(--display)}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+[hidden]{display:none!important}
+img{max-width:100%;height:auto}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+h1,h2,h3{margin:0;text-wrap:balance}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header{background:var(--ink);color:var(--cream);position:sticky;top:0;z-index:5}
+header .wrap{display:flex;align-items:center;gap:12px;padding-block:12px;flex-wrap:wrap}
+header img{width:40px;height:auto}
+header h1{font-weight:900;font-size:19px;flex:1;min-width:0}
+header h1 span{color:var(--accent)}
+.nav{display:flex;gap:4px;background:#ffffff14;border-radius:30px;padding:3px}
+.nav a{color:var(--cream);text-decoration:none;font-weight:800;font-size:12.5px;padding:6px 12px;border-radius:30px}
+.nav a.on{background:var(--accent);color:#fff}
+.hbtn{border:1px solid #ffffff55;background:transparent;color:#fff;border-radius:8px;padding:6px 12px;font-weight:700;font-size:12.5px}
+.login{min-height:70vh;display:grid;place-items:center;padding:24px 16px}
+.login form{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:24px 22px;width:min(360px,100%);display:grid;gap:12px;text-align:center}
+.login img{width:96px;justify-self:center}
+.login h2{font-weight:900;font-size:22px}
+.login p{margin:0;color:var(--muted);font-size:13px}
+input,select,textarea{border:1.5px solid var(--line);border-radius:8px;padding:10px 12px;background:var(--panel);font-size:14px;min-width:0;width:100%}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent)}
+.go{background:var(--accent);color:#fff;border:0;border-radius:8px;padding:12px;font-weight:800;font-size:15px}
+.err{color:var(--danger);font-weight:700;font-size:13px;min-height:1em;margin:0}
+/* Barra */
+.tools{position:sticky;top:64px;z-index:4;background:var(--bg);padding-block:12px;border-bottom:1px solid var(--line)}
+.tw{display:flex;gap:8px;flex-wrap:wrap}
+.tools input{flex:1 1 220px;width:auto}
+.tools select{flex:0 1 210px;width:auto}
+.btn{border:1.5px solid var(--ink);background:transparent;border-radius:8px;padding:9px 14px;font-weight:800;font-size:13px;color:var(--ink);display:inline-flex;align-items:center;justify-content:center;gap:7px;white-space:nowrap}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.sm{padding:6px 10px;font-size:12px}
+.btn.danger{border-color:var(--danger);color:var(--danger)}
+.btn.sure{background:var(--danger);color:#fff}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.cuenta{font-size:12.5px;color:var(--muted);margin:10px 0}
+/* Lista */
+.lista{display:grid;gap:8px;padding-bottom:40px}
+.row{display:grid;grid-template-columns:56px minmax(0,1fr) auto;gap:12px;align-items:center;background:var(--panel);border:1.5px solid var(--line);border-radius:10px;padding:8px 10px}
+.row img,.row .nof{width:56px;height:56px;border-radius:8px;object-fit:contain;background:#fff;border:1px solid var(--line)}
+.row .nof{display:grid;place-items:center;font-size:10px;color:var(--muted);text-align:center;border-style:dashed}
+.row b{display:block;font-weight:800;overflow-wrap:anywhere}
+.row small{color:var(--muted);font-size:12px}
+.marca{font-size:11px;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:.3px}
+.row .acts{display:flex;gap:6px;align-items:center}
+.rayo{border:1.5px solid var(--line);background:var(--panel);border-radius:8px;padding:6px 8px;color:var(--muted);display:inline-flex}
+.rayo.on{background:var(--ok);border-color:var(--ok);color:#fff}
+.vacio{background:var(--panel);border:1.5px dashed var(--line);border-radius:10px;padding:26px 16px;text-align:center;color:var(--muted)}
+/* Editor */
+.veil{position:fixed;inset:0;background:#0007;z-index:20;display:flex;justify-content:flex-end}
+.sheet{background:var(--bg);width:min(560px,100%);height:100%;overflow-y:auto;overscroll-behavior:contain;padding:18px max(18px,env(safe-area-inset-right,0px)) calc(24px + env(safe-area-inset-bottom,0px)) 18px;display:grid;gap:14px;align-content:start}
+.sheet h2{font-weight:900;font-size:22px}
+label.l{display:grid;gap:4px;font-size:12.5px;font-weight:700}
+label.l small{font-weight:500;color:var(--muted)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+textarea{min-height:90px;resize:vertical}
+.foto{display:grid;grid-template-columns:110px minmax(0,1fr);gap:12px;align-items:center}
+.foto .box{width:110px;height:110px;border:1.5px dashed var(--line);border-radius:10px;background:#fff;display:grid;place-items:center;overflow:hidden;color:var(--muted);font-size:12px;text-align:center}
+.foto .box img{width:100%;height:100%;object-fit:contain}
+.foto .bts{display:flex;gap:8px;flex-wrap:wrap}
+.pastez{border:1.5px dashed #f7c7a6;background:var(--accent-soft);border-radius:8px;padding:8px 10px;font-size:12px;line-height:1.3;cursor:text;max-width:280px;caret-color:transparent;outline:none}
+.pastez span{color:var(--muted);font-size:11px}
+.pastez:focus{border-color:var(--accent);box-shadow:0 0 0 2px #FF6A0033}
+.draft{display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:var(--accent-soft);border:1px solid #f7c7a6;border-radius:8px;padding:10px 12px;font-size:13px}
+.draft span{flex:1 1 180px}
+.mtable{border:1.5px solid var(--line);border-radius:10px;overflow:hidden;background:var(--panel)}
+.mhead,.mrow{display:grid;grid-template-columns:46px 56px minmax(0,1fr) minmax(0,1fr) 84px 30px;align-items:center}
+.mhead{background:var(--cream);font-size:10.5px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);font-weight:800}
+.mhead span{padding:7px 8px}
+.mrow{border-top:1px solid var(--line)}
+.mrow input{border:0;border-radius:0;padding:9px 8px;min-width:0;background:var(--panel)}
+.mrow input+input{border-left:1px solid var(--line)}
+.mrow input:focus{outline:2px solid var(--accent);outline-offset:-2px}
+.mrow select.mt{border:0;border-left:1px solid var(--line);border-radius:0;padding:9px 4px;background:var(--panel);font-size:12.5px;min-width:0;height:100%}
+.mrow select.mt.int{color:var(--accent);font-weight:700}
+.mpz{height:100%;min-height:42px;display:grid;place-items:center;text-align:center;border-right:1px solid var(--line);background:var(--accent-soft);color:var(--accent);font-size:10.5px;font-weight:700;line-height:1.15;cursor:text;caret-color:transparent;outline:none;user-select:none;padding:2px}
+.mpz:focus{box-shadow:inset 0 0 0 2px var(--accent);background:#fff}
+.mphw{position:relative;height:100%;display:grid;place-items:center;border-right:1px solid var(--line)}
+.mph{width:36px;height:36px;border:1px dashed var(--line);border-radius:6px;background:#fff;color:var(--muted);display:grid;place-items:center;padding:0;overflow:hidden}
+.mph img{width:100%;height:100%;object-fit:contain}
+.mph.busy{opacity:.5}
+.mphx{position:absolute;top:1px;right:1px;width:16px;height:16px;border-radius:50%;border:0;background:var(--ink);color:#fff;font-size:9px;line-height:16px;padding:0}
+.mdel{border:0;background:none;color:var(--muted);font-size:15px;height:100%;border-left:1px solid var(--line)}
+.mdel:hover{color:var(--danger)}
+.madd{justify-self:start;background:none;border:0;color:var(--accent);font-weight:800;font-size:13px;padding:4px 0}
+.mfill{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.mseq{background:var(--accent-soft);border:1px solid #f7c7a6;color:var(--accent);font-weight:700;font-size:12.5px;border-radius:20px;padding:4px 12px}
+.mseqn{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--muted)}
+.mseqn select{padding:3px 6px;font-size:12.5px;width:auto}
+.bulk{border-color:var(--ok);color:var(--ok)}
+.bulk.off{border-color:var(--line);color:var(--muted)}
+.bulk.sure{background:var(--ok);color:#fff}
+.bulk.off.sure{background:var(--ink);border-color:var(--ink);color:#fff}
+.chk{display:flex;align-items:center;gap:10px;font-weight:700;border:1.5px solid #16a34a55;background:#16a34a12;border-radius:10px;padding:10px 12px}
+.chk svg{color:var(--ok);flex:none}
+.chk input{width:20px;height:20px;accent-color:var(--ok)}
+.bar{display:flex;gap:8px;flex-wrap:wrap}
+.bar .grow{flex:1}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--cream);padding:10px 18px;border-radius:30px;font-size:13px;z-index:30;max-width:calc(100% - 32px)}
+@media (max-width:600px){
+  header h1{font-size:16px}
+  header .hm{display:none}
+  header img{width:32px}
+  .tools{position:static}
+  .tw select{flex:1 1 140px}
+  .tw .btn{flex:1 1 100%}
+  .row{grid-template-columns:48px minmax(0,1fr)}
+  .row img,.row .nof{width:48px;height:48px}
+  .row .acts{grid-column:1 / -1;justify-content:flex-end}
+  .mhead,.mrow{grid-template-columns:40px 48px minmax(0,1fr) minmax(0,1fr) 66px 26px}
+  .mrow select.mt{font-size:11.5px}
+}
+/* Preguntas */
+.pqs{display:grid;gap:10px;padding-bottom:110px}
+.grupo{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin:10px 2px 0}
+.pq{background:var(--panel);border:1.5px solid var(--line);border-radius:12px}
+.pq.nueva{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.pq.off{opacity:.6}
+.pqh{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:10px 12px}
+.pqh .t{border:0;background:none;text-align:left;padding:4px 0;display:grid;gap:2px;min-width:0}
+.pqh .t b{font-weight:800;font-size:14.5px;overflow-wrap:anywhere}
+.pqh .t small{color:var(--muted);font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pqh .acts{display:flex;gap:6px;align-items:center}
+.pqh .acts .btn{height:34px;min-width:36px;padding:0 8px}
+.vis{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--muted);border:1.5px solid var(--line);border-radius:20px;padding:5px 10px;background:#fff}
+.vis.on{color:var(--ok);border-color:#16a34a66;background:#16a34a12}
+.pqb{border-top:1px solid var(--line);padding:12px;display:grid;gap:10px}
+.pqb textarea{min-height:120px}
+.pqb input,.pqb textarea,.pqb select{font-weight:500}
+.pqb .two{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+.tip{font-size:12px;color:var(--muted);margin:0}
+.prev{background:var(--bg);border:1px dashed var(--line);border-radius:8px;padding:10px 12px;font-size:13.5px}
+.prev .pt{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);display:block;margin-bottom:4px}
+.prev .vb{display:inline-block;margin-top:8px;color:var(--accent);font-weight:800;font-size:13px}
+.negr{border:1.5px solid var(--line);background:#fff;border-radius:6px;padding:2px 9px;font-weight:900;font-size:12px}
+fieldset{border:1.5px solid var(--line);border-radius:8px;padding:8px 10px;margin:0;display:grid;gap:8px}
+legend{font-size:12.5px;font-weight:700;padding:0 4px}
+.filtros{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px}
+.filtros button{border:1.5px solid var(--line);background:#fff;border-radius:20px;padding:5px 12px;font-weight:700;font-size:12.5px}
+.filtros button.on{background:var(--ink);border-color:var(--ink);color:#fff}
+@media (max-width:700px){.pqh{grid-template-columns:1fr}.pqh .acts{justify-content:flex-end;flex-wrap:wrap}.pqb .two{grid-template-columns:1fr}}
+.guardar{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--ink);padding:10px max(16px,env(safe-area-inset-left,0px)) calc(10px + env(safe-area-inset-bottom,0px))}
+.guardar .wrap{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;color:var(--cream);font-size:13px;padding:0}
+.ayuda{background:var(--panel);border:1.5px dashed var(--line);border-radius:10px;padding:12px 14px;font-size:13px;margin-bottom:12px}
+@media (max-width:700px){.nav{order:3;width:100%;overflow-x:auto;scrollbar-width:none;flex-wrap:nowrap}.nav::-webkit-scrollbar{display:none}.nav a{white-space:nowrap;flex:none}}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <img src="/marca/mart-lentes-v2.png" alt="" width="295" height="300">
+  <h1><b class="hm">Construmart · </b><span>Panel del dueño</span></h1>
+  <nav class="nav" id="nav" hidden><a href="/bandeja/">Cotizaciones</a><a href="/bandeja/productos/">Productos</a><a href="/bandeja/categorias/">Categorías</a><a href="/bandeja/precios/">Precios</a><a href="/bandeja/clientes/">Clientes</a><a href="/bandeja/banners/">Banners</a><a href="/bandeja/preguntas/" class="on">Preguntas</a><a href="/">Ver página</a></nav>
+  <button class="hbtn" id="salir" type="button" hidden>Salir</button>
+</div></header>
+<section class="login" id="login" hidden>
+  <form id="fLogin" autocomplete="on">
+    <img src="/marca/mart-lentes-v2.png" alt="" width="295" height="300">
+    <h2>Panel del dueño</h2>
+    <p>Entra con tu clave para escribir las preguntas y respuestas de “Pregúntale a Mart”.</p>
+    <input type="text" name="username" value="dueño" autocomplete="username" hidden>
+    <input type="password" id="clave" name="password" autocomplete="current-password" placeholder="Tu clave de dueño" required aria-label="Clave de dueño">
+    <p class="err" id="lerr" role="alert"></p>
+    <button class="go" type="submit" id="lgo">Entrar</button>
+  </form>
+</section>
+<main id="app" hidden>
+  <div class="wrap" style="padding-top:16px">
+    <div class="ayuda"><b>Preguntas frecuentes (“Pregúntale a Mart”).</b> Escribe la pregunta, su respuesta y en qué área va. Salen en la sección <b>Pregúntale a Mart</b> y también dentro de la categoría que escojas. Toca una pregunta para abrirla y editarla. Para resaltar palabras en <b>negritas</b>, ponlas entre dos asteriscos: <code>**así**</code>.</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;align-items:center"><input id="nueva" placeholder="Escribe la nueva pregunta (ej. ¿Qué tinaco me conviene?)" style="flex:1 1 300px;max-width:520px"><button class="btn pri" type="button" id="agregar">+ Agregar pregunta</button></div>
+    <div class="filtros" id="filtros"></div>
+    <p class="cuenta" id="cuenta">Cargando…</p>
+    <div class="pqs" id="pqs"></div>
+  </div>
+</main>
+<div class="guardar" id="barra" hidden><div class="wrap"><span>Tienes cambios sin guardar</span><span style="display:flex;gap:8px"><button class="btn sm" type="button" id="deshacer" style="color:#fff;border-color:#ffffff66">Deshacer</button><button class="btn pri" type="button" id="guardar">Guardar cambios</button></span></div></div>
+<div class="toast" id="toast" hidden></div>
+<script>
+const DUDAS_BASE=[{"id": "envio", "cat": "compras", "q": "¿Tienen envío a domicilio?", "a": "Sí, te llevamos tu pedido a tu casa u obra. Al cotizar, elige **Envío a domicilio** y escribe tu dirección. Te confirmamos por WhatsApp el **costo y el día de entrega** según tu zona.", "on": true, "ver": ["", "", ""]}, {"id": "factura", "cat": "compras", "q": "¿Necesitas factura?", "a": "¡Con gusto! Emitimos **factura electrónica (CFDI 4.0)** de tu compra. Para hacerla necesitamos tu **RFC**, **nombre o razón social**, **régimen fiscal**, **código postal** y el **uso del CFDI**.\nLo más fácil: mándanos por WhatsApp una foto o PDF de tu **Constancia de Situación Fiscal**. Al cotizar, marca la casilla **Necesito factura**.", "on": true, "ver": ["", "", ""]}, {"id": "truper-pretul", "cat": "marcas", "q": "¿Qué diferencia hay entre Truper y Pretul?", "a": "Las dos son de la misma empresa, el **Grupo Truper**. La diferencia está en la calidad y el precio. **Pretul** es la línea económica, pensada para usarse en casa o de vez en cuando. **Truper** es más resistente y está hecha para trabajo frecuente.", "on": true, "tambien": ["herramientas-manuales", "herramientas-electricas", "seguridad-industrial", "pintura", "jardineria"], "ver": ["Pretul", "", "Ver productos Pretul"]}, {"id": "truper-expert", "cat": "marcas", "q": "¿Qué es Truper Expert?", "a": "Es la línea más alta de Truper, hecha para uso profesional e intensivo: todos los días, en la obra, el taller o la planta. Si lo vas a usar a diario en tu trabajo, conviene Expert. Aquí la encuentras, por ejemplo, en chalecos, respiradores e impermeables.", "on": true, "tambien": ["herramientas-manuales", "herramientas-electricas", "seguridad-industrial"], "ver": ["Expert", "", "Ver productos Truper Expert"]}, {"id": "cual-marca", "cat": "marcas", "q": "Pretul, Truper o Truper Expert: ¿cuál me llevo?", "a": "Depende de qué tanto lo vas a usar:\n**En casa, de vez en cuando:** Pretul.\n**Trabajo frecuente:** Truper.\n**Uso diario e intensivo:** Truper Expert.\nSi tienes duda, dinos para qué lo necesitas en tu cotización y te recomendamos.", "on": true, "tambien": ["herramientas-manuales", "herramientas-electricas"], "ver": ["", "", ""]}, {"id": "familia", "cat": "marcas", "q": "¿Conoces las marcas que complementan a Truper?", "a": "Son marcas del mismo Grupo Truper, cada una especializada en su área:\n**Foset:** plomería.\n**Volteck:** material eléctrico.\n**Fiero:** productos de acero, como tornillería, clavos y mallas.\n**Hermex:** cerrajería, como candados y cerraduras.\n**Klintek:** limpieza.", "on": true, "tambien": ["plomeria", "material-electrico", "limpieza", "ferreteria", "mallas", "metal"], "ver": ["", "", ""]}, {"id": "garantia", "cat": "marcas", "q": "¿Las marcas económicas tienen garantía?", "a": "Sí. Las herramientas Pretul también tienen garantía de fábrica, igual que Truper. El tiempo y las condiciones vienen en el empaque o en el manual de cada producto; guarda tu comprobante.", "on": true, "ver": ["", "", ""]}, {"id": "cpvc-pvc", "cat": "plomeria", "q": "¿CPVC o PVC?", "a": "El **CPVC** aguanta agua caliente: úsalo en la línea del calentador, regaderas y lavabos. El **PVC hidráulico** es solo para agua fría: tomas, cisterna y riego. Si por el tubo va a pasar agua caliente, usa CPVC.", "on": true, "ver": ["CPVC", "plomeria", "Ver tubería y conexiones CPVC"], "match": "^Tubo (CPVC|PVC hidráulico)"}, {"id": "hidra-sani", "cat": "plomeria", "q": "¿PVC hidráulico o sanitario?", "a": "El **hidráulico** trabaja con presión y lleva el agua limpia a la casa. El **sanitario** es para el drenaje: baños, lavabos y desagües, sin presión. No se cambian uno por otro.", "on": true, "ver": ["sanitario", "plomeria", "Ver tubo sanitario"], "match": "^Tubo PVC sanitario"}, {"id": "ppr", "cat": "plomeria", "q": "¿Qué es el PPR y cuándo conviene?", "a": "Es tubería de polipropileno para agua fría y caliente. No lleva pegamento: se une con calor (termofusión), por eso las uniones quedan de una pieza y duran mucho. Necesitas la termofusionadora.", "on": true, "ver": ["PPR", "plomeria", "Ver tubería PPR"], "match": "^Tubo de PPR"}, {"id": "cobre", "cat": "plomeria", "q": "¿Cobre o CPVC para agua caliente?", "a": "Los dos sirven. El **cobre** aguanta más temperatura y golpes, pero se suelda con soplete. El **CPVC** es más económico y se pega con su cemento especial.", "on": true, "ver": ["cobre", "plomeria", "Ver conexiones de cobre"]}, {"id": "cemento", "cat": "construccion", "q": "¿Cemento gris, mortero o cemento blanco?", "a": "**Cemento gris:** para concreto de colados, firmes, castillos y dalas. **Mortero:** para pegar block y ladrillo y para aplanar muros; no se usa en la estructura. **Cemento blanco:** para acabados, junteo y trabajos decorativos.", "on": true, "ver": ["Cemento", "construccion", "Ver cementos y morteros"], "match": "^(Cemento gris|Cemento blanco|Mortero)$"}, {"id": "pegapiso", "cat": "construccion", "q": "¿Pegapiso o pegazulejo?", "a": "El **pegazulejo** es para azulejo en muros. El **pegapiso** aguanta más peso y tráfico: es para pisos y piezas grandes. Para porcelanato, pide uno especial para porcelanato.", "on": true, "ver": ["Pega", "construccion", "Ver pegapisos y pegazulejos"], "match": "^(Pegapiso|Pegazulejo)"}, {"id": "brocha-rodillo", "cat": "pintura", "q": "¿Brocha o rodillo?", "a": "El **rodillo** es para muros y techos: pinta más rápido y más parejo. La **brocha** es para orillas, esquinas, marcos, puertas y rejas. Con los dos el trabajo queda mejor.", "on": true, "ver": ["Rodillo", "pintura", "Ver rodillos y brochas"]}, {"id": "cuanta-pintura", "cat": "pintura", "q": "¿Cuánta pintura necesito?", "a": "Mide cada muro (largo por alto) y suma los metros cuadrados. Divídelos entre el rendimiento que dice la cubeta y multiplícalo por las manos que vas a dar (casi siempre son 2). Si quieres, pon las medidas en los comentarios de tu cotización y te ayudamos a calcular.", "on": true, "ver": ["", "", ""]}, {"id": "sellador", "cat": "impermeabilizantes", "q": "¿Por qué poner sellador antes de impermeabilizar?", "a": "El sellador prepara la azotea: tapa el poro para que el impermeabilizante se pegue bien y rinda más. Sin sellador se gasta más producto y dura menos.", "on": true, "ver": ["Sellador", "impermeabilizantes", "Ver selladores"], "match": "^Sellador"}, {"id": "aplicar-imper", "cat": "impermeabilizantes", "q": "¿Cómo aplico el impermeabilizante?", "a": "1) Barre y lava la azotea. 2) Resana grietas y fisuras. 3) Aplica el sellador y deja secar. 4) Da dos manos de impermeabilizante en cruz, con cepillo, dejando secar entre una y otra.", "on": true, "ver": ["Impermeabilizante", "impermeabilizantes", "Ver impermeabilizantes"], "match": "^Impermeabilizante"}, {"id": "casquillo", "cat": "seguridad-industrial", "q": "¿Casquillo de acero o de composite?", "a": "Los dos protegen la punta del pie de golpes. El de **composite** o **aramida** pesa menos, no conduce electricidad ni frío y no suena en los detectores de metal. El **metálico** suele ser más económico.", "on": true, "ver": ["Bota", "seguridad-industrial", "Ver calzado de seguridad"], "match": "^Bota de seguridad"}, {"id": "guantes", "cat": "seguridad-industrial", "q": "¿Qué guante para qué trabajo?", "a": "**Carnaza:** carga y trabajo rudo. **Nitrilo:** buen agarre y contacto con aceites. **Anticorte:** vidrio y lámina. **Carnaza para soldador:** calor y chispas.", "on": true, "ver": ["Guantes", "seguridad-industrial", "Ver guantes"]}];
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const marca=t=>esc(t).replace(/\*\*(.+?)\*\*/g,"<b>$1</b>").replace(/\n/g,"<br>");
+const slugDe=s=>String(s||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"").slice(0,32);
+function toast(t){const el=$("#toast");el.textContent=t;el.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>el.hidden=true,3200)}
+async function api(path,body){const r=await fetch(path,body?{method:"POST",credentials:"same-origin",headers:{"content-type":"application/json"},body:JSON.stringify(body)}:{credentials:"same-origin",cache:"no-store"});
+  const j=await r.json().catch(()=>({}));if(r.status===401&&!path.endsWith("/entrar")){verLogin();throw new Error("sin_sesion")}return j}
+let D=[],orig="[]",AREAS=[],abierta=null,nuevaId="",filtro="";
+const areaNom=s=>(AREAS.find(a=>a.slug===s)||{name:s}).name;
+function verLogin(){$("#login").hidden=false;$("#app").hidden=true;$("#nav").hidden=$("#salir").hidden=true;setTimeout(()=>$("#clave").focus(),50)}
+function verApp(){$("#login").hidden=true;$("#app").hidden=false;$("#nav").hidden=$("#salir").hidden=false;cargar()}
+$("#fLogin").addEventListener("submit",async e=>{e.preventDefault();const b=$("#lgo");b.disabled=true;b.textContent="Revisando…";$("#lerr").textContent="";
+  try{const j=await api("/api/dueno/entrar",{clave:$("#clave").value});if(j.ok){$("#clave").value="";verApp()}else $("#lerr").textContent="Clave incorrecta. Revísala e intenta otra vez."}
+  catch(err){$("#lerr").textContent="No se pudo entrar. Revisa tu conexión."}finally{b.disabled=false;b.textContent="Entrar"}});
+$("#salir").onclick=async()=>{try{await api("/api/dueno/salir",{})}catch(e){}verLogin()};
+const sucio=()=>JSON.stringify(D)!==orig;
+function marcarBarra(){$("#barra").hidden=!sucio()}
+async function cargar(){
+  try{const [c,d]=await Promise.all([fetch("/api/categorias",{cache:"no-store"}).then(r=>r.json()),fetch("/api/dudas",{cache:"no-store"}).then(r=>r.json())]);
+    AREAS=[{slug:"compras",name:"Compras y facturas"},{slug:"marcas",name:"Nuestras marcas"},...c.categorias.map(x=>({slug:x.slug,name:x.name}))];
+    D=(d.propias?d.dudas:DUDAS_BASE).map(x=>({id:x.id,cat:x.cat,q:x.q,a:x.a,on:x.on!==false,tambien:x.tambien||[],ver:x.ver&&x.ver.length?[x.ver[0]||"",x.ver[1]||"",x.ver[2]||""]:["","",""],match:x.match||""}));
+    orig=JSON.stringify(D);pintar()}
+  catch(e){$("#cuenta").textContent="No se pudieron cargar las preguntas. Recarga la página."}
+}
+function tarjeta(d,i){
+  const ab=abierta===d.id;
+  return `<div class="pq${d.id===nuevaId?" nueva":""}${d.on?"":" off"}" data-i="${i}" id="pq-${esc(d.id)}">
+   <div class="pqh"><button type="button" class="t" data-abrir aria-expanded="${ab}"><b>${esc(d.q)||"(Sin pregunta)"}</b><small>${esc(areaNom(d.cat))} · ${esc(d.a.replace(/\*\*/g,"").replace(/\n/g," "))||"Sin respuesta todavía"}</small></button>
+    <div class="acts"><button type="button" class="vis${d.on?" on":""}" data-vis title="Mostrar u ocultar en la página">${d.on?"● Visible":"○ Oculta"}</button><button class="btn sm" type="button" data-mv="-1" aria-label="Subir">↑</button><button class="btn sm" type="button" data-mv="1" aria-label="Bajar">↓</button><button class="btn sm danger" type="button" data-borrar aria-label="Borrar pregunta">✕</button></div></div>
+   ${ab?`<div class="pqb">
+    <label class="l">Pregunta<input data-k="q" value="${esc(d.q)}" maxlength="200" placeholder="Ej. ¿Qué tinaco me conviene?"></label>
+    <label class="l"><span style="display:flex;justify-content:space-between;align-items:center;gap:8px">Respuesta <button type="button" class="negr" data-negr title="Poner en negritas lo que seleccionaste">N</button></span><textarea data-k="a" maxlength="2000" placeholder="Escribe la respuesta como se la explicarías a un cliente en mostrador.">${esc(d.a)}</textarea></label>
+    <p class="tip">Para <b>negritas</b>: selecciona las palabras y toca <b>N</b> (o escríbelas entre **dos asteriscos**). Cada Enter es un renglón nuevo.</p>
+    <label class="l">Área donde aparece<select data-k="cat">${AREAS.map(a=>`<option value="${a.slug}"${a.slug===d.cat?" selected":""}>${esc(a.name)}</option>`).join("")}</select></label>
+    <fieldset><legend>Botón para ver productos (opcional)</legend>
+     <div class="two"><label class="l">Palabra a buscar<input data-v="0" value="${esc(d.ver[0])}" placeholder="Ej. Tinaco"></label><label class="l">Texto del botón<input data-v="2" value="${esc(d.ver[2])}" placeholder="Ej. Ver tinacos"></label></div>
+     <small class="tip">Si escribes una palabra, abajo de la respuesta sale un botón que lleva a esos productos.</small></fieldset>
+    <div class="prev"><span class="pt">Así se verá</span><b>${esc(d.q)}</b><div style="margin-top:4px">${marca(d.a)}</div>${d.ver[0]?`<span class="vb">${esc(d.ver[2]||"Ver productos")} ›</span>`:""}</div>
+    <div><button class="btn sm" type="button" data-abrir>Cerrar</button></div>
+   </div>`:""}</div>`;
+}
+function pintar(){
+  const usadas=AREAS.filter(a=>D.some(d=>d.cat===a.slug));
+  $("#filtros").innerHTML=`<button type="button" data-f=""${filtro?"":' class="on"'}>Todas (${D.length})</button>`+usadas.map(a=>`<button type="button" data-f="${a.slug}"${filtro===a.slug?' class="on"':""}>${esc(a.name)} (${D.filter(d=>d.cat===a.slug).length})</button>`).join("");
+  const vis=D.filter(d=>d.on).length;
+  $("#cuenta").textContent=`${D.length} pregunta${D.length===1?"":"s"} · ${vis} visible${vis===1?"":"s"} en la página`;
+  let html="",ult=null;
+  D.forEach((d,i)=>{if(filtro&&d.cat!==filtro)return;if(!filtro&&d.cat!==ult){html+=`<h3 class="grupo">${esc(areaNom(d.cat))}</h3>`;ult=d.cat}html+=tarjeta(d,i)});
+  $("#pqs").innerHTML=html||`<div class="vacio">No hay preguntas en esta área.</div>`;
+  marcarBarra();
+}
+function refrescarPrev(card,d){const p=card.querySelector(".prev");if(p)p.innerHTML=`<span class="pt">Así se verá</span><b>${esc(d.q)}</b><div style="margin-top:4px">${marca(d.a)}</div>${d.ver[0]?`<span class="vb">${esc(d.ver[2]||"Ver productos")} ›</span>`:""}`;
+  const t=card.querySelector(".t");t.querySelector("b").textContent=d.q||"(Sin pregunta)";t.querySelector("small").textContent=areaNom(d.cat)+" · "+(d.a.replace(/\*\*/g,"").replace(/\n/g," ")||"Sin respuesta todavía")}
+$("#pqs").addEventListener("input",e=>{const card=e.target.closest(".pq");if(!card)return;const d=D[+card.dataset.i];
+  if(e.target.dataset.k&&e.target.dataset.k!=="cat")d[e.target.dataset.k]=e.target.value;
+  if(e.target.dataset.v){d.ver[+e.target.dataset.v]=e.target.value;d.ver[1]=AREAS.slice(2).some(a=>a.slug===d.cat)?d.cat:""}
+  refrescarPrev(card,d);marcarBarra()});
+$("#pqs").addEventListener("change",e=>{if(e.target.dataset.k!=="cat")return;const d=D[+e.target.closest(".pq").dataset.i];d.cat=e.target.value;if(d.ver[0])d.ver[1]=AREAS.slice(2).some(a=>a.slug===d.cat)?d.cat:"";pintar()});
+$("#pqs").addEventListener("click",e=>{const card=e.target.closest(".pq");if(!card)return;const i=+card.dataset.i,d=D[i];
+  if(e.target.closest("[data-abrir]")){abierta=abierta===d.id?null:d.id;pintar();if(abierta){const el=document.getElementById("pq-"+d.id);if(el)el.scrollIntoView({block:"nearest"})}return}
+  if(e.target.closest("[data-vis]")){d.on=!d.on;pintar();return}
+  const mv=e.target.closest("[data-mv]");if(mv){const paso=Number(mv.dataset.mv);let j=i+paso;while(j>=0&&j<D.length&&D[j].cat!==d.cat)j+=paso;if(j<0||j>=D.length){toast("Ya está "+(paso<0?"hasta arriba":"hasta abajo")+" de su área.");return}[D[i],D[j]]=[D[j],D[i]];pintar();return}
+  if(e.target.closest("[data-negr]")){const ta=card.querySelector("textarea");const a=ta.selectionStart,b=ta.selectionEnd;if(a===b){toast("Primero selecciona las palabras que quieres en negritas.");ta.focus();return}
+    ta.value=ta.value.slice(0,a)+"**"+ta.value.slice(a,b)+"**"+ta.value.slice(b);d.a=ta.value;ta.focus();ta.setSelectionRange(a,b+4);refrescarPrev(card,d);marcarBarra();return}
+  const bo=e.target.closest("[data-borrar]");if(bo){if(!bo.dataset.sure){bo.dataset.sure="1";bo.textContent="¿Borrar?";bo.classList.add("sure");setTimeout(()=>{if(bo.isConnected){delete bo.dataset.sure;bo.textContent="✕";bo.classList.remove("sure")}},3000);return}D.splice(i,1);pintar();toast("Pregunta quitada. Toca Guardar cambios para que se quite de la página.")}});
+$("#filtros").addEventListener("click",e=>{const b=e.target.closest("[data-f]");if(!b)return;filtro=b.dataset.f;pintar()});
+function agregar(){const q=$("#nueva").value.trim();if(!q){$("#nueva").focus();toast("Escribe la pregunta.");return}
+  let base=slugDe(q)||"pregunta",id=base,n=2;while(D.some(d=>d.id===id))id=base+"-"+n++;
+  const cat=filtro||"compras";
+  D.unshift({id,cat,q:/^¿/.test(q)||!/\?$/.test(q)?q:"¿"+q,a:"",on:true,tambien:[],ver:["","",""],match:""});
+  nuevaId=abierta=id;$("#nueva").value="";pintar();
+  const el=document.querySelector(`#pq-${id} textarea`);if(el){el.scrollIntoView({block:"center"});el.focus()}
+  toast("Escribe la respuesta, escoge el área y toca Guardar cambios.")}
+$("#agregar").onclick=agregar;$("#nueva").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();agregar()}});
+$("#deshacer").onclick=()=>{D=JSON.parse(orig);nuevaId="";abierta=null;pintar()};
+$("#guardar").onclick=async()=>{const b=$("#guardar");
+  const mala=D.find(d=>!d.q.trim()||!d.a.trim());if(mala){abierta=mala.id;filtro="";pintar();const el=document.getElementById("pq-"+mala.id);if(el)el.scrollIntoView({block:"center"});toast("A esta pregunta le falta "+(mala.q.trim()?"la respuesta":"escribir la pregunta")+".");return}
+  b.disabled=true;b.textContent="Guardando…";
+  try{const j=await api("/api/dueno/dudas",{dudas:D});
+    if(!j.ok){toast("No se pudo guardar. Revisa los datos.");return}
+    D=j.dudas.map(x=>({id:x.id,cat:x.cat,q:x.q,a:x.a,on:x.on!==false,tambien:x.tambien||[],ver:x.ver||["","",""],match:x.match||""}));orig=JSON.stringify(D);nuevaId="";pintar();toast("¡Listo! Las preguntas ya están en la página.")}
+  catch(err){if(err.message!=="sin_sesion")toast("No se pudo guardar. Revisa tu conexión e inténtalo otra vez.")}finally{b.disabled=false;b.textContent="Guardar cambios"}};
+window.addEventListener("beforeunload",e=>{if(sucio()){e.preventDefault();e.returnValue=""}});
+(async()=>{try{const r=await fetch("/api/dueno/sesion",{credentials:"same-origin",cache:"no-store"});r.ok?verApp():verLogin()}catch(e){verLogin()}})();
+</script>
+</body>
+</html>

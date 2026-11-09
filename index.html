@@ -1809,7 +1809,7 @@ document.addEventListener("click",async e=>{
   if(e.target.closest("#cliSalir")){try{await fetch("/api/salir",{method:"POST",credentials:"same-origin"})}catch(err){}cliSet(null);toast("Saliste de tu sesión de cliente.")}
 });
 (async()=>{try{const r=await fetch("/api/sesion",{credentials:"same-origin",cache:"no-store"});if(!r.ok)return;const j=await r.json();if(!j||j.ok!==true)return;
-  $("#cliBtn").hidden=false;SRV=true;cotizHist();catsServidor();prodServidor();bannersServidor();if(j.cliente)cliSet(j.cliente);if(j.dueno)duenoSet(true)}catch(e){}})();
+  $("#cliBtn").hidden=false;SRV=true;cotizHist();catsServidor();dudasServidor();prodServidor();bannersServidor();if(j.cliente)cliSet(j.cliente);if(j.dueno)duenoSet(true)}catch(e){}})();
 // ===== Productos al día: en internet la página pide la lista que el dueño edita en su panel =====
 async function prodServidor(){
   try{const r=await fetch("/api/productos",{credentials:"same-origin"});if(!r.ok)return;const j=await r.json();
@@ -1827,7 +1827,7 @@ let DUENO=false;
 function duenoSet(on){
   DUENO=on;document.body.classList.toggle("modo-dueno",on);
   let bar=$("#duenoBar");
-  if(on&&!bar){document.body.insertAdjacentHTML("afterbegin",`<div class="dueno-bar" id="duenoBar"><div class="wrap"><b>🛠️ Modo dueño</b><a href="/bandeja/">Cotizaciones</a><a href="/bandeja/productos/">Productos</a><a href="/bandeja/categorias/">Categorías</a><a href="/bandeja/precios/">Precios</a><a href="/bandeja/banners/">Banners</a><a href="/bandeja/clientes/">Clientes</a><a href="/bandeja/productos/#nuevo" id="duenoNuevo">+ Agregar producto</a><button type="button" id="duenoSalir">Salir</button></div></div>`);bar=$("#duenoBar")}
+  if(on&&!bar){document.body.insertAdjacentHTML("afterbegin",`<div class="dueno-bar" id="duenoBar"><div class="wrap"><b>🛠️ Modo dueño</b><a href="/bandeja/">Cotizaciones</a><a href="/bandeja/productos/">Productos</a><a href="/bandeja/categorias/">Categorías</a><a href="/bandeja/precios/">Precios</a><a href="/bandeja/banners/">Banners</a><a href="/bandeja/preguntas/">Preguntas</a><a href="/bandeja/clientes/">Clientes</a><a href="/bandeja/productos/#nuevo" id="duenoNuevo">+ Agregar producto</a><button type="button" id="duenoSalir">Salir</button></div></div>`);bar=$("#duenoBar")}
   if(!on&&bar)bar.remove();
   duenoPintar();
 }
@@ -1908,7 +1908,7 @@ document.addEventListener("change",e=>{if(e.target.name==="fent"){form.entrega=e
   const lp=$("#lbPick");if(lp)lp.textContent=env?"¿Cuándo lo necesitas?":"¿Cuándo pasarías por tu pedido?";renderQuote();if(env&&d)setTimeout(()=>$("#fdir").focus(),30)}});
 document.addEventListener("click",e=>{const a=e.target.closest("[data-envio]");if(a){form.entrega="envio";try{const f=JSON.parse(localStorage.getItem("cm-form")||"{}");f.entrega="envio";localStorage.setItem("cm-form",JSON.stringify(f))}catch(err){}}});
 // ===== Lo nuevo: Mart acomodó productos nuevos (se calcula solo con la fecha de alta de cada producto) =====
-let ACTUALIZADO=1794260834320;const DIA=864e5;
+let ACTUALIZADO=1794261346539;const DIA=864e5;
 function fechaAlta(p){if(!p||!/^p[0-9a-z]{7,10}$/.test(p.id))return 0;const t=parseInt(p.id.slice(1),36);return t>1.6e12&&t<Date.now()+DIA?t:0}
 const NUEVOS=(dias=7)=>P.filter(p=>!p.hidden&&fechaAlta(p)>=Date.now()-dias*DIA).sort((a,b)=>fechaAlta(b)-fechaAlta(a));
 function nuevoBadge(p){return fechaAlta(p)>=Date.now()-7*DIA?`<span class="nuevo-tag">Nuevo</span>`:""}
@@ -2062,6 +2062,18 @@ document.addEventListener("click",async e=>{
     q.items.forEach(it=>{if(it.custom){quote.push({custom:true,name:it.n,qty:it.q});n++;return}if(!byId(it.id))return;const ex=quote.find(i=>i.id===it.id&&i.variant===it.v);ex?ex.qty+=it.q:quote.push({id:it.id,variant:it.v,qty:it.q});n++});
     save();updateBadge();toast(`Se agregaron ${n} producto${n===1?"":"s"} a tu cotización`);location.hash="cotizacion"}
 });
+// ===== Pregúntale a Mart: el dueño escribe preguntas y respuestas desde su panel =====
+function dudaMarca(t){return esc(t).replace(/\*\*(.+?)\*\*/g,"<b>$1</b>").replace(/\n/g,"<br>")}
+async function dudasServidor(){
+  try{const r=await fetch("/api/dudas",{cache:"no-store"});if(!r.ok)return;const j=await r.json();if(!j||!j.ok||!j.propias||!Array.isArray(j.dudas))return;
+    const L=j.dudas.filter(d=>d.on!==false&&d.q&&d.a).map(d=>{const o={id:d.id,cat:d.cat,q:d.q,a:dudaMarca(d.a)};
+      if(d.tambien&&d.tambien.length)o.tambien=d.tambien;
+      if(d.ver&&d.ver[0])o.ver=[d.ver[0],d.ver[1]||"",d.ver[2]||"Ver productos"];
+      if(d.match){try{o.match=new RegExp(d.match,"i")}catch(e){}}return o});
+    DUDAS.splice(0,DUDAS.length,...L);
+    const h=location.hash.slice(1);if(h==="dudas"||catBy(h)){const y=scrollY;route();window.scrollTo(0,y)}
+  }catch(e){}
+}
 let search=null;
 function route(){
   showHero(null);
