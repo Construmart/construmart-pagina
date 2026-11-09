@@ -175,6 +175,10 @@ export class Bandeja extends DurableObject {
     return Object.assign(out, especiales || {});
   }
 
+  // ===== Banners del inicio (el dueño los cambia desde su panel) =====
+  async banners() { return (await this.ctx.storage.get("banners")) || null; }
+  async guardarBanners(lista) { await this.ctx.storage.put("banners", lista); return true; }
+
   // ===== Productos de la página (el dueño los edita desde su panel) =====
   sqlFotos() {
     if (!this._sql) {
@@ -361,6 +365,11 @@ async function api(request, env, url) {
     return json({ ok: true }, 200, { "set-cookie": cookie(COOKIE, "", 0) });
   }
 
+  // --- Banners del inicio (los lee la página) ---
+  if (ruta === "/api/banners" && metodo === "GET") {
+    const b = await bandeja(env).banners();
+    return new Response(JSON.stringify({ ok: true, banners: b }), { headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-cache" } });
+  }
   // --- Productos (los lee la página) ---
   if (ruta === "/api/productos" && metodo === "GET") return productosPublicos(request, env, url);
   const mf = ruta.match(/^\/api\/foto\/([a-z0-9]{8,40})$/);
@@ -454,6 +463,20 @@ async function api(request, env, url) {
       }
       await stub.guardarCliente(u, datos);
       return json({ ok: true });
+    }
+    // --- Dueño: banners ---
+    if (ruta === "/api/dueno/banners" && metodo === "POST") {
+      let b = {};
+      try { b = await request.json(); } catch (e) {}
+      const fecha = (v) => (/^\d{4}-\d{2}-\d{2}$/.test(String(v || "")) ? String(v) : "");
+      const lista = (Array.isArray(b.banners) ? b.banners : []).slice(0, 12).map((x) => ({
+        id: txt(x.id, 30) || Date.now().toString(36),
+        img: rutaFoto(x.img) || (/^marca\/[\w.-]+\.(jpg|png|webp)$/.test(String(x.img || "")) ? String(x.img) : ""),
+        href: /^#[a-z0-9-]{0,40}$/.test(String(x.href || "")) ? String(x.href) : "#inicio",
+        alt: txt(x.alt, 200).trim(), activo: x.activo !== false, desde: fecha(x.desde), hasta: fecha(x.hasta),
+      })).filter((x) => x.img);
+      await bandeja(env).guardarBanners(lista);
+      return json({ ok: true, banners: lista });
     }
     // --- Dueño: listas de precios ---
     if (ruta === "/api/dueno/precios" && metodo === "GET") return json({ ok: true, niveles: NIVELES, precios: await bandeja(env).listasTodas() });
