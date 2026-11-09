@@ -748,6 +748,8 @@ footer .fsoc{display:grid;gap:8px;align-content:start}
 .side-mas button .ic{width:20px;height:20px}
 .side-mas button:hover{background:#fff4ea}
 @media (max-width:960px){.side-mas{flex:none}.side-mas button{border:1.5px solid var(--accent);border-radius:30px;padding:8px 14px;white-space:nowrap;background:var(--accent);color:#fff;height:100%}.side-mas button .ic{width:16px;height:16px}}
+.card .ctit,.card .cdesc{display:flex;flex-direction:column;gap:4px;min-width:0}
+.card .ctit .duda-link{align-self:flex-start}
 .branches{align-items:stretch!important}.branch .bbody{flex:1;display:flex;flex-direction:column}.branch .bactions{margin-top:auto!important;padding-top:12px}
 /* Tabletas (681 a 960 px): que la página no se haga más ancha que la pantalla */
 @media (max-width:960px){.shell{grid-template-columns:minmax(0,1fr)!important}.shell>*{min-width:0}}
@@ -921,7 +923,16 @@ const descHTML=d=>{if(!d)return "";const ls=String(d).split(/\n+/).map(x=>x.trim
 // Envuelve la descripción: se ve corta y el botón "Ver más" muestra todo (solo aparece si el texto no cabe)
 const descBox=d=>{const h=descHTML(d);return h?`<div class="dbox">${h}</div><button class="vermas" type="button" aria-expanded="false" hidden>Ver más <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m6 9 6 6 6-6"/></svg></button>`:""};
 function marcarVerMas(all){document.querySelectorAll(".dbox").forEach(b=>{if(b.classList.contains("open"))return;if(b.dataset.ck&&!all)return;b.dataset.ck=1;
-  const over=b.scrollHeight>b.clientHeight+4;b.classList.toggle("fade",over);const btn=b.nextElementSibling;if(btn&&btn.classList.contains("vermas"))btn.hidden=!over})}
+  const over=b.scrollHeight>b.clientHeight+4;b.classList.toggle("fade",over);const btn=b.nextElementSibling;if(btn&&btn.classList.contains("vermas"))btn.hidden=!over});igualarCards()}
+// Alinea las tarjetas: en cada renglón, el título (con su pregunta) y la descripción ocupan la misma altura
+function igualarCards(){cancelAnimationFrame(igualarCards.r);igualarCards.r=requestAnimationFrame(()=>{
+  const cards=[...document.querySelectorAll(".card[data-id]")].filter(c=>c.querySelector(".ctit"));
+  cards.forEach(c=>{c.querySelector(".ctit").style.minHeight="";c.querySelector(".cdesc").style.minHeight=""});
+  const filas=new Map();cards.forEach(c=>{if(!c.offsetParent)return;const k=c.parentElement;let m=filas.get(k);if(!m)filas.set(k,m=new Map());const t=Math.round(c.offsetTop);(m.get(t)||m.set(t,[]).get(t)).push(c)});
+  filas.forEach(m=>m.forEach(f=>{if(f.length<2)return;
+    const ht=Math.max(...f.map(c=>c.querySelector(".ctit").offsetHeight));f.forEach(c=>c.querySelector(".ctit").style.minHeight=ht+"px");
+    const cerr=f.filter(c=>!c.querySelector(".dbox.open"));const hd=Math.max(0,...cerr.map(c=>c.querySelector(".cdesc").offsetHeight));cerr.forEach(c=>c.querySelector(".cdesc").style.minHeight=hd+"px")}));
+})}
 const pic=p=>{if(p.photo)return `<img class="ph" src="${esc(p.photo)}" alt="${esc(p.name)}" loading="lazy">`;if(p.img)return `<img class="ph" src="fotos/${p.img}" alt="${esc(p.name)}" loading="lazy">`;const d=D[p.icon];return `<svg viewBox="0 0 96 96" role="img" aria-label="${p.name}">${typeof d==="function"?d(p):d}</svg>`};
 
 // ===== Iconos de categoría =====
@@ -1304,7 +1315,7 @@ function cardFull(p){ // con cantidad, para la vista de categoría
   const sel=p.variants&&p.variants.length>1?`${p.elige?`<label class="elige" for="v-${p.id}">${esc(p.elige)}</label>`:""}<select id="v-${p.id}" required aria-label="${esc(p.elige||"Presentación")}"><option value="" disabled selected>Selecciona una opción</option>${p.variants.map(v=>`<option>${esc(v)}</option>`).join("")}</select>`:"";
   const spec=p.spec||(p.variants&&p.variants.length===1?p.variants[0]:"");
   return `<article class="card" data-id="${p.id}">${rapBadge(p)}${galeria(p).length>1?`<div class="pic rot">${rotHTML(p,galeria(p))}</div>`:`<div class="pic">${p.variants&&p.variants.length>1&&!p.photo?picV(p,p.variants[0]):pic(p)}</div>`}
-  <div class="brand${p.brand==="Material"?" generic":""}">${p.brand==="Material"?"Material de obra":esc(p.brand)}</div><h3>${p.name}</h3>${dudaLink(p)}${descBox(p.desc)}${spec?`<div class="spec">${esc(spec)}</div>`:""}${sel}${!sel&&p.elige?`<label class="elige elige-qty" for="n-${p.id}">${esc(p.elige)}</label>`:""}
+  <div class="brand${p.brand==="Material"?" generic":""}">${p.brand==="Material"?"Material de obra":esc(p.brand)}</div><div class="ctit"><h3>${p.name}</h3>${dudaLink(p)}</div><div class="cdesc">${descBox(p.desc)}</div>${spec?`<div class="spec">${esc(spec)}</div>`:""}${sel}${!sel&&p.elige?`<label class="elige elige-qty" for="n-${p.id}">${esc(p.elige)}</label>`:""}
   <div class="foot"><div class="qty"><button type="button" data-step="-1" aria-label="Menos">−</button><input id="n-${p.id}" type="number" min="1" value="1" aria-label="Cantidad"><button type="button" data-step="1" aria-label="Más">+</button></div>
   <button class="addbtn" type="button" data-addfull="${p.id}">${cartSvg}Agregar</button></div>
   ${p.unit?`<div class="spec" style="font-size:11.5px">Cantidad en ${UNIT[unitKey(p)][1]}</div>`:""}</article>`;
@@ -1909,7 +1920,7 @@ document.addEventListener("change",e=>{if(e.target.name==="fent"){form.entrega=e
   const lp=$("#lbPick");if(lp)lp.textContent=env?"¿Cuándo lo necesitas?":"¿Cuándo pasarías por tu pedido?";renderQuote();if(env&&d)setTimeout(()=>$("#fdir").focus(),30)}});
 document.addEventListener("click",e=>{const a=e.target.closest("[data-envio]");if(a){form.entrega="envio";try{const f=JSON.parse(localStorage.getItem("cm-form")||"{}");f.entrega="envio";localStorage.setItem("cm-form",JSON.stringify(f))}catch(err){}}});
 // ===== Lo nuevo: Mart acomodó productos nuevos (se calcula solo con la fecha de alta de cada producto) =====
-let ACTUALIZADO=1794262979258;const DIA=864e5;
+let ACTUALIZADO=1794264771710;const DIA=864e5;
 function fechaAlta(p){if(!p||!/^p[0-9a-z]{7,10}$/.test(p.id))return 0;const t=parseInt(p.id.slice(1),36);return t>1.6e12&&t<Date.now()+DIA?t:0}
 const NUEVOS=(dias=7)=>P.filter(p=>!p.hidden&&fechaAlta(p)>=Date.now()-dias*DIA).sort((a,b)=>fechaAlta(b)-fechaAlta(a));
 function nuevoBadge(p){return fechaAlta(p)>=Date.now()-7*DIA?`<span class="nuevo-tag">Nuevo</span>`:""}
