@@ -707,6 +707,9 @@ footer .fsoc{display:grid;gap:8px;align-content:start}
 .zoom-t small{display:block;color:var(--accent);font-weight:800;text-transform:uppercase;font-size:11.5px;letter-spacing:.4px}
 .zoom-t b{font-size:16px}
 @media (prefers-reduced-motion:reduce){.zoom-veil,.zoom-box{transition:none}}
+.aviso-precio{display:block;margin-top:6px;color:#9a5a00;background:#fff4e0;border-radius:6px;padding:6px 8px;font-weight:600}
+.cli-aviso{display:block;margin-top:6px;color:#f5c48f;font-size:12.5px}
+.pr-aviso{display:block;margin-top:4px;color:#9a5a00;font-size:13px;font-weight:600}
 .branches{align-items:stretch!important}.branch .bbody{flex:1;display:flex;flex-direction:column}.branch .bactions{margin-top:auto!important;padding-top:12px}
 /* Tabletas (681 a 960 px): que la página no se haga más ancha que la pantalla */
 @media (max-width:960px){.shell{grid-template-columns:minmax(0,1fr)!important}.shell>*{min-width:0}}
@@ -1429,7 +1432,7 @@ function msg(){
   if(prods.length){L.push("",`*PRODUCTOS (${prods.length})*`);prods.forEach(it=>{const p=byId(it.id);L.push(`▪ *${qtyTxt(p,it.qty)}* — ${detail(p,it)}${cliLinea(it)}`)})}
   if(extra.length){L.push("",`*POR CONSEGUIR (${extra.length})*`,"_No están en la página, ¿los pueden conseguir?_");extra.forEach(it=>L.push(`▪ *${qtyTxt(prodOf(it),it.qty)}* — ${it.name}`))}
   if(form.notes)L.push("",`*Comentarios:* ${form.notes}`);
-  if(CLI){const t=cliTotal();if(t.n)L.push("",`*TOTAL CON MIS PRECIOS:* ${pesos(t.total)}${CLI.nota?" ("+CLI.nota.replace(/\.$/,"").toLowerCase()+")":""}`+(t.sin?` (${t.sin} producto${t.sin===1?"":"s"} por confirmar precio)`:""));L.push("","Quedo en espera de confirmación de existencia. ¡Gracias!")}else L.push("","Quedo en espera de precio y existencia. ¡Gracias!");
+  if(CLI){const t=cliTotal();if(t.n)L.push("",`*TOTAL CON MIS PRECIOS:* ${pesos(t.total)}${CLI.nota?" ("+CLI.nota.replace(/\.$/,"").toLowerCase()+")":""}`+(t.sin?` (${t.sin} producto${t.sin===1?"":"s"} por confirmar precio)`:""));L.push("","_"+AVISO_PRECIO.replace("tu pedido","el pedido")+"_","","Quedo en espera de confirmación de existencia. ¡Gracias!")}else L.push("","Quedo en espera de precio y existencia. ¡Gracias!");
   return L.join("\n");
 }
 function viewQuote(){
@@ -1672,6 +1675,7 @@ function sideHint(){
 // ===== Clientes de mayoreo: entran con usuario y clave y ven sus precios =====
 // Solo funciona en la página publicada en internet (Cloudflare), donde está el portero /api.
 let CLI=null;
+const AVISO_PRECIO="Precios sujetos a cambio sin previo aviso y a existencia. Se respetan al confirmar tu pedido.";
 const pesos=n=>Number(n).toLocaleString("es-MX",{style:"currency",currency:"MXN"});
 const cliKey=(id,v)=>id+"|"+(v||"");
 const cliPrecio=(id,v)=>CLI&&CLI.precios?CLI.precios[cliKey(id,v)]:undefined;
@@ -1687,7 +1691,7 @@ function cliQuote(){
   if(!box){const t=tb.closest(".tablebox");if(!t)return;t.insertAdjacentHTML("afterend",`<div class="qtotal" id="qtotal"></div>`);box=$("#qtotal")}
   const t=cliTotal();
   box.hidden=!quote.length;
-  box.innerHTML=`<div><span>Total con tus precios</span><strong>${pesos(t.total)}</strong></div>${t.sin?`<small>${t.sin} producto${t.sin===1?"":"s"} sin precio: te lo confirmamos en tu pedido.</small>`:""}${CLI.nota?`<small>${esc(CLI.nota)}</small>`:""}`;
+  box.innerHTML=`<div><span>Total con tus precios</span><strong>${pesos(t.total)}</strong></div>${t.sin?`<small>${t.sin} producto${t.sin===1?"":"s"} sin precio: te lo confirmamos en tu pedido.</small>`:""}${CLI.nota?`<small>${esc(CLI.nota)}</small>`:""}<small class="aviso-precio">⚠️ ${AVISO_PRECIO}</small>`;
 }
 // Precio en cada tarjeta de producto
 function cliCard(card){
@@ -1838,7 +1842,7 @@ document.addEventListener("change",e=>{if(e.target.name==="fent"){form.entrega=e
   const lp=$("#lbPick");if(lp)lp.textContent=env?"¿Cuándo lo necesitas?":"¿Cuándo pasarías por tu pedido?";renderQuote();if(env&&d)setTimeout(()=>$("#fdir").focus(),30)}});
 document.addEventListener("click",e=>{const a=e.target.closest("[data-envio]");if(a){form.entrega="envio";try{const f=JSON.parse(localStorage.getItem("cm-form")||"{}");f.entrega="envio";localStorage.setItem("cm-form",JSON.stringify(f))}catch(err){}}});
 // ===== Lo nuevo: Mart acomodó productos nuevos (se calcula solo con la fecha de alta de cada producto) =====
-let ACTUALIZADO=1794254246280;const DIA=864e5;
+let ACTUALIZADO=1794258115392;const DIA=864e5;
 function fechaAlta(p){if(!p||!/^p[0-9a-z]{7,10}$/.test(p.id))return 0;const t=parseInt(p.id.slice(1),36);return t>1.6e12&&t<Date.now()+DIA?t:0}
 const NUEVOS=(dias=7)=>P.filter(p=>!p.hidden&&fechaAlta(p)>=Date.now()-dias*DIA).sort((a,b)=>fechaAlta(b)-fechaAlta(a));
 function nuevoBadge(p){return fechaAlta(p)>=Date.now()-7*DIA?`<span class="nuevo-tag">Nuevo</span>`:""}
@@ -1868,7 +1872,7 @@ const cliCats=()=>(CLI&&Array.isArray(CLI.cats)&&CLI.cats.length?CLI.cats:["cons
 const cliVars=p=>p.variants&&p.variants.length>1?p.variants:[p.spec||(p.variants||[])[0]||""];
 function viewCliente(){
   const mis=cliCats(),otras=CATS.filter(c=>!mis.includes(c.slug));
-  $("#view").innerHTML=`<div class="cli-home"><img src="marca/mart-feliz-v2.png" alt="" width="289" height="300"><div><span class="mart-tag">Tu cuenta de cliente</span><h1>Hola, ${esc(CLI.nombre)}</h1><p>Aquí tienes tus materiales con tus precios. Arma tu pedido en un minuto.</p>
+  $("#view").innerHTML=`<div class="cli-home"><img src="marca/mart-feliz-v2.png" alt="" width="289" height="300"><div><span class="mart-tag">Tu cuenta de cliente</span><h1>Hola, ${esc(CLI.nombre)}</h1><p>Aquí tienes tus materiales con tus precios. Arma tu pedido en un minuto.</p><small class="cli-aviso">${AVISO_PRECIO}</small>
     <div class="cli-acts"><a class="cli-big" href="#pedido-rapido"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>Pedido rápido</a><a class="cli-sec" href="#cotizacion">Mi cotización${quote.length?` (${quote.length})`:""}</a></div></div></div>
   ${mis.map(s=>{const c=catBy(s),ps=P.filter(p=>p.cat===s);if(!ps.length)return "";
     return `<section class="subsec"><h2 class="sub-band">${esc(c.name)}</h2><div class="grid5">${ps.map(cardFull).join("")}</div></section>`}).join("")}
@@ -1883,13 +1887,13 @@ function viewPedido(){
     cliVars(p).forEach(v=>{const pr=cliPrecio(p.id,v);const k=p.id+"|"+v;
       filas.push(`<div class="pr-fila" data-k="${esc(k)}" data-q="${esc(norm(p.name+" "+v+" "+p.brand))}"><div class="pr-n"><b>${esc(p.name)}</b><small>${v?esc(v)+" · ":""}${p.brand&&p.brand!=="Material"?esc(p.brand)+" · ":""}por ${esc(unitOf(p,1))}</small></div><div class="pr-p">${pr?pesos(pr):`<span class="sin">Por confirmar</span>`}</div><input class="pr-c" inputmode="numeric" enterkeyhint="next" placeholder="0" aria-label="Cantidad de ${esc(p.name)} ${esc(v)}"></div>`)})})});
   $("#view").innerHTML=`<div class="crumbs"><a href="#inicio">Inicio</a><span>›</span><span>Pedido rápido</span></div>
-  <div class="pr-head"><h1>Pedido rápido</h1><p>Escribe la cantidad en lo que necesitas y toca <b>Agregar a mi cotización</b>. Enter pasa al siguiente. Lo que no sale aquí lo encuentras con el buscador.</p><input type="search" id="prBuscar" placeholder="Buscar en tu lista… (ej. varilla, cemento)" aria-label="Buscar en el pedido rápido"></div>
+  <div class="pr-head"><h1>Pedido rápido</h1><p>Escribe la cantidad en lo que necesitas y toca <b>Agregar a mi cotización</b>. Enter pasa al siguiente. Lo que no sale aquí lo encuentras con el buscador. <span class="pr-aviso">${AVISO_PRECIO}</span></p><input type="search" id="prBuscar" placeholder="Buscar en tu lista… (ej. varilla, cemento)" aria-label="Buscar en el pedido rápido"></div>
   <div class="pr-tabla"><div class="pr-th"><span>Producto</span><span>Tu precio</span><span>Cantidad</span></div>${filas.join("")}</div>
   <div class="pr-barra"><div><b id="prN">0 productos</b><small id="prT"></small></div><button type="button" id="prAdd" disabled>Agregar a mi cotización</button></div>`;
   $("#below").innerHTML="";
 }
 function prTotales(){let n=0,t=0,sin=0;document.querySelectorAll(".pr-fila").forEach(f=>{const q=parseInt(f.querySelector(".pr-c").value,10)||0;f.classList.toggle("on",q>0);if(q>0){n++;const [id,...r]=f.dataset.k.split("|");const pr=cliPrecio(id,r.join("|"));pr?t+=pr*q:sin++}});
-  const b=$("#prAdd");if(!b)return;b.disabled=!n;$("#prN").textContent=`${n} producto${n===1?"":"s"}`;$("#prT").textContent=n?`Total con tus precios: ${pesos(t)}${sin?` · ${sin} por confirmar`:""}`:""}
+  const b=$("#prAdd");if(!b)return;b.disabled=!n;$("#prN").textContent=`${n} producto${n===1?"":"s"}`;$("#prT").textContent=n?`Total con tus precios: ${pesos(t)}${sin?` · ${sin} por confirmar`:""} · Sujeto a cambio`:""}
 document.addEventListener("input",e=>{
   if(e.target.id==="prBuscar"){const q=norm(e.target.value.trim());document.querySelectorAll(".pr-fila").forEach(f=>f.hidden=!!q&&!f.dataset.q.includes(q));document.querySelectorAll(".pr-grupo").forEach(g=>{let n=g.nextElementSibling,vis=false;while(n&&n.classList.contains("pr-fila")){if(!n.hidden)vis=true;n=n.nextElementSibling}g.hidden=!vis});return}
   if(e.target.classList.contains("pr-c")){e.target.value=e.target.value.replace(/\D/g,"").slice(0,5);prTotales()}});
