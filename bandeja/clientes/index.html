@@ -293,7 +293,7 @@ function abrir(c){
   $("#e-usuario").value=c?c.usuario:"";$("#e-usuario").disabled=!!c;
   $("#e-clave").value="";$("#e-clave").placeholder=c?"Déjala vacía para no cambiarla":"Escribe una o toca Generar";
   $("#claveTit").innerHTML=c?'Cambiar clave <small style="font-weight:500;color:var(--muted)">(opcional) Si le pones una nueva, la anterior deja de servir.</small>':'Clave <small style="font-weight:500;color:var(--muted)">Mínimo 6 letras o números.</small>';
-  $("#e-activo").checked=c?c.activo:true;const cs=c&&Array.isArray(c.cats)?c.cats:["construccion","metal"];$("#e-cats").innerHTML=CATS.map(([s,n])=>`<label><input type="checkbox" value="${s}"${cs.includes(s)?" checked":""}>${esc(n)}</label>`).join("");$("#e-nivel").value=c?(c.nivel||""):"mayoreo";
+  $("#e-activo").checked=c?c.activo:true;const cs=c&&Array.isArray(c.cats)?c.cats:["construccion","metal","mallas"];$("#e-cats").innerHTML=CATS.map(([s,n])=>`<label><input type="checkbox" value="${s}"${cs.includes(s)?" checked":""}>${esc(n)}</label>`).join("");$("#e-nivel").value=c?(c.nivel||""):"mayoreo";
   $("#pq").value="";$("#pcat").value="";$("#psolo").checked=true;
   $("#extra").hidden=!c;$("#eerr").textContent="";$("#gdel").textContent="Borrar cliente";$("#gdel").classList.remove("sure");
   pintarPrecios();$("#veil").hidden=false;setTimeout(()=>$(c?"#e-nombre":"#e-nombre").focus(),50);
