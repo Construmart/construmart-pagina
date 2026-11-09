@@ -1876,7 +1876,7 @@ document.addEventListener("change",e=>{if(e.target.name==="fent"){form.entrega=e
   const lp=$("#lbPick");if(lp)lp.textContent=env?"¿Cuándo lo necesitas?":"¿Cuándo pasarías por tu pedido?";renderQuote();if(env&&d)setTimeout(()=>$("#fdir").focus(),30)}});
 document.addEventListener("click",e=>{const a=e.target.closest("[data-envio]");if(a){form.entrega="envio";try{const f=JSON.parse(localStorage.getItem("cm-form")||"{}");f.entrega="envio";localStorage.setItem("cm-form",JSON.stringify(f))}catch(err){}}});
 // ===== Lo nuevo: Mart acomodó productos nuevos (se calcula solo con la fecha de alta de cada producto) =====
-let ACTUALIZADO=1794258661707;const DIA=864e5;
+let ACTUALIZADO=1794258941034;const DIA=864e5;
 function fechaAlta(p){if(!p||!/^p[0-9a-z]{7,10}$/.test(p.id))return 0;const t=parseInt(p.id.slice(1),36);return t>1.6e12&&t<Date.now()+DIA?t:0}
 const NUEVOS=(dias=7)=>P.filter(p=>!p.hidden&&fechaAlta(p)>=Date.now()-dias*DIA).sort((a,b)=>fechaAlta(b)-fechaAlta(a));
 function nuevoBadge(p){return fechaAlta(p)>=Date.now()-7*DIA?`<span class="nuevo-tag">Nuevo</span>`:""}
@@ -1906,8 +1906,8 @@ const cliCats=()=>(CLI&&Array.isArray(CLI.cats)&&CLI.cats.length?CLI.cats:["cons
 const cliVars=p=>p.variants&&p.variants.length>1?p.variants:[p.spec||(p.variants||[])[0]||""];
 function viewCliente(){
   const mis=cliCats(),otras=CATS.filter(c=>!mis.includes(c.slug));
-  $("#view").innerHTML=`<div class="cli-home"><img src="marca/mart-feliz-v2.png" alt="" width="289" height="300"><div><span class="mart-tag">Tu cuenta de cliente</span><h1>Hola, ${esc(CLI.nombre)}</h1><p>Aquí tienes tus materiales con tus precios. Arma tu pedido en un minuto.</p><small class="cli-aviso">${AVISO_PRECIO}</small>
-    <div class="cli-acts"><a class="cli-big" href="#pedido-rapido"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>Pedido rápido</a><a class="cli-sec" href="#cotizacion">Mi lista${quote.length?` (${quote.length})`:""}</a><a class="cli-sec" href="#mis-cotizaciones">Mis cotizaciones</a></div></div></div>
+  $("#view").innerHTML=`<div class="cli-home"><img src="marca/mart-feliz-v2.png" alt="" width="289" height="300"><div><span class="mart-tag">Tu cuenta de cliente</span><h1>Hola, ${esc(CLI.nombre)}</h1><p>Aquí tienes tus materiales con tus precios. Agrégalos a tu lista y mándanos tu cotización.</p><small class="cli-aviso">${AVISO_PRECIO}</small>
+    <div class="cli-acts"><a class="cli-big" href="#cotizacion">Mi lista${quote.length?` (${quote.length})`:""}</a><a class="cli-sec" href="#mis-cotizaciones">Mis cotizaciones</a></div></div></div>
   <section id="cliMisc"></section>
   ${mis.map(s=>{const c=catBy(s),ps=P.filter(p=>p.cat===s);if(!ps.length)return "";
     return `<section class="subsec"><h2 class="sub-band">${esc(c.name)}</h2><div class="grid5">${ps.map(cardFull).join("")}</div></section>`}).join("")}
@@ -1997,7 +1997,7 @@ async function viewMisCot(){
   $("#view").innerHTML=`<div class="crumbs"><a href="#inicio">Inicio</a><span>›</span><span>Mis cotizaciones</span></div><div class="pr-head"><h1>Mis cotizaciones</h1><p>Aquí te llega la respuesta de Construmart con precio y existencia. Revísala y toca <b>Confirmar pedido</b> para apartarlo.</p></div><div id="miscLista"><p class="mc-n">Cargando…</p></div>`;
   $("#below").innerHTML="";
   const L=await miscCargar(true);const el=document.getElementById("miscLista");if(!el)return;
-  el.innerHTML=L&&L.length?L.map(q=>miscTarjeta(q,false)).join(""):`<div class="mart-empty"><img src="marca/mart-pensando-v2.png" alt="" width="300" height="292"><p><strong>Todavía no tienes cotizaciones.</strong><br>Arma tu lista con el <a href="#pedido-rapido" style="color:var(--accent);font-weight:700">Pedido rápido</a> y mándanosla.</p></div>`;
+  el.innerHTML=L&&L.length?L.map(q=>miscTarjeta(q,false)).join(""):`<div class="mart-empty"><img src="marca/mart-pensando-v2.png" alt="" width="300" height="292"><p><strong>Todavía no tienes cotizaciones.</strong><br>Agrega productos a <a href="#cotizacion" style="color:var(--accent);font-weight:700">tu lista</a> y mándanos tu cotización.</p></div>`;
 }
 document.addEventListener("click",async e=>{
   const c=e.target.closest("[data-confirmar]");
@@ -2030,7 +2030,7 @@ function route(){
   else if(h==="recoge") viewPickup();
   else if(h==="dudas") viewDudas();
   else if(h==="nuevos") viewNuevos();
-  else if(h==="pedido-rapido") viewPedido();
+  else if(h==="pedido-rapido"&&window.PEDIDO_RAPIDO) viewPedido();
   else if(h==="mis-cotizaciones") viewMisCot();
   else if(h!=="tienda"&&typeof CLI!=="undefined"&&CLI) viewCliente();
   else viewHome();
