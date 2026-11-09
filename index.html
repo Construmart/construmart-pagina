@@ -740,7 +740,7 @@ footer .fsoc{display:grid;gap:8px;align-content:start}
     </form>
     <a class="cotiza" href="#cotizacion">
       <img class="cotiza-mart" src="marca/mart-lentes-v2.png" alt="" width="295" height="300">
-      <span><strong>Cotiza tu proyecto <em class="free">GRATIS</em></strong><small>Recibe una cotización</small></span>
+      <span><strong>Cotiza tu proyecto <em class="free">GRATIS</em></strong><small>Sin compromiso de compra</small></span>
     </a>
     
     <button class="cli-btn" id="cliBtn" type="button" hidden aria-label="Acceso para clientes"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg><span id="cliTxt">Clientes</span></button>
@@ -1838,7 +1838,7 @@ document.addEventListener("change",e=>{if(e.target.name==="fent"){form.entrega=e
   const lp=$("#lbPick");if(lp)lp.textContent=env?"¿Cuándo lo necesitas?":"¿Cuándo pasarías por tu pedido?";renderQuote();if(env&&d)setTimeout(()=>$("#fdir").focus(),30)}});
 document.addEventListener("click",e=>{const a=e.target.closest("[data-envio]");if(a){form.entrega="envio";try{const f=JSON.parse(localStorage.getItem("cm-form")||"{}");f.entrega="envio";localStorage.setItem("cm-form",JSON.stringify(f))}catch(err){}}});
 // ===== Lo nuevo: Mart acomodó productos nuevos (se calcula solo con la fecha de alta de cada producto) =====
-let ACTUALIZADO=1794254142257;const DIA=864e5;
+let ACTUALIZADO=1794254246280;const DIA=864e5;
 function fechaAlta(p){if(!p||!/^p[0-9a-z]{7,10}$/.test(p.id))return 0;const t=parseInt(p.id.slice(1),36);return t>1.6e12&&t<Date.now()+DIA?t:0}
 const NUEVOS=(dias=7)=>P.filter(p=>!p.hidden&&fechaAlta(p)>=Date.now()-dias*DIA).sort((a,b)=>fechaAlta(b)-fechaAlta(a));
 function nuevoBadge(p){return fechaAlta(p)>=Date.now()-7*DIA?`<span class="nuevo-tag">Nuevo</span>`:""}
