@@ -109,6 +109,14 @@ textarea{min-height:64px;resize:vertical}
 .btn.wa[aria-disabled="true"]{opacity:.45;pointer-events:none}
 .btn.danger{border-color:var(--danger);color:var(--danger)}
 .btn.sure{background:var(--danger);color:#fff}
+.aviso.borrar{border-left:3px solid var(--danger);padding-left:8px}
+.cveil{position:fixed;inset:0;background:#0008;z-index:40;display:grid;place-items:center;padding:16px}
+.cbox{background:#fff;border-radius:14px;padding:20px 18px;width:min(420px,100%);display:grid;gap:12px;text-align:center}
+.cbox h3{font-weight:900;font-size:19px;margin:0}
+.cbox p{margin:0;font-size:14px;color:var(--ink)}
+.cbox .cbtns{display:grid;gap:8px}
+.cbox .cbtns .btn{width:100%;padding:12px;display:flex;justify-content:center;text-align:center}
+.btn.rojo{background:var(--danger);border-color:var(--danger);color:#fff}
 .aviso{font-size:12.5px;color:var(--muted);margin:0}
 .aviso.bad{color:var(--danger);font-weight:700}
 .toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--cream);padding:10px 18px;border-radius:30px;font-size:13px;z-index:30;max-width:calc(100% - 32px)}
@@ -181,8 +189,22 @@ textarea{min-height:64px;resize:vertical}
   </section>
 </main>
 <div class="toast" id="toast" hidden></div>
+<div class="cveil" id="cBorrar" hidden role="dialog" aria-modal="true" aria-labelledby="cbT"><div class="cbox">
+  <h3 id="cbT">¿Borrar esta cotización?</h3>
+  <p id="cbTxt">Se borra para siempre: <b>desaparece para ti y para el cliente</b>. Ya no la verá en su perfil y no se puede recuperar.</p>
+  <div class="cbtns"><button type="button" class="btn rojo" id="cbSi">Sí, borrar para siempre</button><button type="button" class="btn" id="cbArch">Mejor archivarla</button><button type="button" class="btn" id="cbNo">Cancelar</button></div>
+</div></div>
 
 <script>
+// Confirmación antes de borrar: avisa que también se le borra al cliente
+function confirmarBorrar(q){return new Promise(res=>{const v=document.getElementById("cBorrar");
+  document.getElementById("cbTxt").innerHTML=`Se borra para siempre: <b>desaparece para ti y para el cliente</b>${q&&q.nombre?` (${String(q.nombre).replace(/[&<>"']/g,"")})`:""}. Ya no la verá en su perfil y no se puede recuperar.`;
+  const arch=document.getElementById("cbArch");arch.hidden=!q||q.estado==="archivada";
+  v.hidden=false;setTimeout(()=>document.getElementById("cbNo").focus(),30);
+  const fin=r=>{v.hidden=true;v.onclick=null;document.removeEventListener("keydown",esc);res(r)};
+  const esc=e=>{if(e.key==="Escape")fin(false)};document.addEventListener("keydown",esc);
+  v.onclick=e=>{if(e.target===v||e.target.id==="cbNo")fin(false);else if(e.target.id==="cbSi")fin(true);else if(e.target.id==="cbArch"){fin(false);const b=document.getElementById("archivar");if(b)b.click()}}})}
+
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const pesos=n=>Number(n||0).toLocaleString("es-MX",{style:"currency",currency:"MXN"});
@@ -285,6 +307,7 @@ function pintarDet(){
     <button type="button" class="btn" id="archivar">${q.estado==="archivada"?"Sacar de archivadas":"Archivar"}</button>
     <button type="button" class="btn danger" id="borrar">Borrar</button>
   </div>
+  <p class="aviso borrar"><b>Ojo:</b> si la <b>borras</b>, desaparece para siempre: para ti y para el cliente (ya no la verá en su perfil). Si solo quieres quitarla de tu bandeja, mejor <b>archívala</b>.</p>
   ${digits(q.telefono).length<10?`<p class="aviso bad">El cliente no dejó un teléfono de 10 dígitos. Usa "Copiar mensaje" y mándaselo por otro lado.</p>`:`<p class="aviso">Al tocar el botón verde se guarda tu respuesta, se abre WhatsApp con el mensaje listo y el cliente también la ve en la página.</p>`}`;
   recalcular();
 }
@@ -314,7 +337,7 @@ $("#det").addEventListener("click",async e=>{
   if(t.id==="entregar"){try{const j=await api("/api/dueno/cotizaciones/"+actual.id,{accion:"estado",estado:"entregada"});if(j.ok){actual.estado="entregada";toast("Marcado como entregado");await cargar();pintarDet()}}catch(e){}return}
   if(t.id==="archivar"){const nuevo=actual.estado==="archivada"?(actual.respuesta?"respondida":"pendiente"):"archivada";
     try{const j=await api("/api/dueno/cotizaciones/"+actual.id,{accion:"estado",estado:nuevo});if(j.ok){actual.estado=nuevo;const s=todas.find(q=>q.id===actual.id);if(s)s.estado=nuevo;pintarLista();pintarDet();toast(nuevo==="archivada"?"Archivada":"De regreso en la bandeja")}}catch(err){toast("No se pudo cambiar. Inténtalo otra vez.")}return}
-  if(t.id==="borrar"){if(!t.classList.contains("sure")){t.classList.add("sure");t.textContent="¿Seguro? Toca otra vez";setTimeout(()=>{if(t.isConnected){t.classList.remove("sure");t.textContent="Borrar"}},3500);return}
+  if(t.id==="borrar"){if(!(await confirmarBorrar(actual)))return;
     try{const j=await api("/api/dueno/cotizaciones/"+actual.id,{accion:"borrar"});if(j.ok){todas=todas.filter(q=>q.id!==actual.id);actual=null;abierta=null;document.body.classList.remove("abierta");pintarLista();$("#det").innerHTML=`<div class="vacio">Cotización borrada.</div>`;toast("Cotización borrada")}}catch(err){toast("No se pudo borrar.")}}
 });
 // Revisa si hay cotizaciones nuevas cada minuto mientras la bandeja está abierta
