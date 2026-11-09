@@ -939,7 +939,7 @@ const CI={
 "mallas":`<path d="M3 7h18M3 12h18M3 17h18M7 3v18M12 3v18M17 3v18"/>`,
 "impermeabilizantes":`<path d="M2.5 12.5 12 4l9.5 8.5"/><path d="M12 10c-1.8 2.4-2.8 4-2.8 5.2a2.8 2.8 0 0 0 5.6 0c0-1.2-1-2.8-2.8-5.2z"/>`,
 "limpieza":`<path d="M4 10h12l-1.6 10H5.6z"/><path d="M5.5 10a4.5 4.5 0 0 1 9 0"/><path d="M19 2.5v4M17 4.5h4M21 9v2.5M19.8 10.2h2.4"/>`,
-"tinaco":`<path d="M6 7h12v11a3 3 0 0 1-3 3H9a3 3 0 0 1-3-3z"/><path d="M6 7c0-2 2.7-3.5 6-3.5S18 5 18 7"/><path d="M10 3.6V2.5h4v1.1M6 11h12M6 15.5h12"/>`,
+"tinaco":`<ellipse cx="12" cy="3.6" rx="3.5" ry="1.1"/><path d="M8.5 3.6v2.5a3.5 1.1 0 0 0 7 0V3.6"/><path d="M8.5 5.3C6.4 5.9 5 7.1 5 8.6v9.6a7 2.4 0 0 0 14 0V8.6c0-1.5-1.4-2.7-3.5-3.3"/><path d="M5 9.3c1.5.9 4.2 1.4 7 1.4s5.5-.5 7-1.4M5 14.2c1.5.9 4.2 1.4 7 1.4s5.5-.5 7-1.4"/>`,
 "bano":`<path d="M5 3h6v8H5z"/><path d="M4 11h16a7 7 0 0 1-7 7h-2a7 7 0 0 1-7-7z"/><path d="m9 18-1 3h8l-1-3"/>`,
 "cerradura":`<rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/><path d="M12 14v3"/>`,
 "escalera":`<path d="M7 3 5 21M17 3l2 18M6.6 7h10.8M6.2 11h11.6M5.8 15h12.4M5.3 19h13.4"/>`,
@@ -961,6 +961,7 @@ const CATS=[
  {slug:"construccion",name:"Construcción",blurb:"Herramienta de albañilería y materiales para obra."},
  {slug:"metal",name:"Metal",blurb:"Acero para construcción: armex, varilla, alambre y clavos."},
  {slug:"mallas",name:"Mallas",blurb:"Malla electrosoldada, ciclónica, de gallinero, sombra y mosquitera."},
+ {slug:"tinacos",name:"Tinacos",blurb:"Tinacos, cisternas y accesorios.",icon:"tinaco"},
  {slug:"impermeabilizantes",name:"Impermeabilizantes y selladores",blurb:"Impermeabilizantes, selladores y membranas para techos y muros."},
  {slug:"jardineria",name:"Jardinería",blurb:"Riego, poda y herramienta de jardín."},
  {slug:"seguridad-industrial",name:"Seguridad industrial",blurb:"Equipo de protección personal."},
@@ -1908,7 +1909,7 @@ document.addEventListener("change",e=>{if(e.target.name==="fent"){form.entrega=e
   const lp=$("#lbPick");if(lp)lp.textContent=env?"¿Cuándo lo necesitas?":"¿Cuándo pasarías por tu pedido?";renderQuote();if(env&&d)setTimeout(()=>$("#fdir").focus(),30)}});
 document.addEventListener("click",e=>{const a=e.target.closest("[data-envio]");if(a){form.entrega="envio";try{const f=JSON.parse(localStorage.getItem("cm-form")||"{}");f.entrega="envio";localStorage.setItem("cm-form",JSON.stringify(f))}catch(err){}}});
 // ===== Lo nuevo: Mart acomodó productos nuevos (se calcula solo con la fecha de alta de cada producto) =====
-let ACTUALIZADO=1794261346539;const DIA=864e5;
+let ACTUALIZADO=1794262979258;const DIA=864e5;
 function fechaAlta(p){if(!p||!/^p[0-9a-z]{7,10}$/.test(p.id))return 0;const t=parseInt(p.id.slice(1),36);return t>1.6e12&&t<Date.now()+DIA?t:0}
 const NUEVOS=(dias=7)=>P.filter(p=>!p.hidden&&fechaAlta(p)>=Date.now()-dias*DIA).sort((a,b)=>fechaAlta(b)-fechaAlta(a));
 function nuevoBadge(p){return fechaAlta(p)>=Date.now()-7*DIA?`<span class="nuevo-tag">Nuevo</span>`:""}

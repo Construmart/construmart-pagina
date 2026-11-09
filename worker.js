@@ -176,7 +176,17 @@ export class Bandeja extends DurableObject {
   }
 
   // ===== Categorías =====
-  async categorias() { return (await this.ctx.storage.get("cats")) || null; }
+  async categorias() {
+    const c = (await this.ctx.storage.get("cats")) || null;
+    // Una sola vez: si el dueño ya había guardado sus categorías sin Tinacos, se agrega después de Mallas
+    if (c && !c.some((x) => x.slug === "tinacos") && !(await this.ctx.storage.get("mig_tinacos"))) {
+      const i = c.findIndex((x) => x.slug === "mallas");
+      c.splice(i < 0 ? c.length : i + 1, 0, { slug: "tinacos", name: "Tinacos", blurb: "Tinacos, cisternas y accesorios.", icon: "tinaco" });
+      await this.ctx.storage.put("cats", c);
+      await this.ctx.storage.put("mig_tinacos", true);
+    }
+    return c;
+  }
   async guardarCategorias(lista) { await this.ctx.storage.put("cats", lista); return true; }
 
   // ===== Preguntas frecuentes (Pregúntale a Mart) =====
@@ -312,6 +322,7 @@ const CATS_BASE = [
   { slug: "construccion", name: "Construcción", blurb: "Herramienta de albañilería y materiales para obra." },
   { slug: "metal", name: "Metal", blurb: "Acero para construcción: armex, varilla, alambre y clavos." },
   { slug: "mallas", name: "Mallas", blurb: "Malla electrosoldada, ciclónica, de gallinero, sombra y mosquitera." },
+  { slug: "tinacos", name: "Tinacos", blurb: "Tinacos, cisternas y accesorios.", icon: "tinaco" },
   { slug: "impermeabilizantes", name: "Impermeabilizantes y selladores", blurb: "Impermeabilizantes, selladores y membranas para techos y muros." },
   { slug: "jardineria", name: "Jardinería", blurb: "Riego, poda y herramienta de jardín." },
   { slug: "seguridad-industrial", name: "Seguridad industrial", blurb: "Equipo de protección personal." },
