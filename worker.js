@@ -507,7 +507,8 @@ async function api(request, env, url) {
           // El total se calcula aquí con las cantidades guardadas; lo que no hay no se cobra
           const total = Math.round(lineas.reduce((a, l, i) => a + (l.precio && l.existe !== "no" && actual.items[i] ? l.precio * actual.items[i].q : 0), 0) * 100) / 100;
           const envio = Number(r.envio) > 0 ? Math.round(Number(r.envio) * 100) / 100 : 0;
-          const respuesta = { fecha: Date.now(), lineas, notas: txt(r.notas, 1000), envio, total: Math.round((total + envio) * 100) / 100 };
+          const vigencia = Math.max(0, Math.min(30, parseInt(r.vigencia, 10) || 0));
+          const respuesta = { fecha: Date.now(), lineas, notas: txt(r.notas, 1000), envio, vigencia, total: Math.round((total + envio) * 100) / 100 };
           const q = await bandeja(env).actualizar(id, { estado: "respondida", respuesta });
           return q ? json({ ok: true, respuesta }) : json({ ok: false, error: "no_encontrada" }, 404);
         }

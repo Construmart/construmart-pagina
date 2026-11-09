@@ -710,6 +710,7 @@ footer .fsoc{display:grid;gap:8px;align-content:start}
 .aviso-precio{display:block;margin-top:6px;color:#9a5a00;background:#fff4e0;border-radius:6px;padding:6px 8px;font-weight:600}
 .cli-aviso{display:block;margin-top:6px;color:#f5c48f;font-size:12.5px}
 .pr-aviso{display:block;margin-top:4px;color:#9a5a00;font-size:13px;font-weight:600}
+.hr-v{margin:6px 0 0;font-size:12.5px;color:#9a5a00;font-weight:600}
 .branches{align-items:stretch!important}.branch .bbody{flex:1;display:flex;flex-direction:column}.branch .bactions{margin-top:auto!important;padding-top:12px}
 /* Tabletas (681 a 960 px): que la página no se haga más ancha que la pantalla */
 @media (max-width:960px){.shell{grid-template-columns:minmax(0,1fr)!important}.shell>*{min-width:0}}
@@ -1675,7 +1676,7 @@ function sideHint(){
 // ===== Clientes de mayoreo: entran con usuario y clave y ven sus precios =====
 // Solo funciona en la página publicada en internet (Cloudflare), donde está el portero /api.
 let CLI=null;
-const AVISO_PRECIO="Precios sujetos a cambio sin previo aviso y a existencia. Se respetan al confirmar tu pedido.";
+const AVISO_PRECIO="Precios sujetos a cambio sin previo aviso y a existencia. Al confirmar tu pedido te respetamos el precio por los días que indique tu cotización.";
 const pesos=n=>Number(n).toLocaleString("es-MX",{style:"currency",currency:"MXN"});
 const cliKey=(id,v)=>id+"|"+(v||"");
 const cliPrecio=(id,v)=>CLI&&CLI.precios?CLI.precios[cliKey(id,v)]:undefined;
@@ -1820,7 +1821,7 @@ function cotizPintar(){
     const valid=h.items;
     const html=`<b>Respuesta de Construmart</b><ul>${valid.map((it,k)=>{const l=lista.lineas[k]||{};const p=prodOf(it);if(!p)return "";
       return `<li><span>${it.qty} ${unitOf(p,it.qty)} · ${esc(p.name)}${it.variant&&!it.custom?" "+esc(it.variant):""}</span><span class="hr-p">${l.existe==="no"?`<em class="no">No hay</em>`:`${l.precio?pesos(l.precio)+" c/u":"Sin precio"}${l.existe==="parcial"?` <em class="pa">Parcial</em>`:""}`}</span></li>`}).join("")}</ul>
-      ${lista.envio?`<div class="hr-env"><span>🚚 Envío a domicilio</span><b>${pesos(lista.envio)}</b></div>`:""}<div class="hr-tot"><span>Total</span><strong>${pesos(lista.total||0)}</strong></div>${lista.notas?`<p class="hr-n">${esc(lista.notas)}</p>`:""}`;
+      ${lista.envio?`<div class="hr-env"><span>🚚 Envío a domicilio</span><b>${pesos(lista.envio)}</b></div>`:""}<div class="hr-tot"><span>Total</span><strong>${pesos(lista.total||0)}</strong></div>${lista.vigencia?`<p class="hr-v">Precios válidos hasta el ${new Date(lista.fecha+lista.vigencia*864e5).toLocaleDateString("es-MX",{weekday:"long",day:"numeric",month:"long"})}, sujetos a existencia.</p>`:""}${lista.notas?`<p class="hr-n">${esc(lista.notas)}</p>`:""}`;
     if(!box){const ul=d.querySelector("ul");(ul||d.querySelector("summary")).insertAdjacentHTML("afterend",`<div class="hist-resp"></div>`);box=d.querySelector(".hist-resp")}
     if(box.dataset.h!==html){box.innerHTML=html;box.dataset.h=html}
   });
@@ -1842,7 +1843,7 @@ document.addEventListener("change",e=>{if(e.target.name==="fent"){form.entrega=e
   const lp=$("#lbPick");if(lp)lp.textContent=env?"¿Cuándo lo necesitas?":"¿Cuándo pasarías por tu pedido?";renderQuote();if(env&&d)setTimeout(()=>$("#fdir").focus(),30)}});
 document.addEventListener("click",e=>{const a=e.target.closest("[data-envio]");if(a){form.entrega="envio";try{const f=JSON.parse(localStorage.getItem("cm-form")||"{}");f.entrega="envio";localStorage.setItem("cm-form",JSON.stringify(f))}catch(err){}}});
 // ===== Lo nuevo: Mart acomodó productos nuevos (se calcula solo con la fecha de alta de cada producto) =====
-let ACTUALIZADO=1794258115392;const DIA=864e5;
+let ACTUALIZADO=1794258413162;const DIA=864e5;
 function fechaAlta(p){if(!p||!/^p[0-9a-z]{7,10}$/.test(p.id))return 0;const t=parseInt(p.id.slice(1),36);return t>1.6e12&&t<Date.now()+DIA?t:0}
 const NUEVOS=(dias=7)=>P.filter(p=>!p.hidden&&fechaAlta(p)>=Date.now()-dias*DIA).sort((a,b)=>fechaAlta(b)-fechaAlta(a));
 function nuevoBadge(p){return fechaAlta(p)>=Date.now()-7*DIA?`<span class="nuevo-tag">Nuevo</span>`:""}
