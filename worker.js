@@ -544,6 +544,8 @@ async function api(request, env, url) {
         if (t.length) o.tambien = t;
         const v = Array.isArray(x.ver) ? x.ver : [];
         o.ver = [txt(v[0], 60).trim(), okCats.has(v[1]) ? v[1] : "", txt(v[2], 60).trim()];
+        const pr = Array.isArray(x.prods) ? [...new Set(x.prods.map((v) => String(v)).filter((v) => /^[\w-]{1,30}$/.test(v)))].slice(0, 80) : [];
+        if (pr.length) o.prods = pr;
         if (x.match) { const m = String(x.match).slice(0, 160); try { new RegExp(m); o.match = m; } catch (e) {} }
         return o;
       }).filter((o) => /^[a-z0-9-]{1,40}$/.test(o.id) && okCats.has(o.cat) && o.q && o.a && !vistos.has(o.id) && vistos.add(o.id));

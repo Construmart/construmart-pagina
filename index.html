@@ -1705,7 +1705,7 @@ function dudasCat(slug){
   return `<details class="dcat"><summary><img src="marca/mart-pensando-v2.png" alt="" width="300" height="292"><span><b>¿Dudas? Mart te explica</b><small>${ds.length} pregunta${ds.length===1?"":"s"} frecuente${ds.length===1?"":"s"}</small></span><svg class="dchev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="m6 9 6 6 6-6"/></svg></summary><div class="dcat-list">${ds.map(dudaHTML).join("")}<a class="dcat-all" href="#dudas">Ver todas las dudas ›</a></div></details>`;
 }
 // En la tarjeta del producto: enlace chiquito a su duda
-function dudaLink(p){const d=DUDAS.find(d=>d.match&&d.match.test(p.name));return d?`<a href="#dudas" class="duda-link" data-duda="${d.id}">${QSVG}${esc(d.q)}</a>`:""}
+function dudaLink(p){const d=DUDAS.find(d=>d.prods&&d.prods.includes(p.id))||DUDAS.find(d=>!d.prods&&d.match&&d.match.test(p.name));return d?`<a href="#dudas" class="duda-link" data-duda="${d.id}">${QSVG}${esc(d.q)}</a>`:""}
 document.addEventListener("click",e=>{
   const dl=e.target.closest("[data-duda]");if(dl){e.preventDefault();dudaOpen=dl.dataset.duda;location.hash==="#dudas"?route():(location.hash="dudas");return}
   const bv=e.target.closest("[data-buscar]");if(bv){e.preventDefault();search={q:bv.dataset.buscar,scope:bv.dataset.scope||""};location.hash==="#buscar"?route():(location.hash="buscar");return}
@@ -1920,7 +1920,7 @@ document.addEventListener("change",e=>{if(e.target.name==="fent"){form.entrega=e
   const lp=$("#lbPick");if(lp)lp.textContent=env?"¿Cuándo lo necesitas?":"¿Cuándo pasarías por tu pedido?";renderQuote();if(env&&d)setTimeout(()=>$("#fdir").focus(),30)}});
 document.addEventListener("click",e=>{const a=e.target.closest("[data-envio]");if(a){form.entrega="envio";try{const f=JSON.parse(localStorage.getItem("cm-form")||"{}");f.entrega="envio";localStorage.setItem("cm-form",JSON.stringify(f))}catch(err){}}});
 // ===== Lo nuevo: Mart acomodó productos nuevos (se calcula solo con la fecha de alta de cada producto) =====
-let ACTUALIZADO=1794264771710;const DIA=864e5;
+let ACTUALIZADO=1794264876839;const DIA=864e5;
 function fechaAlta(p){if(!p||!/^p[0-9a-z]{7,10}$/.test(p.id))return 0;const t=parseInt(p.id.slice(1),36);return t>1.6e12&&t<Date.now()+DIA?t:0}
 const NUEVOS=(dias=7)=>P.filter(p=>!p.hidden&&fechaAlta(p)>=Date.now()-dias*DIA).sort((a,b)=>fechaAlta(b)-fechaAlta(a));
 function nuevoBadge(p){return fechaAlta(p)>=Date.now()-7*DIA?`<span class="nuevo-tag">Nuevo</span>`:""}
@@ -2081,7 +2081,7 @@ async function dudasServidor(){
     const L=j.dudas.filter(d=>d.on!==false&&d.q&&d.a).map(d=>{const o={id:d.id,cat:d.cat,q:d.q,a:dudaMarca(d.a)};
       if(d.tambien&&d.tambien.length)o.tambien=d.tambien;
       if(d.ver&&d.ver[0])o.ver=[d.ver[0],d.ver[1]||"",d.ver[2]||"Ver productos"];
-      if(d.match){try{o.match=new RegExp(d.match,"i")}catch(e){}}return o});
+      if(d.prods&&d.prods.length)o.prods=d.prods;if(d.match){try{o.match=new RegExp(d.match,"i")}catch(e){}}return o});
     DUDAS.splice(0,DUDAS.length,...L);
     const h=location.hash.slice(1);if(h==="dudas"||catBy(h)){const y=scrollY;route();window.scrollTo(0,y)}
   }catch(e){}

@@ -157,6 +157,15 @@ textarea{min-height:90px;resize:vertical}
 .negr{border:1.5px solid var(--line);background:#fff;border-radius:6px;padding:2px 9px;font-weight:900;font-size:12px}
 fieldset{border:1.5px solid var(--line);border-radius:8px;padding:8px 10px;margin:0;display:grid;gap:8px}
 legend{font-size:12.5px;font-weight:700;padding:0 4px}
+.pchips{display:flex;flex-wrap:wrap;gap:6px}
+.pchip{display:inline-flex;align-items:center;gap:6px;background:var(--accent-soft);border:1px solid #f7c7a6;border-radius:20px;padding:4px 6px 4px 10px;font-size:12.5px;font-weight:700;max-width:100%}
+.pchip span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pchip button{border:0;background:var(--ink);color:#fff;border-radius:50%;width:18px;height:18px;font-size:10px;line-height:18px;padding:0;flex:none}
+.pres{display:grid;gap:4px}
+.pres button{display:flex;justify-content:space-between;gap:10px;align-items:center;text-align:left;border:1px solid var(--line);background:#fff;border-radius:8px;padding:7px 10px;font-size:13px}
+.pres button:hover{border-color:var(--accent);background:var(--accent-soft)}
+.pres button small{color:var(--muted);font-size:11.5px;flex:none}
+.pres .todos{color:var(--accent);font-weight:800;justify-content:center}
 .filtros{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px}
 .filtros button{border:1.5px solid var(--line);background:#fff;border-radius:20px;padding:5px 12px;font-weight:700;font-size:12.5px}
 .filtros button.on{background:var(--ink);border-color:var(--ink);color:#fff}
@@ -187,7 +196,7 @@ legend{font-size:12.5px;font-weight:700;padding:0 4px}
 </section>
 <main id="app" hidden>
   <div class="wrap" style="padding-top:16px">
-    <div class="ayuda"><b>Preguntas frecuentes (“Pregúntale a Mart”).</b> Escribe la pregunta, su respuesta y en qué área va. Salen en la sección <b>Pregúntale a Mart</b> y también dentro de la categoría que escojas. Toca una pregunta para abrirla y editarla. Para resaltar palabras en <b>negritas</b>, ponlas entre dos asteriscos: <code>**así**</code>.</div>
+    <div class="ayuda"><b>Preguntas frecuentes (“Pregúntale a Mart”).</b> Escribe la pregunta, su respuesta y en qué área va. Salen en la sección <b>Pregúntale a Mart</b> y también dentro de la categoría que escojas. Además puedes <b>ligarla a productos</b>: la pregunta sale en la tarjeta del producto, arriba de su descripción. Toca una pregunta para abrirla y editarla. Para resaltar palabras en <b>negritas</b>, ponlas entre dos asteriscos: <code>**así**</code>.</div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;align-items:center"><input id="nueva" placeholder="Escribe la nueva pregunta (ej. ¿Qué tinaco me conviene?)" style="flex:1 1 300px;max-width:520px"><button class="btn pri" type="button" id="agregar">+ Agregar pregunta</button></div>
     <div class="filtros" id="filtros"></div>
     <p class="cuenta" id="cuenta">Cargando…</p>
@@ -205,7 +214,7 @@ const slugDe=s=>String(s||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u
 function toast(t){const el=$("#toast");el.textContent=t;el.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>el.hidden=true,3200)}
 async function api(path,body){const r=await fetch(path,body?{method:"POST",credentials:"same-origin",headers:{"content-type":"application/json"},body:JSON.stringify(body)}:{credentials:"same-origin",cache:"no-store"});
   const j=await r.json().catch(()=>({}));if(r.status===401&&!path.endsWith("/entrar")){verLogin();throw new Error("sin_sesion")}return j}
-let D=[],orig="[]",AREAS=[],abierta=null,nuevaId="",filtro="";
+let PRODS=[],PBY={},CATN={},D=[],orig="[]",AREAS=[],abierta=null,nuevaId="",filtro="";
 const areaNom=s=>(AREAS.find(a=>a.slug===s)||{name:s}).name;
 function verLogin(){$("#login").hidden=false;$("#app").hidden=true;$("#nav").hidden=$("#salir").hidden=true;setTimeout(()=>$("#clave").focus(),50)}
 function verApp(){$("#login").hidden=true;$("#app").hidden=false;$("#nav").hidden=$("#salir").hidden=false;cargar()}
@@ -216,22 +225,38 @@ $("#salir").onclick=async()=>{try{await api("/api/dueno/salir",{})}catch(e){}ver
 const sucio=()=>JSON.stringify(D)!==orig;
 function marcarBarra(){$("#barra").hidden=!sucio()}
 async function cargar(){
-  try{const [c,d]=await Promise.all([fetch("/api/categorias",{cache:"no-store"}).then(r=>r.json()),fetch("/api/dudas",{cache:"no-store"}).then(r=>r.json())]);
+  try{const [c,d,pp]=await Promise.all([fetch("/api/categorias",{cache:"no-store"}).then(r=>r.json()),fetch("/api/dudas",{cache:"no-store"}).then(r=>r.json()),fetch("/api/productos",{cache:"no-store"}).then(r=>r.json()).catch(()=>({productos:[]}))]);
+    PRODS=(pp.productos||[]).map(p=>({id:p.id,name:p.name,cat:p.cat}));PBY={};PRODS.forEach(p=>PBY[p.id]=p);c.categorias.forEach(x=>CATN[x.slug]=x.name);
     AREAS=[{slug:"compras",name:"Compras y facturas"},{slug:"marcas",name:"Nuestras marcas"},...c.categorias.map(x=>({slug:x.slug,name:x.name}))];
-    D=(d.propias?d.dudas:DUDAS_BASE).map(x=>({id:x.id,cat:x.cat,q:x.q,a:x.a,on:x.on!==false,tambien:x.tambien||[],ver:x.ver&&x.ver.length?[x.ver[0]||"",x.ver[1]||"",x.ver[2]||""]:["","",""],match:x.match||""}));
+    D=(d.propias?d.dudas:DUDAS_BASE).map(x=>({id:x.id,cat:x.cat,q:x.q,a:x.a,on:x.on!==false,tambien:x.tambien||[],ver:x.ver&&x.ver.length?[x.ver[0]||"",x.ver[1]||"",x.ver[2]||""]:["","",""],prods:prodsDe(x),match:""}));
     orig=JSON.stringify(D);pintar()}
   catch(e){$("#cuenta").textContent="No se pudieron cargar las preguntas. Recarga la página."}
 }
+// Productos ligados: los que eligió el dueño; las preguntas viejas toman los productos que antes coincidían por nombre
+function prodsDe(x){if(x.prods&&x.prods.length)return x.prods.filter(id=>PBY[id]);if(!x.match)return [];let re;try{re=new RegExp(x.match,"i")}catch(e){return []}return PRODS.filter(p=>re.test(p.name)).map(p=>p.id)}
+const norm=t=>String(t||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+function chipsHTML(d){return d.prods.length?d.prods.map(id=>`<span class="pchip"><span>${esc((PBY[id]||{name:id}).name)}</span><button type="button" data-pquita="${esc(id)}" aria-label="Quitar">✕</button></span>`).join(""):`<small class="tip">Todavía no está ligada a ningún producto.</small>`}
+function otraDe(id,d){const o=D.find(x=>x!==d&&x.prods.includes(id));return o?o.q:""}
+function resHTML(d,q){q=norm(q).trim();if(q.length<2)return "";const ws=q.split(/\s+/);
+  const L=PRODS.filter(p=>!d.prods.includes(p.id)&&ws.every(w=>norm(p.name+" "+(CATN[p.cat]||"")).includes(w)));
+  if(!L.length)return `<small class="tip">No encontré productos con “${esc(q)}”.</small>`;
+  return L.slice(0,8).map(p=>{const o=otraDe(p.id,d);return `<button type="button" data-pagrega="${esc(p.id)}"><span>+ ${esc(p.name)}${o?` <small style="color:var(--danger)">(ya tiene la pregunta “${esc(o)}”)</small>`:""}</span><small>${esc(CATN[p.cat]||"")}</small></button>`}).join("")+(L.length>1?`<button type="button" class="todos" data-ptodos="${esc(L.map(p=>p.id).join(","))}">+ Agregar ${L.length>8?"los "+L.length:"todos"} (${L.length})</button>`:"")}
+const resumen=d=>areaNom(d.cat)+(d.prods.length?` · 🔗 ${d.prods.length} producto${d.prods.length===1?"":"s"}`:"")+" · "+(d.a.replace(/\*\*/g,"").replace(/\n/g," ")||"Sin respuesta todavía");
 function tarjeta(d,i){
   const ab=abierta===d.id;
   return `<div class="pq${d.id===nuevaId?" nueva":""}${d.on?"":" off"}" data-i="${i}" id="pq-${esc(d.id)}">
-   <div class="pqh"><button type="button" class="t" data-abrir aria-expanded="${ab}"><b>${esc(d.q)||"(Sin pregunta)"}</b><small>${esc(areaNom(d.cat))} · ${esc(d.a.replace(/\*\*/g,"").replace(/\n/g," "))||"Sin respuesta todavía"}</small></button>
+   <div class="pqh"><button type="button" class="t" data-abrir aria-expanded="${ab}"><b>${esc(d.q)||"(Sin pregunta)"}</b><small>${esc(resumen(d))}</small></button>
     <div class="acts"><button type="button" class="vis${d.on?" on":""}" data-vis title="Mostrar u ocultar en la página">${d.on?"● Visible":"○ Oculta"}</button><button class="btn sm" type="button" data-mv="-1" aria-label="Subir">↑</button><button class="btn sm" type="button" data-mv="1" aria-label="Bajar">↓</button><button class="btn sm danger" type="button" data-borrar aria-label="Borrar pregunta">✕</button></div></div>
    ${ab?`<div class="pqb">
     <label class="l">Pregunta<input data-k="q" value="${esc(d.q)}" maxlength="200" placeholder="Ej. ¿Qué tinaco me conviene?"></label>
     <label class="l"><span style="display:flex;justify-content:space-between;align-items:center;gap:8px">Respuesta <button type="button" class="negr" data-negr title="Poner en negritas lo que seleccionaste">N</button></span><textarea data-k="a" maxlength="2000" placeholder="Escribe la respuesta como se la explicarías a un cliente en mostrador.">${esc(d.a)}</textarea></label>
     <p class="tip">Para <b>negritas</b>: selecciona las palabras y toca <b>N</b> (o escríbelas entre **dos asteriscos**). Cada Enter es un renglón nuevo.</p>
     <label class="l">Área donde aparece<select data-k="cat">${AREAS.map(a=>`<option value="${a.slug}"${a.slug===d.cat?" selected":""}>${esc(a.name)}</option>`).join("")}</select></label>
+    <fieldset><legend>Productos donde sale esta pregunta</legend>
+     <small class="tip">La pregunta aparece en la tarjeta del producto, arriba de su descripción. El cliente la toca y lee la respuesta.</small>
+     <div class="pchips">${chipsHTML(d)}</div>
+     <input data-pbus placeholder="Busca el producto para ligarlo (ej. pegapiso)" autocomplete="off">
+     <div class="pres"></div></fieldset>
     <fieldset><legend>Botón para ver productos (opcional)</legend>
      <div class="two"><label class="l">Palabra a buscar<input data-v="0" value="${esc(d.ver[0])}" placeholder="Ej. Tinaco"></label><label class="l">Texto del botón<input data-v="2" value="${esc(d.ver[2])}" placeholder="Ej. Ver tinacos"></label></div>
      <small class="tip">Si escribes una palabra, abajo de la respuesta sale un botón que lleva a esos productos.</small></fieldset>
@@ -250,14 +275,20 @@ function pintar(){
   marcarBarra();
 }
 function refrescarPrev(card,d){const p=card.querySelector(".prev");if(p)p.innerHTML=`<span class="pt">Así se verá</span><b>${esc(d.q)}</b><div style="margin-top:4px">${marca(d.a)}</div>${d.ver[0]?`<span class="vb">${esc(d.ver[2]||"Ver productos")} ›</span>`:""}`;
-  const t=card.querySelector(".t");t.querySelector("b").textContent=d.q||"(Sin pregunta)";t.querySelector("small").textContent=areaNom(d.cat)+" · "+(d.a.replace(/\*\*/g,"").replace(/\n/g," ")||"Sin respuesta todavía")}
+  const t=card.querySelector(".t");t.querySelector("b").textContent=d.q||"(Sin pregunta)";t.querySelector("small").textContent=resumen(d)}
 $("#pqs").addEventListener("input",e=>{const card=e.target.closest(".pq");if(!card)return;const d=D[+card.dataset.i];
+  if(e.target.hasAttribute("data-pbus")){card.querySelector(".pres").innerHTML=resHTML(d,e.target.value);return}
   if(e.target.dataset.k&&e.target.dataset.k!=="cat")d[e.target.dataset.k]=e.target.value;
   if(e.target.dataset.v){d.ver[+e.target.dataset.v]=e.target.value;d.ver[1]=AREAS.slice(2).some(a=>a.slug===d.cat)?d.cat:""}
   refrescarPrev(card,d);marcarBarra()});
 $("#pqs").addEventListener("change",e=>{if(e.target.dataset.k!=="cat")return;const d=D[+e.target.closest(".pq").dataset.i];d.cat=e.target.value;if(d.ver[0])d.ver[1]=AREAS.slice(2).some(a=>a.slug===d.cat)?d.cat:"";pintar()});
 $("#pqs").addEventListener("click",e=>{const card=e.target.closest(".pq");if(!card)return;const i=+card.dataset.i,d=D[i];
   if(e.target.closest("[data-abrir]")){abierta=abierta===d.id?null:d.id;pintar();if(abierta){const el=document.getElementById("pq-"+d.id);if(el)el.scrollIntoView({block:"nearest"})}return}
+  const pa=e.target.closest("[data-pagrega],[data-ptodos],[data-pquita]");if(pa){
+    if(pa.dataset.pagrega)d.prods.push(pa.dataset.pagrega);else if(pa.dataset.ptodos)pa.dataset.ptodos.split(",").forEach(id=>{if(!d.prods.includes(id))d.prods.push(id)});else d.prods=d.prods.filter(id=>id!==pa.dataset.pquita);
+    card.querySelector(".pchips").innerHTML=chipsHTML(d);const bus=card.querySelector("[data-pbus]");card.querySelector(".pres").innerHTML=resHTML(d,bus.value);
+    card.querySelector(".t small").textContent=resumen(d);
+    if(pa.dataset.pagrega||pa.dataset.ptodos)bus.focus();marcarBarra();return}
   if(e.target.closest("[data-vis]")){d.on=!d.on;pintar();return}
   const mv=e.target.closest("[data-mv]");if(mv){const paso=Number(mv.dataset.mv);let j=i+paso;while(j>=0&&j<D.length&&D[j].cat!==d.cat)j+=paso;if(j<0||j>=D.length){toast("Ya está "+(paso<0?"hasta arriba":"hasta abajo")+" de su área.");return}[D[i],D[j]]=[D[j],D[i]];pintar();return}
   if(e.target.closest("[data-negr]")){const ta=card.querySelector("textarea");const a=ta.selectionStart,b=ta.selectionEnd;if(a===b){toast("Primero selecciona las palabras que quieres en negritas.");ta.focus();return}
@@ -267,7 +298,7 @@ $("#filtros").addEventListener("click",e=>{const b=e.target.closest("[data-f]");
 function agregar(){const q=$("#nueva").value.trim();if(!q){$("#nueva").focus();toast("Escribe la pregunta.");return}
   let base=slugDe(q)||"pregunta",id=base,n=2;while(D.some(d=>d.id===id))id=base+"-"+n++;
   const cat=filtro||"compras";
-  D.unshift({id,cat,q:/^¿/.test(q)||!/\?$/.test(q)?q:"¿"+q,a:"",on:true,tambien:[],ver:["","",""],match:""});
+  D.unshift({id,cat,q:/^¿/.test(q)||!/\?$/.test(q)?q:"¿"+q,a:"",on:true,tambien:[],ver:["","",""],prods:[],match:""});
   nuevaId=abierta=id;$("#nueva").value="";pintar();
   const el=document.querySelector(`#pq-${id} textarea`);if(el){el.scrollIntoView({block:"center"});el.focus()}
   toast("Escribe la respuesta, escoge el área y toca Guardar cambios.")}
@@ -278,7 +309,7 @@ $("#guardar").onclick=async()=>{const b=$("#guardar");
   b.disabled=true;b.textContent="Guardando…";
   try{const j=await api("/api/dueno/dudas",{dudas:D});
     if(!j.ok){toast("No se pudo guardar. Revisa los datos.");return}
-    D=j.dudas.map(x=>({id:x.id,cat:x.cat,q:x.q,a:x.a,on:x.on!==false,tambien:x.tambien||[],ver:x.ver||["","",""],match:x.match||""}));orig=JSON.stringify(D);nuevaId="";pintar();toast("¡Listo! Las preguntas ya están en la página.")}
+    D=j.dudas.map(x=>({id:x.id,cat:x.cat,q:x.q,a:x.a,on:x.on!==false,tambien:x.tambien||[],ver:x.ver||["","",""],prods:prodsDe(x),match:""}));orig=JSON.stringify(D);nuevaId="";pintar();toast("¡Listo! Las preguntas ya están en la página.")}
   catch(err){if(err.message!=="sin_sesion")toast("No se pudo guardar. Revisa tu conexión e inténtalo otra vez.")}finally{b.disabled=false;b.textContent="Guardar cambios"}};
 window.addEventListener("beforeunload",e=>{if(sucio()){e.preventDefault();e.returnValue=""}});
 (async()=>{try{const r=await fetch("/api/dueno/sesion",{credentials:"same-origin",cache:"no-store"});r.ok?verApp():verLogin()}catch(e){verLogin()}})();
