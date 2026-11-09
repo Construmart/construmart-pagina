@@ -150,6 +150,10 @@ textarea{min-height:90px;resize:vertical}
 .est.hoy{background:#16a34a1a;color:var(--ok)}.est.prog{background:#2563eb1a;color:#2563eb}.est.fin{background:var(--cream);color:var(--muted)}.est.apag{background:#c0392b14;color:var(--danger)}
 .ayuda{background:var(--panel);border:1.5px dashed var(--line);border-radius:10px;padding:12px 14px;font-size:13px;margin-bottom:12px}
 .ayuda b{font-weight:800}
+.pastez{flex:1 1 320px;max-width:560px;border:1.5px dashed #f7c7a6;background:var(--accent-soft);border-radius:8px;padding:8px 12px;font-size:12.5px;line-height:1.35;cursor:text;caret-color:transparent;outline:none}
+.pastez span{color:var(--muted);font-size:11.5px}
+.pastez:focus,.pastez.on{border-color:var(--accent);box-shadow:0 0 0 2px #FF6A0033}
+.bn .prev.on{outline:3px solid var(--accent)}
 .chk2{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700}
 .chk2 input{width:18px;height:18px;accent-color:var(--ok)}
 .guardar{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--ink);padding:10px max(16px,env(safe-area-inset-left,0px)) calc(10px + env(safe-area-inset-bottom,0px))}
@@ -181,7 +185,7 @@ textarea{min-height:90px;resize:vertical}
 <main id="app" hidden>
   <div class="wrap" style="padding-top:16px">
     <div class="ayuda"><b>Banners del inicio.</b> Son las imágenes grandes que van pasando arriba en la página. Sube la imagen, escoge a dónde lleva al tocarla y, si es de temporada (Navidad, Buen Fin, Día del albañil…), ponle <b>desde</b> y <b>hasta</b>: sale sola en esas fechas y se quita sola. Tamaño ideal: <b>1672 × 941 px</b> (horizontal). Si ninguno está activo hoy, la página muestra los de siempre.</div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px"><button class="btn pri" type="button" id="nuevo">+ Agregar banner</button><a class="btn" href="/" target="_blank" rel="noopener">Ver cómo queda</a></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;align-items:center"><button class="btn pri" type="button" id="nuevo">+ Agregar banner</button><div class="pastez" id="pasteZone" contenteditable="true" role="textbox" aria-label="Pegar imagen copiada" inputmode="none" spellcheck="false">📋 <b>Pega aquí la imagen</b> <span>Copia la imagen (clic derecho → “Copiar imagen”) y aquí Ctrl+V, o mantén presionado → Pegar. También puedes arrastrarla.</span></div><a class="btn" href="/" target="_blank" rel="noopener">Ver cómo queda</a></div>
     <input type="file" id="bfile" accept="image/png,image/jpeg,image/webp" hidden>
     <p class="cuenta" id="cuenta">Cargando…</p>
     <div class="bns" id="bns"></div>
@@ -217,7 +221,7 @@ function pintar(){
   const n=B.filter(b=>estado(b)[0]==="hoy").length;
   $("#cuenta").textContent=`${B.length} banner${B.length===1?"":"s"} · ${n} se ve${n===1?"":"n"} hoy en la página${n?"":" (se muestran los de siempre)"}`;
   $("#bns").innerHTML=B.map((b,i)=>{const [ec,et]=estado(b);return `<div class="bn${b.activo===false?" off":""}" data-i="${i}">
-    <div class="prev"><img src="${esc(src(b.img))}" alt=""><span class="num">${i+1}</span></div>
+    <div class="prev" tabindex="0" title="Para cambiar esta imagen: haz clic aquí y pega (Ctrl+V), o arrastra otra imagen"><img src="${esc(src(b.img))}" alt=""><span class="num">${i+1}</span></div>
     <div class="campos"><div style="display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap"><span class="est ${ec}">${esc(et)}</span><label class="chk2"><input type="checkbox" data-k="activo"${b.activo!==false?" checked":""}> Encendido</label></div>
       <label>Al tocarlo lleva a<select data-k="href">${DEST.map(([v,t])=>`<option value="${v}"${v===b.href?" selected":""}>${esc(t)}</option>`).join("")}</select></label>
       <div class="fila"><label>Desde <small>(opcional)</small><input type="date" data-k="desde" value="${esc(b.desde||"")}"></label><label>Hasta <small>(opcional)</small><input type="date" data-k="hasta" value="${esc(b.hasta||"")}"></label></div>
@@ -240,13 +244,34 @@ function achicar(file){return new Promise(res=>{const img=new Image(),u=URL.crea
     const x=c.getContext("2d");x.fillStyle="#fff";x.fillRect(0,0,c.width,c.height);x.drawImage(img,0,0,c.width,c.height);URL.revokeObjectURL(u);
     const prueba=q=>c.toBlob(b=>{if(b&&b.size>1400000&&q>.5)prueba(q-.1);else res(b)},"image/jpeg",q);prueba(.86)};
   img.onerror=()=>{URL.revokeObjectURL(u);res(null)};img.src=u})}
-$("#bfile").addEventListener("change",async e=>{const f=e.target.files[0];e.target.value="";if(!f)return;
+$("#bfile").addEventListener("change",async e=>{const f=e.target.files[0];e.target.value="";if(f)await subirBanner(f)});
+async function subirBanner(f){
+  if(!/^image\//.test(f.type)){toast("Eso no es una imagen. Usa “Copiar imagen”, no “Copiar dirección de la imagen”.");return}
   toast("Subiendo imagen…");
   try{const b=await achicar(f);if(!b)throw 0;const r=await fetch("/api/dueno/fotos",{method:"POST",credentials:"same-origin",headers:{"content-type":"image/jpeg"},body:b});
     if(r.status===401){verLogin();return}const j=await r.json();if(!j.ok)throw 0;
     if(cambiarI!=null&&B[cambiarI]){B[cambiarI].img=j.ruta}else{B.unshift({id:Date.now().toString(36),img:j.ruta,href:"#inicio",alt:"",activo:true,desde:"",hasta:""})}
     pintar();toast(cambiarI!=null?"Imagen cambiada. Toca Guardar cambios.":"Banner agregado hasta arriba. Escoge a dónde lleva, ponle fechas si es de temporada y toca Guardar cambios.")}
-  catch(err){toast("No se pudo subir la imagen. Prueba con otra (JPG o PNG).")}});
+  catch(err){toast("No se pudo subir la imagen. Prueba con otra (JPG o PNG).")}}
+// Pegar imagen copiada: en el recuadro de arriba agrega un banner nuevo; sobre la foto de un banner, la cambia
+const PASTE_HTML=$("#pasteZone").innerHTML;
+function imgDe(cd){if(!cd)return null;for(const it of cd.items||[]){if(it.kind==="file"&&/^image\//.test(it.type)){const f=it.getAsFile();if(f)return f}}for(const f of cd.files||[]){if(/^image\//.test(f.type))return f}return null}
+document.addEventListener("paste",async e=>{
+  if($("#app").hidden)return;const t=e.target;
+  if(t.matches&&t.matches("input:not([type=checkbox]),textarea")&&!imgDe(e.clipboardData))return;
+  const f=imgDe(e.clipboardData);
+  if(!f){if(t.closest&&t.closest("#pasteZone")){e.preventDefault();toast("Eso no es una imagen. Usa “Copiar imagen”, no “Copiar dirección de la imagen”.")}return}
+  e.preventDefault();const card=t.closest&&t.closest(".bn");cambiarI=card?+card.dataset.i:null;
+  await subirBanner(f);$("#pasteZone").innerHTML=PASTE_HTML;
+});
+$("#pasteZone").addEventListener("beforeinput",e=>{if(e.inputType!=="insertFromPaste")e.preventDefault()});
+$("#pasteZone").addEventListener("blur",()=>{$("#pasteZone").innerHTML=PASTE_HTML});
+$("#pasteZone").addEventListener("dragover",e=>{e.preventDefault();$("#pasteZone").classList.add("on")});
+$("#pasteZone").addEventListener("dragleave",()=>$("#pasteZone").classList.remove("on"));
+$("#pasteZone").addEventListener("drop",async e=>{e.preventDefault();$("#pasteZone").classList.remove("on");const f=[...(e.dataTransfer.files||[])].find(x=>/^image\//.test(x.type));if(f){cambiarI=null;await subirBanner(f)}});
+$("#bns").addEventListener("dragover",e=>{const pv=e.target.closest(".prev");if(pv){e.preventDefault();pv.classList.add("on")}});
+$("#bns").addEventListener("dragleave",e=>{const pv=e.target.closest(".prev");if(pv)pv.classList.remove("on")});
+$("#bns").addEventListener("drop",async e=>{const pv=e.target.closest(".prev");if(!pv)return;e.preventDefault();pv.classList.remove("on");const f=[...(e.dataTransfer.files||[])].find(x=>/^image\//.test(x.type));if(f){cambiarI=+pv.closest(".bn").dataset.i;await subirBanner(f)}});
 $("#deshacer").onclick=()=>{B=JSON.parse(orig);pintar();toast("Se deshicieron los cambios.")};
 $("#guardar").onclick=async()=>{const b=$("#guardar");b.disabled=true;b.textContent="Guardando…";
   try{const j=await api("/api/dueno/banners",{banners:B});if(!j.ok)throw 0;B=j.banners;orig=JSON.stringify(B);pintar();toast("¡Listo! Los banners ya están en la página.")}
