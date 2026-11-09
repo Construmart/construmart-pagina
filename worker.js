@@ -100,7 +100,7 @@ const bandeja = (env) => env.BANDEJA.get(env.BANDEJA.idFromName("principal"));
 const resumen = (q) => ({
   id: q.id, folio: q.folio, fecha: q.fecha, nombre: q.nombre, telefono: q.telefono, sucursal: q.sucursal,
   recoge: q.recoge, factura: !!q.factura, entrega: q.entrega || "recoger", cliente: q.cliente ? q.cliente.nombre : "", productos: q.items.length, estado: q.estado,
-  total: q.respuesta ? q.respuesta.total : null, respondida: q.respuesta ? q.respuesta.fecha : null,
+  total: q.respuesta ? q.respuesta.total : null, respondida: q.respuesta ? q.respuesta.fecha : null, confirmada: q.confirmada ? q.confirmada.fecha : null,
 });
 
 export class Bandeja extends DurableObject {
@@ -244,6 +244,11 @@ export class Bandeja extends DurableObject {
     const r = this.sqlFotos().exec("SELECT tipo, datos FROM fotos WHERE id = ?", id).toArray();
     return r.length ? { tipo: r[0].tipo, datos: r[0].datos } : null;
   }
+  async deCliente(usuario) {
+    const m = await this.ctx.storage.list({ prefix: "q:", reverse: true, limit: 400 });
+    return [...m.values()].filter((q) => q.cliente && q.cliente.usuario === usuario).slice(0, 40)
+      .map((q) => ({ id: q.id, folio: q.folio, fecha: q.fecha, estado: q.estado, sucursal: q.sucursal, entrega: q.entrega, items: q.items.map((it) => ({ id: it.custom ? "" : it.id, n: it.n, v: it.v, q: it.q, u: it.u, custom: !!it.custom })), respuesta: q.respuesta || null, confirmada: q.confirmada || null }));
+  }
   async porTokens(pares) {
     const out = [];
     for (const [id, tok] of pares) {
@@ -363,6 +368,29 @@ async function api(request, env, url) {
     const f = await bandeja(env).foto(mf[1]);
     if (!f) return new Response("No encontrada", { status: 404 });
     return new Response(f.datos, { headers: { "content-type": f.tipo, "cache-control": "public, max-age=31536000, immutable" } });
+  }
+
+  // --- Clientes con cuenta: sus cotizaciones y confirmar pedido ---
+  if (ruta === "/api/mis-pedidos" && metodo === "GET") {
+    const s = await sesionCliente(request, env);
+    if (!s) return json({ ok: false, error: "sin_sesion" }, 401);
+    return json({ ok: true, cotizaciones: await bandeja(env).deCliente(s.usuario) });
+  }
+  if (ruta === "/api/mis-pedidos/confirmar" && metodo === "POST") {
+    const s = await sesionCliente(request, env);
+    if (!s) return json({ ok: false, error: "sin_sesion" }, 401);
+    let b = {};
+    try { b = await request.json(); } catch (e) {}
+    const stub = bandeja(env);
+    const q = await stub.obtener(txt(b.id, 40));
+    if (!q || !q.cliente || q.cliente.usuario !== s.usuario) return json({ ok: false, error: "no_encontrada" }, 404);
+    if (!q.respuesta) return json({ ok: false, error: "sin_respuesta" }, 409);
+    if (q.confirmada) return json({ ok: true, confirmada: q.confirmada });
+    const r = q.respuesta;
+    if (r.vigencia && Date.now() > r.fecha + r.vigencia * 864e5 + 864e5) return json({ ok: false, error: "vencida" }, 409);
+    const confirmada = { fecha: Date.now(), notas: txt(b.notas, 500) };
+    await stub.actualizar(q.id, { estado: "confirmada", confirmada });
+    return json({ ok: true, confirmada });
   }
 
   // --- Cotizaciones que mandan los clientes ---
@@ -492,7 +520,7 @@ async function api(request, env, url) {
         try { b = await request.json(); } catch (e) {}
         if (b.accion === "borrar") { await bandeja(env).borrar(id); return json({ ok: true }); }
         if (b.accion === "estado") {
-          const estado = ["pendiente", "respondida", "archivada"].includes(b.estado) ? b.estado : "pendiente";
+          const estado = ["pendiente", "respondida", "confirmada", "entregada", "archivada"].includes(b.estado) ? b.estado : "pendiente";
           const q = await bandeja(env).actualizar(id, { estado });
           return q ? json({ ok: true }) : json({ ok: false, error: "no_encontrada" }, 404);
         }

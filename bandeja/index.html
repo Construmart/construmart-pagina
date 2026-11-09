@@ -62,6 +62,8 @@ main.bandeja{display:grid;grid-template-columns:minmax(0,380px) minmax(0,1fr);ga
 .chip{font-size:10.5px;font-weight:800;border-radius:20px;padding:2px 8px;background:var(--cream);color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
 .chip.pend{background:var(--accent);color:#fff}
 .chip.resp{background:var(--ok);color:#fff}
+.chip.conf{background:#2563eb;color:#fff}
+.conf-box{background:#2563eb14;border:1.5px solid #2563eb55;border-radius:10px;padding:10px 12px;font-weight:700;display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
 .chip.may{background:var(--ink);color:#fff}
 .chip.fac{background:#2563eb;color:#fff}
 .chip.env{background:var(--accent);color:#fff;outline:2px solid var(--ink);outline-offset:-2px}
@@ -167,6 +169,8 @@ textarea{min-height:64px;resize:vertical}
     <div class="tabs" role="group" aria-label="Filtrar">
       <button type="button" class="on" data-f="pendiente">Pendientes <b id="n-pendiente">0</b></button>
       <button type="button" data-f="respondida">Respondidas <b id="n-respondida">0</b></button>
+      <button type="button" data-f="confirmada">Confirmadas <b id="n-confirmada">0</b></button>
+      <button type="button" data-f="entregada">Entregadas <b id="n-entregada">0</b></button>
       <button type="button" data-f="archivada">Archivadas <b id="n-archivada">0</b></button>
       <button type="button" data-f="">Todas</button>
     </div>
@@ -208,12 +212,12 @@ async function cargar(aviso){
   catch(e){if(e.message!=="sin_sesion")toast("No se pudo cargar la bandeja. Revisa tu conexión.")}
 }
 function pintarLista(){
-  ["pendiente","respondida","archivada"].forEach(k=>$("#n-"+k).textContent=todas.filter(q=>q.estado===k).length);
+  ["pendiente","respondida","confirmada","entregada","archivada"].forEach(k=>$("#n-"+k).textContent=todas.filter(q=>q.estado===k).length);
   const L=todas.filter(q=>!filtro||q.estado===filtro);
   $("#lista").innerHTML=L.length?L.map(q=>`<button type="button" class="q${abierta===q.id?" on":""}" data-id="${esc(q.id)}">
     <span class="t"><b>${esc(q.cliente||q.nombre||"Sin nombre")}</b><time datetime="${new Date(q.fecha).toISOString()}" title="${esc(fecha(q.fecha))}">${hace(q.fecha)}</time></span>
     <small>${esc(q.folio)} · ${q.productos} producto${q.productos===1?"":"s"} · ${esc(q.sucursal)}${q.total!=null?" · "+pesos(q.total):""}</small>
-    <span class="chips">${q.estado==="pendiente"?`<i class="chip pend">Por contestar</i>`:q.estado==="respondida"?`<i class="chip resp">Respondida</i>`:`<i class="chip">Archivada</i>`}${q.cliente?`<i class="chip may">Mayoreo</i>`:""}${q.factura?`<i class="chip fac">Factura</i>`:""}${q.entrega==="envio"?`<i class="chip env">Envío</i>`:q.entrega==="cotizar"?`<i class="chip">Solo cotiza</i>`:""}${q.telefono?"":`<i class="chip">Sin teléfono</i>`}</span>
+    <span class="chips">${q.estado==="pendiente"?`<i class="chip pend">Por contestar</i>`:q.estado==="respondida"?`<i class="chip resp">Respondida</i>`:q.estado==="confirmada"?`<i class="chip conf">✅ Pedido confirmado</i>`:q.estado==="entregada"?`<i class="chip">Entregada</i>`:`<i class="chip">Archivada</i>`}${q.cliente?`<i class="chip may">Mayoreo</i>`:""}${q.factura?`<i class="chip fac">Factura</i>`:""}${q.entrega==="envio"?`<i class="chip env">Envío</i>`:q.entrega==="cotizar"?`<i class="chip">Solo cotiza</i>`:""}${q.telefono?"":`<i class="chip">Sin teléfono</i>`}</span>
   </button>`).join(""):`<div class="vacio"><img src="/marca/mart-guino-v2.png" alt="" width="290" height="300">${filtro==="pendiente"?"No tienes cotizaciones por contestar. ¡Al corriente!":"No hay cotizaciones aquí."}</div>`;
 }
 document.querySelector(".tabs").addEventListener("click",e=>{const b=e.target.closest("[data-f]");if(!b)return;filtro=b.dataset.f;document.querySelectorAll(".tabs button").forEach(x=>x.classList.toggle("on",x===b));pintarLista()});
@@ -261,6 +265,7 @@ function pintarDet(){
   $("#det").innerHTML=`<div class="det-h"><div><h2>${esc(q.cliente?q.cliente.nombre:q.nombre||"Sin nombre")}</h2><p>${esc(q.folio)} · llegó ${esc(fecha(q.fecha))}${r?` · respondida ${esc(fecha(r.fecha))}`:""}</p></div>
     <button type="button" class="btn atras" id="atras">← Volver a la lista</button></div>
   <div class="datos"><div><span>Nombre</span><b>${esc(q.nombre||"—")}</b></div><div><span>Teléfono</span><b>${esc(q.telefono||"No lo dejó")}</b></div><div><span>Sucursal</span><b>${esc(q.sucursal||"—")}</b></div>${q.entrega==="envio"?`<div><span>Entrega</span><b>🚚 Envío a domicilio</b></div><div style="grid-column:1/-1"><span>Dirección</span><b>${esc(q.direccion||"No la escribió")}</b></div><div><span>Lo necesita</span><b>${esc(q.recoge||"—")}</b></div>`:q.entrega==="cotizar"?`<div><span>Entrega</span><b>Solo quiere cotizar</b></div>`:`<div><span>¿Cuándo pasa?</span><b>${esc(q.recoge||"—")}</b></div>`}<div><span>Factura</span><b>${q.factura?"Sí, la pidió":"No"}</b></div>${q.cliente?`<div><span>Cliente de mayoreo</span><b>${esc(q.cliente.nombre)} (${esc(q.cliente.usuario)})</b></div>`:""}</div>
+  ${q.confirmada?`<div class="conf-box"><span>✅ El cliente confirmó este pedido el ${esc(fecha(q.confirmada.fecha))}${q.confirmada.notas?` · “${esc(q.confirmada.notas)}”`:""}</span>${q.estado==="entregada"?"<span>📦 Entregado</span>":""}</div>`:""}
   ${q.notas?`<div class="notas-c"><b>Comentarios del cliente:</b> ${esc(q.notas)}</div>`:""}
   <div class="tbox"><table><thead><tr><th>Cant.</th><th>Producto</th><th>Precio c/u</th><th>Existencia</th><th style="text-align:right">Subtotal</th></tr></thead><tbody id="filas">
   ${q.items.map((it,i)=>{const l=r&&r.lineas[i]||{};const sg=(actual._sug||[])[i];const pv=l.precio||it.pc||(!r&&sg)||"";const ex=l.existe||"si";
@@ -276,6 +281,7 @@ function pintarDet(){
     <a class="btn wa" id="wa" href="#" target="_blank" rel="noopener"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2z"/></svg>Guardar y mandar por WhatsApp</a>
     <button type="button" class="btn" id="guardar">Solo guardar</button>
     <button type="button" class="btn" id="copiar">Copiar mensaje</button>
+    ${q.estado==="confirmada"?`<button type="button" class="btn" id="entregar">Marcar como entregado</button>`:""}
     <button type="button" class="btn" id="archivar">${q.estado==="archivada"?"Sacar de archivadas":"Archivar"}</button>
     <button type="button" class="btn danger" id="borrar">Borrar</button>
   </div>
@@ -305,6 +311,7 @@ $("#det").addEventListener("click",async e=>{
   if(t.id==="wa"){if(t.getAttribute("aria-disabled")==="true"){e.preventDefault();return}actualizarWA();guardar(true).then(ok=>{if(ok)toast("Respuesta guardada. Envía el mensaje en WhatsApp.")});return}
   if(t.id==="guardar"){t.disabled=true;await guardar();t.disabled=false;return}
   if(t.id==="copiar"){const m=mensaje();try{await navigator.clipboard.writeText(m);toast("Mensaje copiado")}catch(err){toast("No se pudo copiar en este navegador")}return}
+  if(t.id==="entregar"){try{const j=await api("/api/dueno/cotizaciones/"+actual.id,{accion:"estado",estado:"entregada"});if(j.ok){actual.estado="entregada";toast("Marcado como entregado");await cargar();pintarDet()}}catch(e){}return}
   if(t.id==="archivar"){const nuevo=actual.estado==="archivada"?(actual.respuesta?"respondida":"pendiente"):"archivada";
     try{const j=await api("/api/dueno/cotizaciones/"+actual.id,{accion:"estado",estado:nuevo});if(j.ok){actual.estado=nuevo;const s=todas.find(q=>q.id===actual.id);if(s)s.estado=nuevo;pintarLista();pintarDet();toast(nuevo==="archivada"?"Archivada":"De regreso en la bandeja")}}catch(err){toast("No se pudo cambiar. Inténtalo otra vez.")}return}
   if(t.id==="borrar"){if(!t.classList.contains("sure")){t.classList.add("sure");t.textContent="¿Seguro? Toca otra vez";setTimeout(()=>{if(t.isConnected){t.classList.remove("sure");t.textContent="Borrar"}},3500);return}

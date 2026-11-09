@@ -711,6 +711,39 @@ footer .fsoc{display:grid;gap:8px;align-content:start}
 .cli-aviso{display:block;margin-top:6px;color:#f5c48f;font-size:12.5px}
 .pr-aviso{display:block;margin-top:4px;color:#9a5a00;font-size:13px;font-weight:600}
 .hr-v{margin:6px 0 0;font-size:12.5px;color:#9a5a00;font-weight:600}
+#cliMisc:empty{display:none}
+#cliMisc{margin:0 0 20px}
+.mc-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:10px}
+.mc-head h2{margin:0;font-size:20px;font-weight:800}
+.mc-head a{color:var(--accent);font-weight:700;text-decoration:none}
+.mc-badge{display:inline-block;background:var(--ok,#16a34a);color:#fff;font-size:12px;border-radius:20px;padding:2px 9px;vertical-align:middle}
+.mc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.mc{background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:14px;margin-bottom:12px}
+.mc-grid .mc{margin:0}
+.mc header{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.mc header b{display:block;font-weight:800}
+.mc header small{color:var(--muted);font-size:12px}
+.mc-est{font-style:normal;font-size:11.5px;font-weight:800;border-radius:20px;padding:3px 10px;background:#f1ece4;color:var(--muted);text-align:center}
+.mc.resp{border-color:var(--ok,#16a34a)}.mc.resp .mc-est{background:var(--ok,#16a34a);color:#fff}
+.mc.conf{border-color:#2563eb}.mc.conf .mc-est{background:#2563eb;color:#fff}
+.mc.venc .mc-est{background:#fde2e1;color:#b42318}
+.mc ul{list-style:none;margin:10px 0;padding:0;font-size:13.5px}
+.mc li{display:flex;justify-content:space-between;gap:10px;padding:5px 0;border-top:1px solid var(--line)}
+.mc-p{white-space:nowrap;font-weight:700}
+.mc-p em{font-style:normal;font-size:11px;border-radius:4px;padding:1px 5px}.mc-p em.no{background:#fde2e1;color:#b42318}.mc-p em.pa{background:#fff4e0;color:#9a5a00}
+.mc-row,.mc-tot{display:flex;justify-content:space-between;gap:10px;font-size:14px}
+.mc-tot{border-top:2px solid var(--ink,#343639);padding-top:8px;margin-top:4px}
+.mc-tot strong{font-size:20px;font-weight:900}
+.mc-v{margin:6px 0 0;font-size:12.5px;color:#9a5a00;font-weight:600}
+.mc-n{margin:6px 0 0;font-size:13px;color:var(--muted)}
+.mc-res{margin:8px 0 0;color:var(--muted);font-size:13px}
+.mc-acts{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px}
+.mc-acts:empty{display:none}
+.mc-ok{background:var(--ok,#16a34a);color:#fff;border:0;border-radius:10px;padding:10px 16px;font:inherit;font-weight:800;cursor:pointer}
+.mc-sec{border:1.5px solid var(--line);background:#fff;color:var(--ink,#343639);border-radius:10px;padding:8px 14px;font:inherit;font-weight:700;text-decoration:none;cursor:pointer;font-size:13.5px}
+.mc-wa{background:#25D366;color:#fff;border-radius:10px;padding:9px 14px;font-weight:800;text-decoration:none;font-size:13.5px}
+.mc-hecho{font-size:13px;color:#2563eb;font-weight:700}
+.cli-bar-link{color:#FF6A00;font-weight:800;margin-left:6px;text-decoration:underline}
 .branches{align-items:stretch!important}.branch .bbody{flex:1;display:flex;flex-direction:column}.branch .bactions{margin-top:auto!important;padding-top:12px}
 /* Tabletas (681 a 960 px): que la página no se haga más ancha que la pantalla */
 @media (max-width:960px){.shell{grid-template-columns:minmax(0,1fr)!important}.shell>*{min-width:0}}
@@ -1717,9 +1750,9 @@ function cliSet(c){
   const b=$("#cliBtn"),bar=$("#cliBar");
   b.classList.toggle("on",!!c);$("#cliTxt").textContent=c?c.nombre:"Clientes";b.setAttribute("aria-label",c?"Sesión de "+c.nombre:"Acceso para clientes");
   bar.hidden=!c;
-  bar.innerHTML=c?`<div class="wrap"><span><b>Hola, ${esc(c.nombre)}.</b> Estás viendo tus precios de cliente.</span><button type="button" id="cliSalir">Salir</button></div>`:"";
+  bar.innerHTML=c?`<div class="wrap"><span><b>Hola, ${esc(c.nombre)}.</b> Estás viendo tus precios de cliente. <a href="#mis-cotizaciones" class="cli-bar-link">Mis cotizaciones</a></span><button type="button" id="cliSalir">Salir</button></div>`:"";
   cliPintar();if($("#qbody"))renderQuote();
-  const h=location.hash.slice(1);if(!h||h==="inicio"||h==="pedido-rapido")route();
+  MISC=null;const h=location.hash.slice(1);if(!h||h==="inicio"||h==="pedido-rapido"||h==="mis-cotizaciones")route();
 }
 function cliModal(){
   let v=$("#cliVeil");
@@ -1843,7 +1876,7 @@ document.addEventListener("change",e=>{if(e.target.name==="fent"){form.entrega=e
   const lp=$("#lbPick");if(lp)lp.textContent=env?"¿Cuándo lo necesitas?":"¿Cuándo pasarías por tu pedido?";renderQuote();if(env&&d)setTimeout(()=>$("#fdir").focus(),30)}});
 document.addEventListener("click",e=>{const a=e.target.closest("[data-envio]");if(a){form.entrega="envio";try{const f=JSON.parse(localStorage.getItem("cm-form")||"{}");f.entrega="envio";localStorage.setItem("cm-form",JSON.stringify(f))}catch(err){}}});
 // ===== Lo nuevo: Mart acomodó productos nuevos (se calcula solo con la fecha de alta de cada producto) =====
-let ACTUALIZADO=1794258413162;const DIA=864e5;
+let ACTUALIZADO=1794258661707;const DIA=864e5;
 function fechaAlta(p){if(!p||!/^p[0-9a-z]{7,10}$/.test(p.id))return 0;const t=parseInt(p.id.slice(1),36);return t>1.6e12&&t<Date.now()+DIA?t:0}
 const NUEVOS=(dias=7)=>P.filter(p=>!p.hidden&&fechaAlta(p)>=Date.now()-dias*DIA).sort((a,b)=>fechaAlta(b)-fechaAlta(a));
 function nuevoBadge(p){return fechaAlta(p)>=Date.now()-7*DIA?`<span class="nuevo-tag">Nuevo</span>`:""}
@@ -1874,11 +1907,12 @@ const cliVars=p=>p.variants&&p.variants.length>1?p.variants:[p.spec||(p.variants
 function viewCliente(){
   const mis=cliCats(),otras=CATS.filter(c=>!mis.includes(c.slug));
   $("#view").innerHTML=`<div class="cli-home"><img src="marca/mart-feliz-v2.png" alt="" width="289" height="300"><div><span class="mart-tag">Tu cuenta de cliente</span><h1>Hola, ${esc(CLI.nombre)}</h1><p>Aquí tienes tus materiales con tus precios. Arma tu pedido en un minuto.</p><small class="cli-aviso">${AVISO_PRECIO}</small>
-    <div class="cli-acts"><a class="cli-big" href="#pedido-rapido"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>Pedido rápido</a><a class="cli-sec" href="#cotizacion">Mi cotización${quote.length?` (${quote.length})`:""}</a></div></div></div>
+    <div class="cli-acts"><a class="cli-big" href="#pedido-rapido"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>Pedido rápido</a><a class="cli-sec" href="#cotizacion">Mi lista${quote.length?` (${quote.length})`:""}</a><a class="cli-sec" href="#mis-cotizaciones">Mis cotizaciones</a></div></div></div>
+  <section id="cliMisc"></section>
   ${mis.map(s=>{const c=catBy(s),ps=P.filter(p=>p.cat===s);if(!ps.length)return "";
     return `<section class="subsec"><h2 class="sub-band">${esc(c.name)}</h2><div class="grid5">${ps.map(cardFull).join("")}</div></section>`}).join("")}
   <section class="cli-mas"><h2>¿Necesitas algo más?</h2><p>También tenemos todo esto a la mano:</p><div class="cli-chips">${otras.map(c=>`<a href="#${c.slug}">${esc(c.name)}</a>`).join("")}<a href="#tienda" class="todo">Ver toda la tienda ›</a></div></section>`;
-  $("#below").innerHTML="";
+  $("#below").innerHTML="";miscResumen();
 }
 function viewPedido(){
   if(!CLI){location.hash="inicio";return}
@@ -1931,6 +1965,57 @@ function zoomCerrar(desdeAtras){const z=document.getElementById("zoomVeil");if(!
 document.addEventListener("click",e=>{const b=e.target.closest(".zoom-btn");if(!b)return;e.preventDefault();e.stopPropagation();zoomAbrir(b.closest(".card[data-id]"))},true);
 document.addEventListener("keydown",e=>{const z=document.getElementById("zoomVeil");if(!z||z.hidden)return;if(e.key==="Escape")zoomCerrar();if(e.key==="ArrowRight")zoomIr(1);if(e.key==="ArrowLeft")zoomIr(-1)});
 window.addEventListener("popstate",()=>{if(zoomAbierto)zoomCerrar(true)});
+// ===== Clientes con cuenta: Mis cotizaciones (respuesta de Construmart y confirmar pedido) =====
+let MISC=null,miscHora=0;
+const ESTADO_CLI={pendiente:["espera","En espera de respuesta"],respondida:["resp","Respondida · revísala y confirma"],confirmada:["conf","✅ Pedido confirmado"],entregada:["ent","📦 Entregado"],archivada:["arch","Cerrada"]};
+const vence=r=>r&&r.vigencia?r.fecha+r.vigencia*864e5:0;
+const fechaLarga=t=>new Date(t).toLocaleDateString("es-MX",{weekday:"long",day:"numeric",month:"long"});
+async function miscCargar(forzar){
+  if(!CLI)return null;if(!forzar&&MISC&&Date.now()-miscHora<15000)return MISC;
+  try{const r=await fetch("/api/mis-pedidos",{credentials:"same-origin",cache:"no-store"});const j=await r.json();if(j.ok){MISC=j.cotizaciones||[];miscHora=Date.now()}}catch(e){}
+  return MISC;
+}
+function miscTarjeta(q,corta){
+  const [cl,txt]=ESTADO_CLI[q.estado]||ESTADO_CLI.pendiente,r=q.respuesta,v=vence(r),vencida=v&&Date.now()>v+864e5&&!q.confirmada;
+  const lineas=q.items.map((it,i)=>{const l=r&&r.lineas[i]||{};return `<li><span>${it.q} ${esc(it.u)} · ${esc(it.n)}${it.v?" "+esc(it.v):""}</span><span class="mc-p">${!r?"":l.existe==="no"?`<em class="no">No hay</em>`:l.precio?`${pesos(l.precio)} c/u${l.existe==="parcial"?` <em class="pa">Parcial</em>`:""}`:"Por confirmar"}</span></li>`}).join("");
+  return `<article class="mc ${cl}${vencida?" venc":""}" data-mc="${esc(q.id)}"><header><div><b>${esc(q.folio||"Cotización")}</b><small>${esc(new Date(q.fecha).toLocaleString("es-MX",{day:"numeric",month:"short",hour:"numeric",minute:"2-digit"}))}</small></div><i class="mc-est">${vencida?"Vigencia vencida":txt}</i></header>
+  ${corta?`<p class="mc-res">${q.items.length} producto${q.items.length===1?"":"s"}${r?` · Total ${pesos(r.total)}`:""}</p>`:`<ul>${lineas}</ul>
+  ${r?`${r.envio?`<div class="mc-row"><span>🚚 Envío a domicilio</span><b>${pesos(r.envio)}</b></div>`:""}<div class="mc-tot"><span>Total</span><strong>${pesos(r.total)}</strong></div>${v?`<p class="mc-v">${vencida?"Estos precios ya vencieron el ":"Precios válidos hasta el "}${fechaLarga(v)}${vencida?". Pídenos que te los actualicemos.":", sujetos a existencia."}</p>`:""}${r.notas?`<p class="mc-n">${esc(r.notas)}</p>`:""}`:`<p class="mc-n">Te contestamos en 15 a 30 minutos en horario de tienda. Aquí te aparecerá la respuesta.</p>`}`}
+  <div class="mc-acts">${q.estado==="respondida"&&!vencida?`<button type="button" class="mc-ok" data-confirmar="${esc(q.id)}">✅ Confirmar pedido</button>`:""}
+  ${q.confirmada?`<span class="mc-hecho">Confirmaste el ${esc(new Date(q.confirmada.fecha).toLocaleString("es-MX",{day:"numeric",month:"short",hour:"numeric",minute:"2-digit"}))}. Te avisamos cuando esté listo.</span>`:""}
+  ${vencida?`<button type="button" class="mc-sec" data-recotizar="${esc(q.id)}">Volver a cotizar</button>`:""}
+  ${corta?`<a class="mc-sec" href="#mis-cotizaciones">Ver detalle</a>`:""}</div></article>`;
+}
+async function miscResumen(){
+  const box=document.getElementById("cliMisc");if(!box)return;const L=await miscCargar();if(!L||!document.getElementById("cliMisc"))return;
+  if(!L.length){box.innerHTML="";return}
+  const nuevas=L.filter(q=>q.estado==="respondida").length;
+  box.innerHTML=`<div class="mc-head"><h2>Mis cotizaciones${nuevas?` <span class="mc-badge">${nuevas} respondida${nuevas===1?"":"s"}</span>`:""}</h2><a href="#mis-cotizaciones">Ver todas ›</a></div><div class="mc-grid">${L.slice(0,3).map(q=>miscTarjeta(q,true)).join("")}</div>`;
+}
+async function viewMisCot(){
+  if(!CLI){location.hash="inicio";return}
+  $("#view").innerHTML=`<div class="crumbs"><a href="#inicio">Inicio</a><span>›</span><span>Mis cotizaciones</span></div><div class="pr-head"><h1>Mis cotizaciones</h1><p>Aquí te llega la respuesta de Construmart con precio y existencia. Revísala y toca <b>Confirmar pedido</b> para apartarlo.</p></div><div id="miscLista"><p class="mc-n">Cargando…</p></div>`;
+  $("#below").innerHTML="";
+  const L=await miscCargar(true);const el=document.getElementById("miscLista");if(!el)return;
+  el.innerHTML=L&&L.length?L.map(q=>miscTarjeta(q,false)).join(""):`<div class="mart-empty"><img src="marca/mart-pensando-v2.png" alt="" width="300" height="292"><p><strong>Todavía no tienes cotizaciones.</strong><br>Arma tu lista con el <a href="#pedido-rapido" style="color:var(--accent);font-weight:700">Pedido rápido</a> y mándanosla.</p></div>`;
+}
+document.addEventListener("click",async e=>{
+  const c=e.target.closest("[data-confirmar]");
+  if(c){if(!c.dataset.sure){c.dataset.sure="1";c.textContent="¿Confirmas este pedido? Toca otra vez";setTimeout(()=>{if(c.isConnected){delete c.dataset.sure;c.textContent="✅ Confirmar pedido"}},4000);return}
+    c.disabled=true;c.textContent="Confirmando…";
+    try{const r=await fetch("/api/mis-pedidos/confirmar",{method:"POST",credentials:"same-origin",headers:{"content-type":"application/json"},body:JSON.stringify({id:c.dataset.confirmar})});const j=await r.json().catch(()=>({}));
+      if(j.ok){const q=(MISC||[]).find(x=>x.id===c.dataset.confirmar);
+        toast("¡Pedido confirmado! Construmart ya lo ve en su bandeja.");
+        const wa=digits(RECIBE_COTIZACIONES||branchOf(form.branch).wa[0]);
+        if(q&&wa){const t=`Hola, soy ${CLI.nombre}. Confirmo mi pedido ${q.folio||""} desde la página. ¡Gracias!`;const a=c.closest(".mc-acts");if(a)a.insertAdjacentHTML("beforeend",`<a class="mc-wa" href="https://wa.me/52${wa}?text=${encodeURIComponent(t)}" target="_blank" rel="noopener">Avisar también por WhatsApp</a>`)}
+        await miscCargar(true);const h=location.hash.slice(1);if(h==="mis-cotizaciones"){const el=document.getElementById("miscLista");if(el&&MISC){el.innerHTML=MISC.map(q=>miscTarjeta(q,false)).join("");const a=el.querySelector(`[data-mc="${c.dataset.confirmar}"] .mc-acts`);if(a&&wa)a.insertAdjacentHTML("beforeend",`<a class="mc-wa" href="https://wa.me/52${wa}?text=${encodeURIComponent(`Hola, soy ${CLI.nombre}. Confirmo mi pedido ${q?q.folio:""} desde la página. ¡Gracias!`)}" target="_blank" rel="noopener">Avisar también por WhatsApp</a>`)}}else miscResumen()}
+      else{c.disabled=false;delete c.dataset.sure;c.textContent="✅ Confirmar pedido";toast(j.error==="vencida"?"Esta cotización ya venció. Pídenos que la actualicemos.":"No se pudo confirmar. Inténtalo otra vez.")}}
+    catch(err){c.disabled=false;delete c.dataset.sure;c.textContent="✅ Confirmar pedido";toast("No se pudo confirmar. Revisa tu conexión.")}return}
+  const rc=e.target.closest("[data-recotizar]");
+  if(rc){const q=(MISC||[]).find(x=>x.id===rc.dataset.recotizar);if(!q)return;let n=0;
+    q.items.forEach(it=>{if(it.custom){quote.push({custom:true,name:it.n,qty:it.q});n++;return}if(!byId(it.id))return;const ex=quote.find(i=>i.id===it.id&&i.variant===it.v);ex?ex.qty+=it.q:quote.push({id:it.id,variant:it.v,qty:it.q});n++});
+    save();updateBadge();toast(`Se agregaron ${n} producto${n===1?"":"s"} a tu cotización`);location.hash="cotizacion"}
+});
 let search=null;
 function route(){
   showHero(null);
@@ -1946,6 +2031,7 @@ function route(){
   else if(h==="dudas") viewDudas();
   else if(h==="nuevos") viewNuevos();
   else if(h==="pedido-rapido") viewPedido();
+  else if(h==="mis-cotizaciones") viewMisCot();
   else if(h!=="tienda"&&typeof CLI!=="undefined"&&CLI) viewCliente();
   else viewHome();
   if(h!=="inicio")window.scrollTo({top:0});
