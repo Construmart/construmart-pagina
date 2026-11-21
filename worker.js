@@ -546,8 +546,13 @@ async function api(request, env, url) {
       const lista = (a) => (Array.isArray(a) ? a : []).map(tel).filter(Boolean).slice(0, 4);
       const SUC = ["matriz", "armadillo"];
       const c = { modo: b.modo === "unico" ? "unico" : "sucursal", unico: tel(b.unico), cotiz: {}, cuentas: tel(b.cuentas), suc: {} };
+      const hora = (v) => (v === "x" ? "x" : /^\d\d:\d\d$/.test(String(v || "")) ? String(v) : "");
+      c.cajas = {};
       for (const id of SUC) {
-        c.cotiz[id] = tel(b.cotiz && b.cotiz[id]);
+        let cj = b.cajas && Array.isArray(b.cajas[id]) ? b.cajas[id] : [{ wa: b.cotiz && b.cotiz[id] }];
+        cj = cj.slice(0, 4).map((x) => ({ nombre: String((x && x.nombre) || "").trim().slice(0, 40), wa: tel(x && x.wa), sale: Array.from({ length: 7 }, (_, i) => hora(x && Array.isArray(x.sale) ? x.sale[i] : "")) })).filter((x) => x.wa);
+        c.cajas[id] = cj;
+        c.cotiz[id] = cj.length ? cj[0].wa : "";
         const x = (b.suc && b.suc[id]) || {};
         c.suc[id] = { tel: lista(x.tel), wa: lista(x.wa) };
       }

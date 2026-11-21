@@ -133,6 +133,19 @@ textarea{min-height:90px;resize:vertical}
   .mrow select.mt{font-size:11.5px}
 }
 /* Teléfonos */
+.sucbox{display:grid;gap:10px}.sucbox+.sucbox{border-top:1.5px dashed var(--line);padding-top:14px}
+.st{font-size:15px}
+.cjs{display:grid;gap:10px}
+.cj{border:1.5px solid var(--line);border-radius:12px;padding:12px;background:#fff;display:grid;gap:10px}
+.cjh{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto;gap:8px;align-items:center}
+.cjq{border:0;background:none;color:var(--muted);font-weight:700;font-size:12.5px}
+.cjq:hover{color:var(--danger)}
+.dias{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+.dias label{display:grid;gap:3px;font-size:11px;font-weight:800;color:var(--muted);text-align:center}
+.dias select{padding:6px 2px;font-size:12px;text-align:center}
+.dias select.x{color:var(--muted);background:#f3efe9}
+.dias select.h{color:var(--accent);font-weight:700;border-color:#f7c7a6}
+@media (max-width:700px){.cjh{grid-template-columns:1fr 1fr}.cjh .cjq{grid-column:1/-1;justify-self:end}.dias{grid-template-columns:repeat(4,minmax(0,1fr))}}
 .bloque{background:var(--panel);border:1.5px solid var(--line);border-radius:14px;padding:18px;margin-bottom:14px;display:grid;gap:12px}
 .bloque h2{font-size:19px;font-weight:900;margin:0}
 .bloque p.tip{margin:0;font-size:13px;color:var(--muted)}
@@ -182,9 +195,9 @@ input.mal{border-color:var(--danger)!important;background:#fff5f5}
         <label data-m="unico"><input type="radio" name="modo" value="unico"> Todas a un solo número</label>
       </div>
       <div id="mSucursal" class="suc">
-        <div class="fila"><b>Sucursal Río Suchiate</b><input id="cz_matriz" inputmode="tel" placeholder="WhatsApp de la caja de Río Suchiate"></div>
-        <div class="fila"><b>Sucursal Armadillo</b><input id="cz_armadillo" inputmode="tel" placeholder="WhatsApp de la caja de Armadillo"></div>
-        <p class="tip">Cada cotización le llega a la caja de la sucursal que escogió el cliente.</p>
+        <div class="sucbox"><b class="st">Sucursal Río Suchiate</b><div id="cj_matriz" class="cjs"></div><button type="button" class="madd" data-add="matriz">+ Agregar otra cajera</button></div>
+        <div class="sucbox"><b class="st">Sucursal Armadillo</b><div id="cj_armadillo" class="cjs"></div><button type="button" class="madd" data-add="armadillo">+ Agregar otra cajera</button></div>
+        <p class="tip">Cada cotización le llega a una cajera de la sucursal que escogió el cliente. <b>Si hay dos o más cajeras trabajando, se reparten por turnos al azar (mitad y mitad).</b> Cuando una ya salió o descansa ese día, todas le llegan a la que sigue en caja. Si ya no hay nadie (de noche), le llega a cualquiera de las que trabajan ese día para que la vea al abrir.</p>
       </div>
       <div id="mUnico" class="suc" hidden>
         <div class="fila"><b>Número para todas</b><input id="cz_unico" inputmode="tel" placeholder="WhatsApp que recibe todas las cotizaciones"></div>
@@ -224,15 +237,27 @@ $("#fLogin").addEventListener("submit",async e=>{e.preventDefault();const b=$("#
   try{const j=await api("/api/dueno/entrar",{clave:$("#clave").value});if(j.ok){$("#clave").value="";verApp()}else $("#lerr").textContent="Clave incorrecta. Revísala e intenta otra vez."}
   catch(err){$("#lerr").textContent="No se pudo entrar. Revisa tu conexión."}finally{b.disabled=false;b.textContent="Entrar"}});
 $("#salir").onclick=async()=>{try{await api("/api/dueno/salir",{})}catch(e){}verLogin()};
+const DIAS=["Lun","Mar","Mié","Jue","Vie","Sáb","Dom"];
+const HORAS=[];for(let h=11;h<=21;h++)for(const m of ["00","30"])HORAS.push(String(h).padStart(2,"0")+":"+m);
+function h12(t){const [h,m]=t.split(":").map(Number);return (h>12?h-12:h)+":"+String(m).padStart(2,"0")+(h>=12?" pm":" am")}
+function cajaHTML(x){x=x||{};const sale=x.sale||[];
+  return `<div class="cj"><div class="cjh"><input class="cjn" placeholder="Nombre de la cajera (opcional)" value="${(x.nombre||"").replace(/"/g,"&quot;")}"><input class="cjw" inputmode="tel" placeholder="Su WhatsApp" value="${x.wa||""}"><button type="button" class="cjq">Quitar</button></div>
+  <div><span class="mini">¿A qué hora deja de recibir cotizaciones cada día?</span><div class="dias">${DIAS.map((d,i)=>{const v=sale[i]||"";return `<label>${d}<select data-d="${i}" class="${v==="x"?"x":v?"h":""}"><option value="">Todo el día</option>${HORAS.map(h=>`<option value="${h}"${v===h?" selected":""}>Sale ${h12(h)}</option>`).join("")}<option value="x"${v==="x"?" selected":""}>Descansa</option></select></label>`}).join("")}</div></div></div>`}
+function pintarCajas(id,lista){const el=$("#cj_"+id);el.innerHTML=(lista&&lista.length?lista:[{}]).map(cajaHTML).join("");quitarVis(id)}
+function quitarVis(id){const cs=document.querySelectorAll("#cj_"+id+" .cj");cs.forEach(c=>c.querySelector(".cjq").hidden=cs.length<2);const a=document.querySelector(`[data-add="${id}"]`);if(a)a.hidden=cs.length>=4}
+function leerCajas(id){return [...document.querySelectorAll("#cj_"+id+" .cj")].map(c=>({nombre:c.querySelector(".cjn").value.trim(),wa:fmt(c.querySelector(".cjw").value),sale:[...c.querySelectorAll("select")].map(s=>s.value)})).filter(x=>x.wa)}
+document.addEventListener("click",e=>{const a=e.target.closest("[data-add]");if(a){const id=a.dataset.add;$("#cj_"+id).insertAdjacentHTML("beforeend",cajaHTML());quitarVis(id);$("#cj_"+id).lastElementChild.querySelector(".cjw").focus();barra();return}
+  const q=e.target.closest(".cjq");if(q){const box=q.closest(".cjs");q.closest(".cj").remove();quitarVis(box.id.slice(3));barra()}});
+document.addEventListener("change",e=>{if(e.target.matches(".dias select")){e.target.className=e.target.value==="x"?"x":e.target.value?"h":"";barra()}});
 const fmt=v=>{const d=String(v||"").replace(/\D/g,"").slice(-10);return d.length===10?`${d.slice(0,3)}-${d.slice(3,6)}-${d.slice(6)}`:String(v||"").trim()};
 const ok=v=>!v.trim()||String(v).replace(/\D/g,"").length>=10;
 let orig="";
 function poner(c){document.querySelectorAll('[name=modo]').forEach(r=>r.checked=r.value===c.modo);
-  $("#cz_unico").value=c.unico||"";$("#cz_matriz").value=c.cotiz.matriz||"";$("#cz_armadillo").value=c.cotiz.armadillo||"";$("#cuentas").value=c.cuentas||"";
+  $("#cz_unico").value=c.unico||"";for(const id of ["matriz","armadillo"])pintarCajas(id,c.cajas&&c.cajas[id]&&c.cajas[id].length?c.cajas[id]:(c.cotiz&&c.cotiz[id]?[{wa:c.cotiz[id]}]:[]));$("#cuentas").value=c.cuentas||"";
   for(const id of ["matriz","armadillo"]){$("#t_"+id).value=(c.suc[id].tel||[]).join(", ");$("#w_"+id).value=(c.suc[id].wa||[]).join(", ")}
   modo();orig=JSON.stringify(leer());barra()}
 function leer(){const m=(document.querySelector('[name=modo]:checked')||{}).value||"sucursal";const L=v=>v.split(",").map(fmt).filter(Boolean);
-  return {modo:m,unico:fmt($("#cz_unico").value),cotiz:{matriz:fmt($("#cz_matriz").value),armadillo:fmt($("#cz_armadillo").value)},cuentas:fmt($("#cuentas").value),
+  return {modo:m,unico:fmt($("#cz_unico").value),cajas:{matriz:leerCajas("matriz"),armadillo:leerCajas("armadillo")},cuentas:fmt($("#cuentas").value),
     suc:{matriz:{tel:L($("#t_matriz").value),wa:L($("#w_matriz").value)},armadillo:{tel:L($("#t_armadillo").value),wa:L($("#w_armadillo").value)}}}}
 function modo(){const m=(document.querySelector('[name=modo]:checked')||{}).value;$("#mUnico").hidden=m!=="unico";$("#mSucursal").hidden=m==="unico";
   document.querySelectorAll('#modo label').forEach(l=>l.classList.toggle("on",l.dataset.m===m))}
@@ -245,7 +270,7 @@ $("#deshacer").onclick=()=>poner(JSON.parse(orig));
 $("#guardar").onclick=async()=>{const c=leer();const malos=[...document.querySelectorAll("#app input[inputmode=tel]")].filter(i=>!i.closest("[hidden]")&&!i.value.split(",").every(ok));
   malos.forEach(i=>i.classList.add("mal"));if(malos.length){malos[0].focus();toast("Revisa los números marcados en rojo: deben tener 10 dígitos.");return}
   if(c.modo==="unico"&&!c.unico){$("#cz_unico").classList.add("mal");$("#cz_unico").focus();toast("Escribe el número que recibe las cotizaciones.");return}
-  if(c.modo==="sucursal"){const f=["matriz","armadillo"].find(id=>!c.cotiz[id]);if(f){$("#cz_"+f).classList.add("mal");$("#cz_"+f).focus();toast("Falta el WhatsApp de la caja de esa sucursal.");return}}
+  if(c.modo==="sucursal"){const f=["matriz","armadillo"].find(id=>!c.cajas[id].length);if(f){const i=document.querySelector("#cj_"+f+" .cjw");i.classList.add("mal");i.focus();toast("Falta el WhatsApp de al menos una cajera de esa sucursal.");return}}
   const b=$("#guardar");b.disabled=true;b.textContent="Guardando…";
   try{const j=await api("/api/dueno/contacto",c);if(!j.ok){toast("No se pudo guardar. Revisa los números.");return}poner(j.contacto);toast("¡Listo! Los teléfonos ya están en la página.")}
   catch(err){if(err.message!=="sin_sesion")toast("No se pudo guardar. Revisa tu conexión.")}finally{b.disabled=false;b.textContent="Guardar cambios"}};

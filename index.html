@@ -1920,7 +1920,7 @@ document.addEventListener("change",e=>{if(e.target.name==="fent"){form.entrega=e
   const lp=$("#lbPick");if(lp)lp.textContent=env?"¿Cuándo lo necesitas?":"¿Cuándo pasarías por tu pedido?";renderQuote();if(env&&d)setTimeout(()=>$("#fdir").focus(),30)}});
 document.addEventListener("click",e=>{const a=e.target.closest("[data-envio]");if(a){form.entrega="envio";try{const f=JSON.parse(localStorage.getItem("cm-form")||"{}");f.entrega="envio";localStorage.setItem("cm-form",JSON.stringify(f))}catch(err){}}});
 // ===== Lo nuevo: Mart acomodó productos nuevos (se calcula solo con la fecha de alta de cada producto) =====
-let ACTUALIZADO=1795286354657;const DIA=864e5;
+let ACTUALIZADO=1795286975282;const DIA=864e5;
 function fechaAlta(p){if(!p||!/^p[0-9a-z]{7,10}$/.test(p.id))return 0;const t=parseInt(p.id.slice(1),36);return t>1.6e12&&t<Date.now()+DIA?t:0}
 const NUEVOS=(dias=7)=>P.filter(p=>!p.hidden&&fechaAlta(p)>=Date.now()-dias*DIA).sort((a,b)=>fechaAlta(b)-fechaAlta(a));
 function nuevoBadge(p){return fechaAlta(p)>=Date.now()-7*DIA?`<span class="nuevo-tag">Nuevo</span>`:""}
@@ -2088,12 +2088,15 @@ async function dudasServidor(){
 }
 
 // ===== Teléfonos configurables desde el panel del dueño =====
-function waCotiz(id){return WA_COTIZ[id]||RECIBE_COTIZACIONES||branchOf(id).wa[0]}
+const WA_CAJAS={},_cajaElegida={};
+function ahoraTepic(){try{const p=new Intl.DateTimeFormat("en-US",{timeZone:"America/Mazatlan",weekday:"short",hour:"2-digit",minute:"2-digit",hourCycle:"h23"}).formatToParts(new Date());const g=t=>(p.find(x=>x.type===t)||{}).value;return {d:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"].indexOf(g("weekday")),hm:g("hour")+":"+g("minute")}}catch(e){const n=new Date();return {d:(n.getDay()+6)%7,hm:String(n.getHours()).padStart(2,"0")+":"+String(n.getMinutes()).padStart(2,"0")}}}
+function cajeraDe(id){const cs=WA_CAJAS[id];if(!cs||!cs.length)return "";const t=ahoraTepic();const hoy=cs.filter(c=>((c.sale||[])[t.d]||"")!=="x");let ok=hoy.filter(c=>{const s=(c.sale||[])[t.d]||"";return !s||t.hm<s});if(!ok.length)ok=hoy.length?hoy:cs;const k=id+"|"+ok.map(c=>c.wa).join(",");if(!_cajaElegida[k])_cajaElegida[k]=ok[Math.floor(Math.random()*ok.length)].wa;return _cajaElegida[k]}
+function waCotiz(id){return RECIBE_COTIZACIONES||cajeraDe(id)||WA_COTIZ[id]||branchOf(id).wa[0]}
 function pintarTelefonos(){const f=document.getElementById("fphones");if(f)f.innerHTML="<strong>Contacto</strong>"+SUCURSALES.map(b=>`<div class="fbranch"><span>${esc(b.nombre)}</span><div class="phones">${phoneList(b)}</div></div>`).join("")}
 async function contactoServidor(){
   try{const r=await fetch("/api/contacto",{cache:"no-store"});if(!r.ok)return;const j=await r.json();const c=j&&j.contacto;if(!c)return;
     RECIBE_COTIZACIONES=c.modo==="unico"?(c.unico||""):"";
-    Object.keys(WA_COTIZ).forEach(k=>delete WA_COTIZ[k]);if(c.modo!=="unico"&&c.cotiz)Object.assign(WA_COTIZ,c.cotiz);
+    Object.keys(WA_COTIZ).forEach(k=>delete WA_COTIZ[k]);if(c.modo!=="unico"&&c.cotiz)Object.assign(WA_COTIZ,c.cotiz);Object.keys(WA_CAJAS).forEach(k=>delete WA_CAJAS[k]);if(c.modo!=="unico"&&c.cajas)Object.assign(WA_CAJAS,c.cajas);
     WA_CUENTAS=c.cuentas||"";
     if(c.suc)SUCURSALES.forEach(b=>{const x=c.suc[b.id];if(x){if(Array.isArray(x.tel))b.tel=x.tel;if(Array.isArray(x.wa)&&x.wa.length)b.wa=x.wa}});
     pintarTelefonos();const pd=document.getElementById("cliPedir");if(pd&&pd.dispatchEvent){const i=document.getElementById("cliPN");if(i)i.dispatchEvent(new Event("input"))}
