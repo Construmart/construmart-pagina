@@ -693,6 +693,10 @@ async function api(request, env, url) {
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
+    // La dirección vieja (workers.dev) manda a la nueva: construmartmx.com
+    if (url.hostname.endsWith(".workers.dev") && !url.pathname.startsWith("/api/")) {
+      return Response.redirect("https://construmartmx.com" + url.pathname + url.search, 301);
+    }
     if (url.pathname.startsWith("/api/")) return api(request, env, url);
     return env.ASSETS.fetch(request);
   },
