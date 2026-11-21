@@ -822,7 +822,7 @@ footer .fsoc{display:grid;gap:8px;align-content:start}
 <footer>
   <div class="wrap">
     <div><span class="flogo"><img src="marca/logo-construmart.png" alt="Construmart. Tu proyecto, nuestro compromiso." width="240" height="81"></span><p>Cotiza en línea y recoge en tienda.</p><p class="f-act" id="fAct"></p></div>
-    <div><strong>Visítanos</strong><p>Matriz · C. Río Suchiate 616</p><p>Sucursal Armadillo · Palomas 636</p><p><a href="#recoge" style="color:inherit">Ver mapas y horarios</a></p><p><a href="#dudas" style="color:inherit">Pregúntale a Mart</a></p><p>Envío a domicilio</p><p>Emitimos factura electrónica (CFDI)</p></div>
+    <div><strong>Visítanos</strong><p>Sucursal Río Suchiate · C. Río Suchiate 616</p><p>Sucursal Armadillo · Palomas 636</p><p><a href="#recoge" style="color:inherit">Ver mapas y horarios</a></p><p><a href="#dudas" style="color:inherit">Pregúntale a Mart</a></p><p>Envío a domicilio</p><p>Emitimos factura electrónica (CFDI)</p></div>
     <div class="fphones" id="fphones"><strong>Contacto</strong></div>
     <div class="fsoc" id="fsoc"></div>
   </div>
@@ -835,10 +835,10 @@ footer .fsoc{display:grid;gap:8px;align-content:start}
 // ===== ¿A qué WhatsApp llegan las cotizaciones? =====
 // Por ahora todas llegan a este número (no se muestra en la página).
 // Para que cada cotización llegue al WhatsApp de su sucursal, déjalo vacío: const RECIBE_COTIZACIONES = "";
-const RECIBE_COTIZACIONES = "311-270-6318";
+let RECIBE_COTIZACIONES = "311-270-6318";let WA_CUENTAS="";const WA_COTIZ={};
 // tel: teléfono fijo/llamada · wa: WhatsApp (el primero de "wa" recibe las cotizaciones de esa sucursal)
 const SUCURSALES=[
-  {id:"matriz",nombre:"Matriz",etiqueta:"Matriz",direccion:"C. Río Suchiate 616",referencias:"Nuestra tienda principal",mapa:"https://maps.app.goo.gl/C6bEEeWEdpSp8P7YA",
+  {id:"matriz",nombre:"Sucursal Río Suchiate",etiqueta:"Río Suchiate",direccion:"C. Río Suchiate 616",referencias:"Nuestra tienda principal",mapa:"https://maps.app.goo.gl/C6bEEeWEdpSp8P7YA",
    horario:[["Lunes a viernes","8:00 a.m. a 6:00 p.m."],["Sábado","8:00 a.m. a 2:00 p.m."],["Domingo","9:00 a.m. a 2:00 p.m."]],
    tel:["311-218-6196"],wa:["311-107-6297","311-250-4290"]},
   {id:"armadillo",nombre:"Sucursal Armadillo",etiqueta:"Sucursal",direccion:"Palomas 636, El Armadillo",referencias:"",mapa:"https://maps.app.goo.gl/aLhwRyB14BB4szT68",
@@ -1551,8 +1551,8 @@ function renderQuote(){
   const m=msg(),ok=quote.length>0;
   $("#preview").textContent=m;
   $("#waBtn").setAttribute("aria-disabled",String(!ok));
-  $("#waBtn").href=ok?`https://wa.me/52${digits(RECIBE_COTIZACIONES||branchOf(form.branch).wa[0])}?text=${encodeURIComponent(m)}`:"#";
-  const wn=$("#waNote");if(wn)wn.textContent=RECIBE_COTIZACIONES?(form.entrega==="envio"?`Tu cotización llegará al WhatsApp de Construmart, con envío a domicilio desde ${branchOf(form.branch).nombre}.`:form.entrega==="recoger"?`Tu cotización llegará al WhatsApp de Construmart para recoger en ${branchOf(form.branch).nombre}.`:`Tu cotización llegará al WhatsApp de Construmart (${branchOf(form.branch).nombre}). Sin compromiso de compra.`):`Se enviará al WhatsApp de ${branchOf(form.branch).nombre}: ${branchOf(form.branch).wa[0]}`;
+  $("#waBtn").href=ok?`https://wa.me/52${digits(waCotiz(form.branch))}?text=${encodeURIComponent(m)}`:"#";
+  const wn=$("#waNote");if(wn)wn.textContent=(RECIBE_COTIZACIONES||WA_COTIZ[form.branch])?(form.entrega==="envio"?`Tu cotización llegará al WhatsApp de Construmart, con envío a domicilio desde ${branchOf(form.branch).nombre}.`:form.entrega==="recoger"?`Tu cotización llegará al WhatsApp de Construmart para recoger en ${branchOf(form.branch).nombre}.`:`Tu cotización llegará al WhatsApp de Construmart (${branchOf(form.branch).nombre}). Sin compromiso de compra.`):`Se enviará al WhatsApp de ${branchOf(form.branch).nombre}: ${branchOf(form.branch).wa[0]}`;
   updateBadge();save();
 }
 
@@ -1798,7 +1798,7 @@ function cliModal(){
   </form></div>`);v=$("#cliVeil");
     const pedirHref=()=>{const neg=$("#cliPN").value.trim(),per=$("#cliPP").value.trim();
       const t=`Hola, soy ${per||"(mi nombre)"}${neg?" de "+neg:""}. Quiero mi acceso de cliente de mayoreo en la página de Construmart para ver mis precios. ¡Gracias!`;
-      return `https://wa.me/52${digits(RECIBE_COTIZACIONES||branchOf(form.branch).wa[0])}?text=${encodeURIComponent(t)}`};
+      return `https://wa.me/52${digits(WA_CUENTAS||waCotiz(form.branch))}?text=${encodeURIComponent(t)}`};
     ["#cliPN","#cliPP"].forEach(s=>$(s).addEventListener("input",()=>{$("#cliPedir").href=pedirHref()}));
     $("#cliPedir").href=pedirHref();
     $("#cliPedir").addEventListener("click",e=>{if(!$("#cliPN").value.trim()){e.preventDefault();$("#cliPN").focus();$("#cliPN").placeholder="Escribe aquí el nombre de tu negocio"}else toast("Se abrió WhatsApp. Envía el mensaje y te damos tu acceso.")});
@@ -1821,7 +1821,7 @@ document.addEventListener("click",async e=>{
   if(e.target.closest("#cliSalir")){try{await fetch("/api/salir",{method:"POST",credentials:"same-origin"})}catch(err){}cliSet(null);toast("Saliste de tu sesión de cliente.")}
 });
 (async()=>{try{const r=await fetch("/api/sesion",{credentials:"same-origin",cache:"no-store"});if(!r.ok)return;const j=await r.json();if(!j||j.ok!==true)return;
-  $("#cliBtn").hidden=false;SRV=true;cotizHist();catsServidor();dudasServidor();prodServidor();bannersServidor();if(j.cliente)cliSet(j.cliente);if(j.dueno)duenoSet(true)}catch(e){}})();
+  $("#cliBtn").hidden=false;SRV=true;cotizHist();catsServidor();dudasServidor();contactoServidor();prodServidor();bannersServidor();if(j.cliente)cliSet(j.cliente);if(j.dueno)duenoSet(true)}catch(e){}})();
 // ===== Productos al día: en internet la página pide la lista que el dueño edita en su panel =====
 async function prodServidor(){
   try{const r=await fetch("/api/productos",{credentials:"same-origin"});if(!r.ok)return;const j=await r.json();
@@ -1839,7 +1839,7 @@ let DUENO=false;
 function duenoSet(on){
   DUENO=on;document.body.classList.toggle("modo-dueno",on);
   let bar=$("#duenoBar");
-  if(on&&!bar){document.body.insertAdjacentHTML("afterbegin",`<div class="dueno-bar" id="duenoBar"><div class="wrap"><b>🛠️ Modo dueño</b><a href="/bandeja/">Cotizaciones</a><a href="/bandeja/productos/">Productos</a><a href="/bandeja/categorias/">Categorías</a><a href="/bandeja/precios/">Precios</a><a href="/bandeja/banners/">Banners</a><a href="/bandeja/preguntas/">Preguntas</a><a href="/bandeja/clientes/">Clientes</a><a href="/bandeja/productos/#nuevo" id="duenoNuevo">+ Agregar producto</a><button type="button" id="duenoSalir">Salir</button></div></div>`);bar=$("#duenoBar")}
+  if(on&&!bar){document.body.insertAdjacentHTML("afterbegin",`<div class="dueno-bar" id="duenoBar"><div class="wrap"><b>🛠️ Modo dueño</b><a href="/bandeja/">Cotizaciones</a><a href="/bandeja/productos/">Productos</a><a href="/bandeja/categorias/">Categorías</a><a href="/bandeja/precios/">Precios</a><a href="/bandeja/banners/">Banners</a><a href="/bandeja/preguntas/">Preguntas</a><a href="/bandeja/telefonos/">Teléfonos</a><a href="/bandeja/clientes/">Clientes</a><a href="/bandeja/productos/#nuevo" id="duenoNuevo">+ Agregar producto</a><button type="button" id="duenoSalir">Salir</button></div></div>`);bar=$("#duenoBar")}
   if(!on&&bar)bar.remove();
   duenoPintar();
 }
@@ -1920,7 +1920,7 @@ document.addEventListener("change",e=>{if(e.target.name==="fent"){form.entrega=e
   const lp=$("#lbPick");if(lp)lp.textContent=env?"¿Cuándo lo necesitas?":"¿Cuándo pasarías por tu pedido?";renderQuote();if(env&&d)setTimeout(()=>$("#fdir").focus(),30)}});
 document.addEventListener("click",e=>{const a=e.target.closest("[data-envio]");if(a){form.entrega="envio";try{const f=JSON.parse(localStorage.getItem("cm-form")||"{}");f.entrega="envio";localStorage.setItem("cm-form",JSON.stringify(f))}catch(err){}}});
 // ===== Lo nuevo: Mart acomodó productos nuevos (se calcula solo con la fecha de alta de cada producto) =====
-let ACTUALIZADO=1794264876839;const DIA=864e5;
+let ACTUALIZADO=1795286354657;const DIA=864e5;
 function fechaAlta(p){if(!p||!/^p[0-9a-z]{7,10}$/.test(p.id))return 0;const t=parseInt(p.id.slice(1),36);return t>1.6e12&&t<Date.now()+DIA?t:0}
 const NUEVOS=(dias=7)=>P.filter(p=>!p.hidden&&fechaAlta(p)>=Date.now()-dias*DIA).sort((a,b)=>fechaAlta(b)-fechaAlta(a));
 function nuevoBadge(p){return fechaAlta(p)>=Date.now()-7*DIA?`<span class="nuevo-tag">Nuevo</span>`:""}
@@ -2064,7 +2064,7 @@ document.addEventListener("click",async e=>{
     try{const r=await fetch("/api/mis-pedidos/confirmar",{method:"POST",credentials:"same-origin",headers:{"content-type":"application/json"},body:JSON.stringify({id:c.dataset.confirmar})});const j=await r.json().catch(()=>({}));
       if(j.ok){const q=(MISC||[]).find(x=>x.id===c.dataset.confirmar);
         toast("¡Pedido confirmado! Construmart ya lo ve en su bandeja.");
-        const wa=digits(RECIBE_COTIZACIONES||branchOf(form.branch).wa[0]);
+        const wa=digits(waCotiz(form.branch));
         if(q&&wa){const t=`Hola, soy ${CLI.nombre}. Confirmo mi pedido ${q.folio||""} desde la página. ¡Gracias!`;const a=c.closest(".mc-acts");if(a)a.insertAdjacentHTML("beforeend",`<a class="mc-wa" href="https://wa.me/52${wa}?text=${encodeURIComponent(t)}" target="_blank" rel="noopener">Avisar también por WhatsApp</a>`)}
         await miscCargar(true);const h=location.hash.slice(1);if(h==="mis-cotizaciones"){const el=document.getElementById("miscLista");if(el&&MISC){el.innerHTML=MISC.map(q=>miscTarjeta(q,false)).join("");const a=el.querySelector(`[data-mc="${c.dataset.confirmar}"] .mc-acts`);if(a&&wa)a.insertAdjacentHTML("beforeend",`<a class="mc-wa" href="https://wa.me/52${wa}?text=${encodeURIComponent(`Hola, soy ${CLI.nombre}. Confirmo mi pedido ${q?q.folio:""} desde la página. ¡Gracias!`)}" target="_blank" rel="noopener">Avisar también por WhatsApp</a>`)}}else miscResumen()}
       else{c.disabled=false;delete c.dataset.sure;c.textContent="✅ Confirmar pedido";toast(j.error==="vencida"?"Esta cotización ya venció. Pídenos que la actualicemos.":"No se pudo confirmar. Inténtalo otra vez.")}}
@@ -2084,6 +2084,20 @@ async function dudasServidor(){
       if(d.prods&&d.prods.length)o.prods=d.prods;if(d.match){try{o.match=new RegExp(d.match,"i")}catch(e){}}return o});
     DUDAS.splice(0,DUDAS.length,...L);
     const h=location.hash.slice(1);if(h==="dudas"||catBy(h)){const y=scrollY;route();window.scrollTo(0,y)}
+  }catch(e){}
+}
+
+// ===== Teléfonos configurables desde el panel del dueño =====
+function waCotiz(id){return WA_COTIZ[id]||RECIBE_COTIZACIONES||branchOf(id).wa[0]}
+function pintarTelefonos(){const f=document.getElementById("fphones");if(f)f.innerHTML="<strong>Contacto</strong>"+SUCURSALES.map(b=>`<div class="fbranch"><span>${esc(b.nombre)}</span><div class="phones">${phoneList(b)}</div></div>`).join("")}
+async function contactoServidor(){
+  try{const r=await fetch("/api/contacto",{cache:"no-store"});if(!r.ok)return;const j=await r.json();const c=j&&j.contacto;if(!c)return;
+    RECIBE_COTIZACIONES=c.modo==="unico"?(c.unico||""):"";
+    Object.keys(WA_COTIZ).forEach(k=>delete WA_COTIZ[k]);if(c.modo!=="unico"&&c.cotiz)Object.assign(WA_COTIZ,c.cotiz);
+    WA_CUENTAS=c.cuentas||"";
+    if(c.suc)SUCURSALES.forEach(b=>{const x=c.suc[b.id];if(x){if(Array.isArray(x.tel))b.tel=x.tel;if(Array.isArray(x.wa)&&x.wa.length)b.wa=x.wa}});
+    pintarTelefonos();const pd=document.getElementById("cliPedir");if(pd&&pd.dispatchEvent){const i=document.getElementById("cliPN");if(i)i.dispatchEvent(new Event("input"))}
+    const h=location.hash.slice(1);if(h==="cotizacion"||h==="recoge"){const y=scrollY;route();window.scrollTo(0,y)}
   }catch(e){}
 }
 let search=null;

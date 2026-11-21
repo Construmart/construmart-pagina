@@ -189,6 +189,10 @@ export class Bandeja extends DurableObject {
   }
   async guardarCategorias(lista) { await this.ctx.storage.put("cats", lista); return true; }
 
+  // ===== Teléfonos (cotizaciones, cuentas nuevas y los que ven los clientes) =====
+  async contacto() { return (await this.ctx.storage.get("contacto")) || null; }
+  async guardarContacto(c) { await this.ctx.storage.put("contacto", c); return true; }
+
   // ===== Preguntas frecuentes (Pregúntale a Mart) =====
   async dudas() { return (await this.ctx.storage.get("dudas")) || null; }
   async guardarDudas(lista) { await this.ctx.storage.put("dudas", lista); return true; }
@@ -406,6 +410,11 @@ async function api(request, env, url) {
     const c = await bandeja(env).categorias();
     return new Response(JSON.stringify({ ok: true, categorias: c || CATS_BASE, propias: !!c }), { headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-cache" } });
   }
+  // --- Teléfonos (los lee la página) ---
+  if (ruta === "/api/contacto" && metodo === "GET") {
+    const c = await bandeja(env).contacto();
+    return new Response(JSON.stringify({ ok: true, contacto: c }), { headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-cache" } });
+  }
   // --- Preguntas frecuentes (las lee la página) ---
   if (ruta === "/api/dudas" && metodo === "GET") {
     const d = await bandeja(env).dudas();
@@ -528,6 +537,24 @@ async function api(request, env, url) {
       if (faltan.length) return json({ ok: false, error: "con_productos", categorias: faltan }, 409);
       await bandeja(env).guardarCategorias(lista);
       return json({ ok: true, categorias: lista });
+    }
+    // --- Dueño: teléfonos ---
+    if (ruta === "/api/dueno/contacto" && metodo === "POST") {
+      let b = {};
+      try { b = await request.json(); } catch (e) {}
+      const tel = (v) => { const d = String(v || "").replace(/\D/g, "").slice(-10); return d.length === 10 ? `${d.slice(0, 3)}-${d.slice(3, 6)}-${d.slice(6)}` : ""; };
+      const lista = (a) => (Array.isArray(a) ? a : []).map(tel).filter(Boolean).slice(0, 4);
+      const SUC = ["matriz", "armadillo"];
+      const c = { modo: b.modo === "unico" ? "unico" : "sucursal", unico: tel(b.unico), cotiz: {}, cuentas: tel(b.cuentas), suc: {} };
+      for (const id of SUC) {
+        c.cotiz[id] = tel(b.cotiz && b.cotiz[id]);
+        const x = (b.suc && b.suc[id]) || {};
+        c.suc[id] = { tel: lista(x.tel), wa: lista(x.wa) };
+      }
+      if (c.modo === "unico" && !c.unico) return json({ ok: false, error: "falta_unico" }, 400);
+      if (c.modo === "sucursal" && SUC.some((id) => !c.cotiz[id])) return json({ ok: false, error: "falta_sucursal" }, 400);
+      await bandeja(env).guardarContacto(c);
+      return json({ ok: true, contacto: c });
     }
     // --- Dueño: preguntas frecuentes ---
     if (ruta === "/api/dueno/dudas" && metodo === "POST") {

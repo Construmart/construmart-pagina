@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Teléfonos · Panel Construmart</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800;900&display=swap">
+<link rel="icon" href="/favicon.ico">
+<style>
+/* Panel del dueño, pestaña Productos: barra para buscar/filtrar, lista de productos y panel lateral para editar uno. */
+:root{
+  --bg:#FBF6EE; --panel:#ffffff; --ink:#343639; --muted:#6d6862; --line:#eadfcf; --cream:#F5EBDD;
+  --accent:#FF6A00; --accent-soft:#FFF1E4; --ok:#16a34a; --danger:#c0392b;
+  --display:"Montserrat","Segoe UI",Arial,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 var(--display)}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+[hidden]{display:none!important}
+img{max-width:100%;height:auto}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+h1,h2,h3{margin:0;text-wrap:balance}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header{background:var(--ink);color:var(--cream);position:sticky;top:0;z-index:5}
+header .wrap{display:flex;align-items:center;gap:12px;padding-block:12px;flex-wrap:wrap}
+header img{width:40px;height:auto}
+header h1{font-weight:900;font-size:19px;flex:1;min-width:0}
+header h1 span{color:var(--accent)}
+.nav{display:flex;gap:4px;background:#ffffff14;border-radius:30px;padding:3px}
+.nav a{color:var(--cream);text-decoration:none;font-weight:800;font-size:12.5px;padding:6px 12px;border-radius:30px}
+.nav a.on{background:var(--accent);color:#fff}
+.hbtn{border:1px solid #ffffff55;background:transparent;color:#fff;border-radius:8px;padding:6px 12px;font-weight:700;font-size:12.5px}
+.login{min-height:70vh;display:grid;place-items:center;padding:24px 16px}
+.login form{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:24px 22px;width:min(360px,100%);display:grid;gap:12px;text-align:center}
+.login img{width:96px;justify-self:center}
+.login h2{font-weight:900;font-size:22px}
+.login p{margin:0;color:var(--muted);font-size:13px}
+input,select,textarea{border:1.5px solid var(--line);border-radius:8px;padding:10px 12px;background:var(--panel);font-size:14px;min-width:0;width:100%}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent)}
+.go{background:var(--accent);color:#fff;border:0;border-radius:8px;padding:12px;font-weight:800;font-size:15px}
+.err{color:var(--danger);font-weight:700;font-size:13px;min-height:1em;margin:0}
+/* Barra */
+.tools{position:sticky;top:64px;z-index:4;background:var(--bg);padding-block:12px;border-bottom:1px solid var(--line)}
+.tw{display:flex;gap:8px;flex-wrap:wrap}
+.tools input{flex:1 1 220px;width:auto}
+.tools select{flex:0 1 210px;width:auto}
+.btn{border:1.5px solid var(--ink);background:transparent;border-radius:8px;padding:9px 14px;font-weight:800;font-size:13px;color:var(--ink);display:inline-flex;align-items:center;justify-content:center;gap:7px;white-space:nowrap}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.sm{padding:6px 10px;font-size:12px}
+.btn.danger{border-color:var(--danger);color:var(--danger)}
+.btn.sure{background:var(--danger);color:#fff}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.cuenta{font-size:12.5px;color:var(--muted);margin:10px 0}
+/* Lista */
+.lista{display:grid;gap:8px;padding-bottom:40px}
+.row{display:grid;grid-template-columns:56px minmax(0,1fr) auto;gap:12px;align-items:center;background:var(--panel);border:1.5px solid var(--line);border-radius:10px;padding:8px 10px}
+.row img,.row .nof{width:56px;height:56px;border-radius:8px;object-fit:contain;background:#fff;border:1px solid var(--line)}
+.row .nof{display:grid;place-items:center;font-size:10px;color:var(--muted);text-align:center;border-style:dashed}
+.row b{display:block;font-weight:800;overflow-wrap:anywhere}
+.row small{color:var(--muted);font-size:12px}
+.marca{font-size:11px;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:.3px}
+.row .acts{display:flex;gap:6px;align-items:center}
+.rayo{border:1.5px solid var(--line);background:var(--panel);border-radius:8px;padding:6px 8px;color:var(--muted);display:inline-flex}
+.rayo.on{background:var(--ok);border-color:var(--ok);color:#fff}
+.vacio{background:var(--panel);border:1.5px dashed var(--line);border-radius:10px;padding:26px 16px;text-align:center;color:var(--muted)}
+/* Editor */
+.veil{position:fixed;inset:0;background:#0007;z-index:20;display:flex;justify-content:flex-end}
+.sheet{background:var(--bg);width:min(560px,100%);height:100%;overflow-y:auto;overscroll-behavior:contain;padding:18px max(18px,env(safe-area-inset-right,0px)) calc(24px + env(safe-area-inset-bottom,0px)) 18px;display:grid;gap:14px;align-content:start}
+.sheet h2{font-weight:900;font-size:22px}
+label.l{display:grid;gap:4px;font-size:12.5px;font-weight:700}
+label.l small{font-weight:500;color:var(--muted)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+textarea{min-height:90px;resize:vertical}
+.foto{display:grid;grid-template-columns:110px minmax(0,1fr);gap:12px;align-items:center}
+.foto .box{width:110px;height:110px;border:1.5px dashed var(--line);border-radius:10px;background:#fff;display:grid;place-items:center;overflow:hidden;color:var(--muted);font-size:12px;text-align:center}
+.foto .box img{width:100%;height:100%;object-fit:contain}
+.foto .bts{display:flex;gap:8px;flex-wrap:wrap}
+.pastez{border:1.5px dashed #f7c7a6;background:var(--accent-soft);border-radius:8px;padding:8px 10px;font-size:12px;line-height:1.3;cursor:text;max-width:280px;caret-color:transparent;outline:none}
+.pastez span{color:var(--muted);font-size:11px}
+.pastez:focus{border-color:var(--accent);box-shadow:0 0 0 2px #FF6A0033}
+.draft{display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:var(--accent-soft);border:1px solid #f7c7a6;border-radius:8px;padding:10px 12px;font-size:13px}
+.draft span{flex:1 1 180px}
+.mtable{border:1.5px solid var(--line);border-radius:10px;overflow:hidden;background:var(--panel)}
+.mhead,.mrow{display:grid;grid-template-columns:46px 56px minmax(0,1fr) minmax(0,1fr) 84px 30px;align-items:center}
+.mhead{background:var(--cream);font-size:10.5px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);font-weight:800}
+.mhead span{padding:7px 8px}
+.mrow{border-top:1px solid var(--line)}
+.mrow input{border:0;border-radius:0;padding:9px 8px;min-width:0;background:var(--panel)}
+.mrow input+input{border-left:1px solid var(--line)}
+.mrow input:focus{outline:2px solid var(--accent);outline-offset:-2px}
+.mrow select.mt{border:0;border-left:1px solid var(--line);border-radius:0;padding:9px 4px;background:var(--panel);font-size:12.5px;min-width:0;height:100%}
+.mrow select.mt.int{color:var(--accent);font-weight:700}
+.mpz{height:100%;min-height:42px;display:grid;place-items:center;text-align:center;border-right:1px solid var(--line);background:var(--accent-soft);color:var(--accent);font-size:10.5px;font-weight:700;line-height:1.15;cursor:text;caret-color:transparent;outline:none;user-select:none;padding:2px}
+.mpz:focus{box-shadow:inset 0 0 0 2px var(--accent);background:#fff}
+.mphw{position:relative;height:100%;display:grid;place-items:center;border-right:1px solid var(--line)}
+.mph{width:36px;height:36px;border:1px dashed var(--line);border-radius:6px;background:#fff;color:var(--muted);display:grid;place-items:center;padding:0;overflow:hidden}
+.mph img{width:100%;height:100%;object-fit:contain}
+.mph.busy{opacity:.5}
+.mphx{position:absolute;top:1px;right:1px;width:16px;height:16px;border-radius:50%;border:0;background:var(--ink);color:#fff;font-size:9px;line-height:16px;padding:0}
+.mdel{border:0;background:none;color:var(--muted);font-size:15px;height:100%;border-left:1px solid var(--line)}
+.mdel:hover{color:var(--danger)}
+.madd{justify-self:start;background:none;border:0;color:var(--accent);font-weight:800;font-size:13px;padding:4px 0}
+.mfill{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.mseq{background:var(--accent-soft);border:1px solid #f7c7a6;color:var(--accent);font-weight:700;font-size:12.5px;border-radius:20px;padding:4px 12px}
+.mseqn{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--muted)}
+.mseqn select{padding:3px 6px;font-size:12.5px;width:auto}
+.bulk{border-color:var(--ok);color:var(--ok)}
+.bulk.off{border-color:var(--line);color:var(--muted)}
+.bulk.sure{background:var(--ok);color:#fff}
+.bulk.off.sure{background:var(--ink);border-color:var(--ink);color:#fff}
+.chk{display:flex;align-items:center;gap:10px;font-weight:700;border:1.5px solid #16a34a55;background:#16a34a12;border-radius:10px;padding:10px 12px}
+.chk svg{color:var(--ok);flex:none}
+.chk input{width:20px;height:20px;accent-color:var(--ok)}
+.bar{display:flex;gap:8px;flex-wrap:wrap}
+.bar .grow{flex:1}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--cream);padding:10px 18px;border-radius:30px;font-size:13px;z-index:30;max-width:calc(100% - 32px)}
+@media (max-width:600px){
+  header h1{font-size:16px}
+  header .hm{display:none}
+  header img{width:32px}
+  .tools{position:static}
+  .tw select{flex:1 1 140px}
+  .tw .btn{flex:1 1 100%}
+  .row{grid-template-columns:48px minmax(0,1fr)}
+  .row img,.row .nof{width:48px;height:48px}
+  .row .acts{grid-column:1 / -1;justify-content:flex-end}
+  .mhead,.mrow{grid-template-columns:40px 48px minmax(0,1fr) minmax(0,1fr) 66px 26px}
+  .mrow select.mt{font-size:11.5px}
+}
+/* Teléfonos */
+.bloque{background:var(--panel);border:1.5px solid var(--line);border-radius:14px;padding:18px;margin-bottom:14px;display:grid;gap:12px}
+.bloque h2{font-size:19px;font-weight:900;margin:0}
+.bloque p.tip{margin:0;font-size:13px;color:var(--muted)}
+.fila{display:grid;grid-template-columns:200px minmax(0,1fr);gap:12px;align-items:center}
+.fila b{font-size:14.5px}
+.modo{display:flex;gap:8px;flex-wrap:wrap}
+.modo label{display:flex;gap:8px;align-items:center;border:1.5px solid var(--line);border-radius:10px;padding:10px 14px;font-weight:700;cursor:pointer;background:#fff}
+.modo input{width:auto!important;height:auto!important;margin:0;flex:none;accent-color:var(--accent)}
+.modo label.on{border-color:var(--accent);background:var(--accent-soft)}
+.mini{font-size:12px;color:var(--muted);font-weight:600}
+input.mal{border-color:var(--danger)!important;background:#fff5f5}
+.suc{border:1.5px dashed var(--line);border-radius:12px;padding:14px;display:grid;gap:10px}
+@media (max-width:700px){.fila{grid-template-columns:1fr;gap:4px}}
+.guardar{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--ink);padding:10px max(16px,env(safe-area-inset-left,0px)) calc(10px + env(safe-area-inset-bottom,0px))}
+.guardar .wrap{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;color:var(--cream);font-size:13px;padding:0}
+.ayuda{background:var(--panel);border:1.5px dashed var(--line);border-radius:10px;padding:12px 14px;font-size:13px;margin-bottom:12px}
+@media (max-width:700px){.nav{order:3;width:100%;overflow-x:auto;scrollbar-width:none;flex-wrap:nowrap}.nav::-webkit-scrollbar{display:none}.nav a{white-space:nowrap;flex:none}}
+@media (max-width:700px){.nav{order:3;width:100%;overflow-x:auto;scrollbar-width:none;flex-wrap:nowrap}.nav::-webkit-scrollbar{display:none}.nav a{white-space:nowrap;flex:none}}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <img src="/marca/mart-lentes-v2.png" alt="" width="295" height="300">
+  <h1><b class="hm">Construmart · </b><span>Panel del dueño</span></h1>
+  <nav class="nav" id="nav" hidden><a href="/bandeja/">Cotizaciones</a><a href="/bandeja/productos/">Productos</a><a href="/bandeja/categorias/">Categorías</a><a href="/bandeja/precios/">Precios</a><a href="/bandeja/clientes/">Clientes</a><a href="/bandeja/banners/">Banners</a><a href="/bandeja/preguntas/">Preguntas</a><a href="/bandeja/telefonos/" class="on">Teléfonos</a><a href="/">Ver página</a></nav>
+  <button class="hbtn" id="salir" type="button" hidden>Salir</button>
+</div></header>
+<section class="login" id="login" hidden>
+  <form id="fLogin" autocomplete="on">
+    <img src="/marca/mart-lentes-v2.png" alt="" width="295" height="300">
+    <h2>Panel del dueño</h2>
+    <p>Entra con tu clave para cambiar los teléfonos de la página.</p>
+    <input type="text" name="username" value="dueño" autocomplete="username" hidden>
+    <input type="password" id="clave" name="password" autocomplete="current-password" placeholder="Tu clave de dueño" required aria-label="Clave de dueño">
+    <p class="err" id="lerr" role="alert"></p>
+    <button class="go" type="submit" id="lgo">Entrar</button>
+  </form>
+</section>
+<main id="app" hidden>
+  <div class="wrap" style="padding-top:16px;padding-bottom:110px">
+    <div class="ayuda"><b>Teléfonos de la página.</b> Aquí decides a qué WhatsApp llegan las cotizaciones, a cuál las solicitudes de cuenta de clientes nuevos, y qué números ven los clientes en la página. Escribe los números de 10 dígitos (ej. 311 123 4567).</div>
+
+    <section class="bloque">
+      <h2>📩 ¿A qué WhatsApp llegan las cotizaciones?</h2>
+      <div class="modo" id="modo">
+        <label data-m="sucursal"><input type="radio" name="modo" value="sucursal"> Cada sucursal a su caja</label>
+        <label data-m="unico"><input type="radio" name="modo" value="unico"> Todas a un solo número</label>
+      </div>
+      <div id="mSucursal" class="suc">
+        <div class="fila"><b>Sucursal Río Suchiate</b><input id="cz_matriz" inputmode="tel" placeholder="WhatsApp de la caja de Río Suchiate"></div>
+        <div class="fila"><b>Sucursal Armadillo</b><input id="cz_armadillo" inputmode="tel" placeholder="WhatsApp de la caja de Armadillo"></div>
+        <p class="tip">Cada cotización le llega a la caja de la sucursal que escogió el cliente.</p>
+      </div>
+      <div id="mUnico" class="suc" hidden>
+        <div class="fila"><b>Número para todas</b><input id="cz_unico" inputmode="tel" placeholder="WhatsApp que recibe todas las cotizaciones"></div>
+      </div>
+    </section>
+
+    <section class="bloque">
+      <h2>🔐 Solicitudes de cuenta (clientes nuevos)</h2>
+      <div class="fila"><b>WhatsApp</b><input id="cuentas" inputmode="tel" placeholder="Ej. tu número"></div>
+      <p class="tip">Aquí llega el mensaje de “Pedir mi acceso por WhatsApp”. Si lo dejas vacío, llega al mismo número de las cotizaciones.</p>
+    </section>
+
+    <section class="bloque">
+      <h2>📞 Números que ven los clientes</h2>
+      <p class="tip">Salen en el pie de la página y en “Recoge en tienda”. Si tienes varios, sepáralos con coma.</p>
+      <div class="suc"><b>Sucursal Río Suchiate</b>
+        <div class="fila"><span class="mini">Para llamar</span><input id="t_matriz" inputmode="tel"></div>
+        <div class="fila"><span class="mini">WhatsApp</span><input id="w_matriz" inputmode="tel"></div></div>
+      <div class="suc"><b>Sucursal Armadillo</b>
+        <div class="fila"><span class="mini">Para llamar</span><input id="t_armadillo" inputmode="tel"></div>
+        <div class="fila"><span class="mini">WhatsApp</span><input id="w_armadillo" inputmode="tel"></div></div>
+    </section>
+  </div>
+</main>
+<div class="guardar" id="barra" hidden><div class="wrap"><span>Tienes cambios sin guardar</span><span style="display:flex;gap:8px"><button class="btn sm" type="button" id="deshacer" style="color:#fff;border-color:#ffffff66">Deshacer</button><button class="btn pri" type="button" id="guardar">Guardar cambios</button></span></div></div>
+<div class="toast" id="toast" hidden></div>
+<script>
+// Valores que tenía la página antes de usar esta pestaña
+const BASE={modo:"unico",unico:"311-270-6318",cotiz:{matriz:"",armadillo:""},cuentas:"",suc:{matriz:{tel:["311-218-6196"],wa:["311-107-6297","311-250-4290"]},armadillo:{tel:["311-170-9152"],wa:["311-120-6193"]}}};
+const $=s=>document.querySelector(s);
+function toast(t){const el=$("#toast");el.textContent=t;el.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>el.hidden=true,3200)}
+async function api(path,body){const r=await fetch(path,body?{method:"POST",credentials:"same-origin",headers:{"content-type":"application/json"},body:JSON.stringify(body)}:{credentials:"same-origin",cache:"no-store"});
+  const j=await r.json().catch(()=>({}));if(r.status===401&&!path.endsWith("/entrar")){verLogin();throw new Error("sin_sesion")}return j}
+function verLogin(){$("#login").hidden=false;$("#app").hidden=true;$("#nav").hidden=$("#salir").hidden=true;setTimeout(()=>$("#clave").focus(),50)}
+function verApp(){$("#login").hidden=true;$("#app").hidden=false;$("#nav").hidden=$("#salir").hidden=false;cargar()}
+$("#fLogin").addEventListener("submit",async e=>{e.preventDefault();const b=$("#lgo");b.disabled=true;b.textContent="Revisando…";$("#lerr").textContent="";
+  try{const j=await api("/api/dueno/entrar",{clave:$("#clave").value});if(j.ok){$("#clave").value="";verApp()}else $("#lerr").textContent="Clave incorrecta. Revísala e intenta otra vez."}
+  catch(err){$("#lerr").textContent="No se pudo entrar. Revisa tu conexión."}finally{b.disabled=false;b.textContent="Entrar"}});
+$("#salir").onclick=async()=>{try{await api("/api/dueno/salir",{})}catch(e){}verLogin()};
+const fmt=v=>{const d=String(v||"").replace(/\D/g,"").slice(-10);return d.length===10?`${d.slice(0,3)}-${d.slice(3,6)}-${d.slice(6)}`:String(v||"").trim()};
+const ok=v=>!v.trim()||String(v).replace(/\D/g,"").length>=10;
+let orig="";
+function poner(c){document.querySelectorAll('[name=modo]').forEach(r=>r.checked=r.value===c.modo);
+  $("#cz_unico").value=c.unico||"";$("#cz_matriz").value=c.cotiz.matriz||"";$("#cz_armadillo").value=c.cotiz.armadillo||"";$("#cuentas").value=c.cuentas||"";
+  for(const id of ["matriz","armadillo"]){$("#t_"+id).value=(c.suc[id].tel||[]).join(", ");$("#w_"+id).value=(c.suc[id].wa||[]).join(", ")}
+  modo();orig=JSON.stringify(leer());barra()}
+function leer(){const m=(document.querySelector('[name=modo]:checked')||{}).value||"sucursal";const L=v=>v.split(",").map(fmt).filter(Boolean);
+  return {modo:m,unico:fmt($("#cz_unico").value),cotiz:{matriz:fmt($("#cz_matriz").value),armadillo:fmt($("#cz_armadillo").value)},cuentas:fmt($("#cuentas").value),
+    suc:{matriz:{tel:L($("#t_matriz").value),wa:L($("#w_matriz").value)},armadillo:{tel:L($("#t_armadillo").value),wa:L($("#w_armadillo").value)}}}}
+function modo(){const m=(document.querySelector('[name=modo]:checked')||{}).value;$("#mUnico").hidden=m!=="unico";$("#mSucursal").hidden=m==="unico";
+  document.querySelectorAll('#modo label').forEach(l=>l.classList.toggle("on",l.dataset.m===m))}
+function barra(){$("#barra").hidden=JSON.stringify(leer())===orig}
+document.addEventListener("input",e=>{if(e.target.closest("#app")){e.target.classList.remove("mal");barra()}});
+document.addEventListener("change",e=>{if(e.target.name==="modo"){modo();barra()}});
+document.addEventListener("focusout",e=>{if(e.target.matches&&e.target.matches("#app input[inputmode=tel]")){const v=e.target.value;e.target.value=v.split(",").map(fmt).filter(Boolean).join(", ");barra()}});
+async function cargar(){try{const j=await fetch("/api/contacto",{cache:"no-store"}).then(r=>r.json());poner(j.contacto||BASE)}catch(e){toast("No se pudieron cargar los teléfonos. Recarga la página.")}}
+$("#deshacer").onclick=()=>poner(JSON.parse(orig));
+$("#guardar").onclick=async()=>{const c=leer();const malos=[...document.querySelectorAll("#app input[inputmode=tel]")].filter(i=>!i.closest("[hidden]")&&!i.value.split(",").every(ok));
+  malos.forEach(i=>i.classList.add("mal"));if(malos.length){malos[0].focus();toast("Revisa los números marcados en rojo: deben tener 10 dígitos.");return}
+  if(c.modo==="unico"&&!c.unico){$("#cz_unico").classList.add("mal");$("#cz_unico").focus();toast("Escribe el número que recibe las cotizaciones.");return}
+  if(c.modo==="sucursal"){const f=["matriz","armadillo"].find(id=>!c.cotiz[id]);if(f){$("#cz_"+f).classList.add("mal");$("#cz_"+f).focus();toast("Falta el WhatsApp de la caja de esa sucursal.");return}}
+  const b=$("#guardar");b.disabled=true;b.textContent="Guardando…";
+  try{const j=await api("/api/dueno/contacto",c);if(!j.ok){toast("No se pudo guardar. Revisa los números.");return}poner(j.contacto);toast("¡Listo! Los teléfonos ya están en la página.")}
+  catch(err){if(err.message!=="sin_sesion")toast("No se pudo guardar. Revisa tu conexión.")}finally{b.disabled=false;b.textContent="Guardar cambios"}};
+window.addEventListener("beforeunload",e=>{if(orig&&JSON.stringify(leer())!==orig){e.preventDefault();e.returnValue=""}});
+(async()=>{try{const r=await fetch("/api/dueno/sesion",{credentials:"same-origin",cache:"no-store"});r.ok?verApp():verLogin()}catch(e){verLogin()}})();
+</script>
+</body>
+</html>
