@@ -238,11 +238,13 @@ $("#fLogin").addEventListener("submit",async e=>{e.preventDefault();const b=$("#
   catch(err){$("#lerr").textContent="No se pudo entrar. Revisa tu conexión."}finally{b.disabled=false;b.textContent="Entrar"}});
 $("#salir").onclick=async()=>{try{await api("/api/dueno/salir",{})}catch(e){}verLogin()};
 const DIAS=["Lun","Mar","Mié","Jue","Vie","Sáb","Dom"];
-const HORAS=[];for(let h=11;h<=21;h++)for(const m of ["00","30"])HORAS.push(String(h).padStart(2,"0")+":"+m);
+const HORAS=[];for(let h=8;h<=17;h++)HORAS.push(String(h).padStart(2,"0")+":00");
+const CIERRE=i=>i===5?"14:00":"18:00";
 function h12(t){const [h,m]=t.split(":").map(Number);return (h>12?h-12:h)+":"+String(m).padStart(2,"0")+(h>=12?" pm":" am")}
+const HASTA=i=>"Hasta "+h12(CIERRE(i));
 function cajaHTML(x){x=x||{};const sale=x.sale||[];
   return `<div class="cj"><div class="cjh"><input class="cjn" placeholder="Nombre de la cajera (opcional)" value="${(x.nombre||"").replace(/"/g,"&quot;")}"><input class="cjw" inputmode="tel" placeholder="Su WhatsApp" value="${x.wa||""}"><button type="button" class="cjq">Quitar</button></div>
-  <div><span class="mini">¿A qué hora deja de recibir cotizaciones cada día?</span><div class="dias">${DIAS.map((d,i)=>{const v=sale[i]||"";return `<label>${d}<select data-d="${i}" class="${v==="x"?"x":v?"h":""}"><option value="">Todo el día</option>${HORAS.map(h=>`<option value="${h}"${v===h?" selected":""}>Sale ${h12(h)}</option>`).join("")}<option value="x"${v==="x"?" selected":""}>Descansa</option></select></label>`}).join("")}</div></div></div>`}
+  <div><span class="mini">¿Hasta qué hora recibe cotizaciones cada día?</span><div class="dias">${DIAS.map((d,i)=>{const v=sale[i]||"";return `<label>${d}<select data-d="${i}" class="${v==="x"?"x":v?"h":""}"><option value="">${HASTA(i)}</option>${HORAS.filter(h=>h<CIERRE(i)).map(h=>`<option value="${h}"${v===h?" selected":""}>${h12(h)}</option>`).join("")}<option value="x"${v==="x"?" selected":""}>Descansa</option></select></label>`}).join("")}</div></div></div>`}
 function pintarCajas(id,lista){const el=$("#cj_"+id);el.innerHTML=(lista&&lista.length?lista:[{}]).map(cajaHTML).join("");quitarVis(id)}
 function quitarVis(id){const cs=document.querySelectorAll("#cj_"+id+" .cj");cs.forEach(c=>c.querySelector(".cjq").hidden=cs.length<2);const a=document.querySelector(`[data-add="${id}"]`);if(a)a.hidden=cs.length>=4}
 function leerCajas(id){return [...document.querySelectorAll("#cj_"+id+" .cj")].map(c=>({nombre:c.querySelector(".cjn").value.trim(),wa:fmt(c.querySelector(".cjw").value),sale:[...c.querySelectorAll("select")].map(s=>s.value)})).filter(x=>x.wa)}
