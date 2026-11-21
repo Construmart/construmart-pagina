@@ -449,6 +449,7 @@ body{background:var(--cream-page);color:var(--ink)}
 .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .cot-mart{position:relative;overflow:hidden;padding-block:14px}
 .cot-mart img{width:86px;height:auto;flex:none;filter:drop-shadow(0 4px 8px rgba(0,0,0,.3))}
+.sin-cuenta{display:inline-flex!important;align-items:center;gap:6px;margin-top:8px!important;background:var(--ok);color:#fff!important;font-weight:700;font-size:12.5px!important;border-radius:20px;padding:4px 12px 4px 9px;line-height:1.3!important;opacity:1!important}.sin-cuenta svg{flex:none;width:14px!important;height:14px!important;color:#fff!important;stroke:#fff!important;filter:none!important;position:static!important}
 .gratis-tag{display:inline-block;vertical-align:middle;background:var(--ok);color:#fff;font-size:12px;font-weight:800;letter-spacing:.6px;border-radius:5px;padding:3px 8px;margin-left:6px}
 @media (max-width:680px){.cot-mart img{width:64px}.gratis-tag{font-size:10px}}
 .cotiza{padding-block:4px}
@@ -783,7 +784,7 @@ footer .fsoc{display:grid;gap:8px;align-content:start}
     </form>
     <a class="cotiza" href="#cotizacion">
       <img class="cotiza-mart" src="marca/mart-lentes-v2.png" alt="" width="295" height="300">
-      <span><strong>Cotiza tu proyecto <em class="free">GRATIS</em></strong><small>Sin compromiso de compra</small></span>
+      <span><strong>Cotiza tu proyecto <em class="free">GRATIS</em></strong><small>Sin registrarte · sin compromiso</small></span>
     </a>
     
     <button class="cli-btn" id="cliBtn" type="button" hidden aria-label="Acceso para clientes"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg><span id="cliTxt">Clientes</span></button>
@@ -1350,7 +1351,7 @@ function viewHome(){
   </section>
   <div class="perks">
     <a class="perk perk-link" href="#recoge"><svg width="34" height="30" viewBox="0 0 34 30" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 13 17 3l14 10v14H3z"/><path d="M12 27v-8h10v8"/></svg><div><strong>Recoge en tienda</strong><small>Tu pedido listo en mostrador</small></div></a>
-    <div class="perk"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"/><path d="m9 12 2 2 4-4"/></svg><div><strong>Cotiza sin compromiso</strong><small>Precio y existencia por WhatsApp</small></div></div>
+    <div class="perk"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"/><path d="m9 12 2 2 4-4"/></svg><div><strong>Cotiza sin registrarte</strong><small>Sin cuenta · respuesta por WhatsApp</small></div></div>
     <div class="perk perk-fac"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4M9 12h7M9 16h7"/></svg><div><strong>Facturamos tu compra</strong><small>Factura electrónica (CFDI)</small></div></div>
     <div class="perk"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="9" r="6"/><path d="m9 14-2 7 5-3 5 3-2-7"/></svg><div><strong>Productos originales</strong><small>Garantía de fábrica</small></div></div>
     <div class="perk"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 14v-2a8 8 0 0 1 16 0v2"/><rect x="3" y="14" width="4" height="6" rx="1"/><rect x="17" y="14" width="4" height="6" rx="1"/></svg><div><strong>Asesoría personalizada</strong><small>Estamos para ayudarte</small></div></div>
@@ -1495,7 +1496,7 @@ function msg(){
 }
 function viewQuote(){
   $("#view").innerHTML=`<div class="crumbs"><a href="#inicio">Inicio</a><span>›</span><span>Cotiza tu proyecto</span></div>
-  <div class="cat-banner cot-mart"><img src="marca/mart-lentes-v2.png" alt="" width="295" height="300"><div><h1>Cotiza tu proyecto <span class="gratis-tag">GRATIS</span></h1><p>Revisa tu lista, déjanos tus datos y envíala. Te respondemos con precio y existencia.</p></div></div>
+  <div class="cat-banner cot-mart"><img src="marca/mart-lentes-v2.png" alt="" width="295" height="300"><div><h1>Cotiza tu proyecto <span class="gratis-tag">GRATIS</span></h1><p>Revisa tu lista, déjanos tus datos y envíala. Te respondemos con precio y existencia.</p><p class="sin-cuenta"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m5 12 5 5 9-10"/></svg>No necesitas cuenta ni iniciar sesión para cotizar</p></div></div>
   <div class="quote">
     <div class="qcol"><div class="panel quick"><h2>Agrega rápido</h2>
       <div class="qa-mart"><img src="marca/mart-feliz-v2.png" alt="" width="289" height="300"><label class="qlabel" for="qa-q"><span>Busca el producto por nombre</span>Escríbelo y agrégalo a tu lista</label></div>
@@ -1920,7 +1921,7 @@ document.addEventListener("change",e=>{if(e.target.name==="fent"){form.entrega=e
   const lp=$("#lbPick");if(lp)lp.textContent=env?"¿Cuándo lo necesitas?":"¿Cuándo pasarías por tu pedido?";renderQuote();if(env&&d)setTimeout(()=>$("#fdir").focus(),30)}});
 document.addEventListener("click",e=>{const a=e.target.closest("[data-envio]");if(a){form.entrega="envio";try{const f=JSON.parse(localStorage.getItem("cm-form")||"{}");f.entrega="envio";localStorage.setItem("cm-form",JSON.stringify(f))}catch(err){}}});
 // ===== Lo nuevo: Mart acomodó productos nuevos (se calcula solo con la fecha de alta de cada producto) =====
-let ACTUALIZADO=1795290797802;const DIA=864e5;
+let ACTUALIZADO=1795298785937;const DIA=864e5;
 function fechaAlta(p){if(!p||!/^p[0-9a-z]{7,10}$/.test(p.id))return 0;const t=parseInt(p.id.slice(1),36);return t>1.6e12&&t<Date.now()+DIA?t:0}
 const NUEVOS=(dias=7)=>P.filter(p=>!p.hidden&&fechaAlta(p)>=Date.now()-dias*DIA).sort((a,b)=>fechaAlta(b)-fechaAlta(a));
 function nuevoBadge(p){return fechaAlta(p)>=Date.now()-7*DIA?`<span class="nuevo-tag">Nuevo</span>`:""}
