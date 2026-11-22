@@ -1,0 +1,6 @@
+User-agent: *
+Disallow: /bandeja/
+Disallow: /api/
+Disallow: /original/
+
+Sitemap: https://construmartmx.com/sitemap.xml

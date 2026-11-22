@@ -1,5 +1,18 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
-<title>Construmart Ferretería</title>
+<!doctype html><html lang="es"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Construmart · Ferretería en Tepic | Cotiza gratis en línea</title>
+<meta name="description" content="Ferretería y materiales de construcción en Tepic, Nayarit. Cotiza gratis en línea y recoge en tienda o pide envío a domicilio. Sucursales Río Suchiate y Armadillo.">
+<link rel="canonical" href="https://construmartmx.com/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Construmart">
+<meta property="og:locale" content="es_MX">
+<meta property="og:url" content="https://construmartmx.com/">
+<meta property="og:title" content="Construmart · Ferretería y materiales en Tepic">
+<meta property="og:description" content="Cotiza gratis en línea y recoge en tienda o pide envío a domicilio. Sucursales Río Suchiate y Armadillo.">
+<meta property="og:image" content="https://construmartmx.com/marca/compartir.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Construmart, ferretería en Tepic, con Mart el oso constructor">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="/favicon.ico" sizes="48x48">
 <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
@@ -843,7 +856,7 @@ const SUCURSALES=[
   {id:"matriz",nombre:"Sucursal Río Suchiate",etiqueta:"Río Suchiate",direccion:"C. Río Suchiate 616",referencias:"Nuestra tienda principal",mapa:"https://maps.app.goo.gl/C6bEEeWEdpSp8P7YA",
    horario:[["Lunes a viernes","8:00 a.m. a 6:00 p.m."],["Sábado","8:00 a.m. a 2:00 p.m."],["Domingo","9:00 a.m. a 2:00 p.m."]],
    tel:["311-218-6196"],wa:["311-107-6297","311-250-4290"]},
-  {id:"armadillo",nombre:"Sucursal Armadillo",etiqueta:"Sucursal",direccion:"Palomas 636, El Armadillo",referencias:"",mapa:"https://maps.app.goo.gl/aLhwRyB14BB4szT68",
+  {id:"armadillo",nombre:"Sucursal Armadillo",etiqueta:"Armadillo",direccion:"Palomas 636, El Armadillo",referencias:"",mapa:"https://maps.app.goo.gl/aLhwRyB14BB4szT68",
    horario:[["Lunes a viernes","8:00 a.m. a 6:00 p.m."],["Sábado","8:00 a.m. a 2:00 p.m."]],
    tel:["311-170-9152"],wa:["311-120-6193"]},
 ];
@@ -1280,7 +1293,7 @@ const form={name:"",phone:"",pick:"Solo quiero precio por ahora",branch:"matriz"
 let hist=[];try{hist=JSON.parse(localStorage.getItem("cm-historial")||"[]")}catch(e){hist=[]}
 const saveHist=()=>{try{localStorage.setItem("cm-historial",JSON.stringify(hist.slice(0,20)))}catch(e){}};
 const p2=n=>String(n).padStart(2,"0");
-const newFolio=()=>{const d=new Date();return `CM-${p2(d.getDate())}${p2(d.getMonth()+1)}-${p2(d.getHours())}${p2(d.getMinutes())}`};
+const newFolio=()=>{const d=new Date(),L="ABCDEFGHJKMNPQRSTUVWXYZ23456789";let r="";for(let i=0;i<2;i++)r+=L[Math.floor(Math.random()*L.length)];return `CM-${p2(d.getDate())}${p2(d.getMonth()+1)}-${p2(d.getHours())}${p2(d.getMinutes())}${r}`};
 let folio=newFolio();
 try{const f=JSON.parse(localStorage.getItem("cm-form")||"null");if(f)Object.assign(form,f,{notes:""})}catch(e){}
 
@@ -1441,7 +1454,7 @@ function viewAll(){
   $("#below").innerHTML="";
 }
 function viewSearch(q,scope){
-  const list=P.filter(p=>!p.hidden&&(!scope||p.cat===scope)&&norm([p.name,p.spec,p.brand,catBy(p.cat).name,(p.variants||[]).join(" ")].join(" ")).includes(norm(q)));
+  const list=buscaProds(q,scope);
   $("#view").innerHTML=`<div class="crumbs"><a href="#inicio">Inicio</a><span>›</span><span>Búsqueda</span></div>
   <div class="sec-head"><h2>${list.length} resultado${list.length===1?"":"s"} para “${esc(q)}”${scope?` en ${catBy(scope).name}`:""}</h2></div>
   <div class="grid5">${list.length?list.map(cardFull).join(""):`<div class="empty"><img class="empty-mart" src="marca/mart-sorpresa-v2.png" alt="" width="300" height="299"><strong>No encontramos ese producto en línea.</strong><br>Escríbelo en los comentarios de tu cotización y te confirmamos si lo tenemos en tienda.</div>`}</div>`;
@@ -1599,7 +1612,15 @@ function recordSend(){
 
 // ===== Agrega rápido =====
 let qaSel=null,qaMatches=[],qaActive=-1;
-function qaFind(q){q=norm(q.trim());if(!q)return[];const w=q.split(/\s+/);
+// Forma "de sonido" para perdonar faltas: c/s/z, ll/y, v/b, h muda, qu/k, letras dobles y plurales
+const fon=s=>" "+norm(String(s||"")).replace(/[^a-z0-9/.,"\s-]/g," ").replace(/ch/g,"\u0001").replace(/h/g,"").replace(/\u0001/g,"ch").replace(/ll/g,"y").replace(/qu([ei])/g,"k$1").replace(/c([ei])/g,"s$1").replace(/z/g,"s").replace(/v/g,"b").replace(/c([aou])/g,"k$1").replace(/([a-z])\1/g,"$1")+" ";
+const palQ=q=>fon(q).trim().split(/\s+/).filter(Boolean).map(w=>w.length>4?w.replace(/(es|s)$/,""):w);
+const _fonP=new WeakMap();
+const textoP=p=>{let t=_fonP.get(p);if(!t){t=fon([p.name,p.spec,p.brand,p.sub,catBy(p.cat).name,(p.variants||[]).join(" "),(p.codes||[p.code]).join(" ")].join(" "));_fonP.set(p,t)}return t};
+function puntaje(p,ws){const t=textoP(p);if(!ws.every(w=>t.includes(w)))return 0;const n=fon(p.name);return n.startsWith(" "+ws[0])?3:n.includes(" "+ws[0])?2:1}
+function buscaProds(q,scope){const ws=palQ(q);if(!ws.length)return[];return P.filter(p=>!p.hidden&&(!scope||p.cat===scope)).map(p=>[p,puntaje(p,ws)]).filter(x=>x[1]).sort((a,b)=>b[1]-a[1]).map(x=>x[0])}
+function qaFind(q){if(!q.trim())return[];return buscaProds(q).slice(0,8)}
+function qaFindViejo(q){q=norm(q.trim());if(!q)return[];const w=q.split(/\s+/);
   return P.filter(p=>!p.hidden).map(p=>{const t=norm([p.name,p.brand,p.spec||"",catBy(p.cat).name,(p.variants||[]).join(" ")].join(" "));return [p,w.every(x=>t.includes(x))?(norm(p.name).startsWith(w[0])?2:1):0]}).filter(x=>x[1]).sort((a,b)=>b[1]-a[1]).slice(0,8).map(x=>x[0])}
 function qaRender(){
   const L=$("#qa-list");if(!L)return;
@@ -1926,7 +1947,7 @@ document.addEventListener("change",e=>{if(e.target.name==="fent"){form.entrega=e
   const lp=$("#lbPick");if(lp)lp.textContent=env?"¿Cuándo lo necesitas?":"¿Cuándo pasarías por tu pedido?";renderQuote();if(env&&d)setTimeout(()=>$("#fdir").focus(),30)}});
 document.addEventListener("click",e=>{const a=e.target.closest("[data-envio]");if(a){form.entrega="envio";try{const f=JSON.parse(localStorage.getItem("cm-form")||"{}");f.entrega="envio";localStorage.setItem("cm-form",JSON.stringify(f))}catch(err){}}});
 // ===== Lo nuevo: Mart acomodó productos nuevos (se calcula solo con la fecha de alta de cada producto) =====
-let ACTUALIZADO=1795377049235;const DIA=864e5;
+let ACTUALIZADO=1795381761879;const DIA=864e5;
 function fechaAlta(p){if(!p||!/^p[0-9a-z]{7,10}$/.test(p.id))return 0;const t=parseInt(p.id.slice(1),36);return t>1.6e12&&t<Date.now()+DIA?t:0}
 const NUEVOS=(dias=7)=>P.filter(p=>!p.hidden&&fechaAlta(p)>=Date.now()-dias*DIA).sort((a,b)=>fechaAlta(b)-fechaAlta(a));
 function nuevoBadge(p){return fechaAlta(p)>=Date.now()-7*DIA?`<span class="nuevo-tag">Nuevo</span>`:""}

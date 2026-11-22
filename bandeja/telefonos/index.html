@@ -242,7 +242,7 @@ $("#fLogin").addEventListener("submit",async e=>{e.preventDefault();const b=$("#
 $("#salir").onclick=async()=>{try{await api("/api/dueno/salir",{})}catch(e){}verLogin()};
 const DIAS=["Lun","Mar","Mié","Jue","Vie","Sáb","Dom"];
 const HORAS=[];for(let h=8;h<=17;h++)HORAS.push(String(h).padStart(2,"0")+":00");
-const CIERRE=i=>i===5?"14:00":"18:00";
+const CIERRE=i=>i>=5?"14:00":"18:00"; // sábado y domingo cierran a las 2
 function h12(t){const [h,m]=t.split(":").map(Number);return (h>12?h-12:h)+":"+String(m).padStart(2,"0")+(h>=12?" pm":" am")}
 const HASTA=i=>"Hasta "+h12(CIERRE(i));
 function cajaHTML(x){x=x||{};const sale=x.sale||[];
