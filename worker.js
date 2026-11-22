@@ -174,9 +174,13 @@ export class Bandeja extends DurableObject {
       const todas = await this.listasTodas();
       const catDe = {};
       if (hayNc) { const pt = await this.productosTodos(); for (const p of pt.productos || []) catDe[p.id] = p.cat; }
+      const N5 = [...NIVELES, "especial"];
       for (const [id, pm] of Object.entries(todas)) for (const [v, arr] of Object.entries(pm)) {
-        const j = hayNc && nc[catDe[id]] ? NIVELES.indexOf(nc[catDe[id]]) : i;
-        const x = esp && arr[4] > 0 ? arr[4] : j >= 0 ? arr[j] : 0;
+        // Orden: producto elegido > Especial (si lo tiene) > categoría > su nivel general
+        const jp = hayNc && nc["p:" + id] ? N5.indexOf(nc["p:" + id]) : -1;
+        const jc = hayNc && nc[catDe[id]] ? N5.indexOf(nc[catDe[id]]) : -1;
+        const base = jc >= 0 && arr[jc] > 0 ? arr[jc] : i >= 0 ? arr[i] : 0;
+        const x = jp >= 0 && arr[jp] > 0 ? arr[jp] : esp && arr[4] > 0 ? arr[4] : base;
         if (x > 0) out[id + "|" + v] = x;
       }
     }
@@ -511,7 +515,7 @@ async function api(request, env, url) {
       if (b.nuevo && previo) return json({ ok: false, error: "existe" }, 409);
       const okCats = await catsOk(env);
       const datos = { n: txt(c.nombre, 80).trim() || u, persona: txt(c.persona, 80).trim(), wa: txt(c.wa, 20).trim(), activo: c.activo !== false, nivel: NIVELES.includes(c.nivel) ? c.nivel : "", esp: c.esp === true, nc: {}, cats: Array.isArray(c.cats) ? c.cats.filter((x) => okCats.includes(x)).slice(0, 40) : CATS_DEF };
-      if (c.nc && typeof c.nc === "object") for (const [k, v] of Object.entries(c.nc).slice(0, 40)) if (okCats.includes(k) && NIVELES.includes(v)) datos.nc[k] = v;
+      if (c.nc && typeof c.nc === "object") for (const [k, v] of Object.entries(c.nc).slice(0, 300)) if ((okCats.includes(k) || /^p:[a-z0-9]{1,20}$/i.test(k)) && (NIVELES.includes(v) || v === "especial")) datos.nc[k] = v;
       const clave = String(c.clave || "");
       if (clave) {
         if (clave.length < 6 || clave.length > 60) return json({ ok: false, error: "clave" }, 400);
