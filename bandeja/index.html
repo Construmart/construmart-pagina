@@ -77,6 +77,8 @@ mark{background:#ffe1c7;color:inherit;border-radius:3px;padding:0 1px}
 .chip.pend{background:var(--accent);color:#fff}
 .chip.resp{background:var(--ok);color:#fff}
 .chip.conf{background:#2563eb;color:#fff}
+.btn.entregado{background:var(--ok,#16a34a);border-color:var(--ok,#16a34a);color:#fff;font-size:14px;padding:9px 16px}
+.ent-ok{display:inline-flex;align-items:center;gap:10px;flex-wrap:wrap}
 .conf-box{background:#2563eb14;border:1.5px solid #2563eb55;border-radius:10px;padding:10px 12px;font-weight:700;display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
 .chip.may{background:var(--ink);color:#fff}
 .chip.fac{background:#2563eb;color:#fff}
@@ -344,7 +346,7 @@ function pintarDet(){
   $("#det").innerHTML=`<div class="det-h"><div><h2>${esc(q.cliente?q.cliente.nombre:q.nombre||"Sin nombre")}</h2><p>${esc(q.folio)} · llegó ${esc(fecha(q.fecha))}${r?` · respondida ${esc(fecha(r.fecha))}`:""}</p><button type="button" class="verCli" id="verCli">Ver todas de este cliente</button></div>
     <button type="button" class="btn atras" id="atras">← Volver a la lista</button></div>
   <div class="datos"><div><span>Nombre</span><b>${esc(q.nombre||"—")}</b></div><div><span>Teléfono</span><b>${esc(q.telefono||"No lo dejó")}</b></div><div><span>Sucursal</span><b>${esc(q.sucursal||"—")}</b></div>${q.entrega==="envio"?`<div><span>Entrega</span><b>🚚 Envío a domicilio</b></div><div style="grid-column:1/-1"><span>Dirección</span><b>${esc(q.direccion||"No la escribió")}</b></div><div><span>Lo necesita</span><b>${esc(q.recoge||"—")}</b></div>`:q.entrega==="cotizar"?`<div><span>Entrega</span><b>Solo quiere cotizar</b></div>`:`<div><span>¿Cuándo pasa?</span><b>${esc(q.recoge||"—")}</b></div>`}<div><span>Factura</span><b>${q.factura?"Sí, la pidió":"No"}</b></div>${q.cliente?`<div><span>Cliente de mayoreo</span><b>${esc(q.cliente.nombre)} (${esc(q.cliente.usuario)})</b></div>`:""}</div>
-  ${q.confirmada?`<div class="conf-box"><span>✅ El cliente confirmó este pedido el ${esc(fecha(q.confirmada.fecha))}${q.confirmada.notas?` · “${esc(q.confirmada.notas)}”`:""}</span>${q.estado==="entregada"?"<span>📦 Entregado</span>":""}</div>`:""}
+  ${q.confirmada||q.estado==="confirmada"||q.estado==="entregada"?`<div class="conf-box"><span>${q.confirmada?`✅ El cliente confirmó este pedido el ${esc(fecha(q.confirmada.fecha))}${q.confirmada.notas?` · “${esc(q.confirmada.notas)}”`:""}`:"✅ Pedido confirmado"}</span>${q.estado==="confirmada"?`<button type="button" class="btn entregado" id="entregar2">📦 Entregado</button>`:q.estado==="entregada"?`<span class="ent-ok">📦 Entregado${q.entregada?" el "+esc(fecha(q.entregada)):""} <button type="button" class="btn sm" id="desentregar">Regresar a confirmadas</button></span>`:""}</div>`:""}
   ${q.notas?`<div class="notas-c"><b>Comentarios del cliente:</b> ${esc(q.notas)}</div>`:""}
   <div class="tbox"><table><thead><tr><th>Cant.</th><th>Producto</th><th>Precio c/u</th><th>Existencia</th><th style="text-align:right">Subtotal</th></tr></thead><tbody id="filas">
   ${q.items.map((it,i)=>{const l=r&&r.lineas[i]||{};const sg=(actual._sug||[])[i];const pv=l.precio||it.pc||(!r&&sg)||"";const ex=l.existe||"si";
@@ -392,6 +394,10 @@ $("#det").addEventListener("click",async e=>{
   if(t.id==="wa"){if(t.getAttribute("aria-disabled")==="true"){e.preventDefault();return}actualizarWA();guardar(true).then(ok=>{if(ok)toast("Respuesta guardada. Envía el mensaje en WhatsApp.")});return}
   if(t.id==="guardar"){t.disabled=true;const ok=await guardar(true);t.disabled=false;if(ok){toast(actual.cliente?"Enviada: ya le aparece en su perfil.":"Enviada: ya le aparece en la página, en “Mis cotizaciones”.");t.lastChild.textContent="Actualizar en su perfil"}return}
   if(t.id==="copiar"){const m=mensaje();try{await navigator.clipboard.writeText(m);toast("Mensaje copiado")}catch(err){toast("No se pudo copiar en este navegador")}return}
+  if(t.id==="entregar2"||t.id==="desentregar"){const nuevo=t.id==="entregar2"?"entregada":"confirmada";t.disabled=true;
+    try{const j=await api("/api/dueno/cotizaciones/"+actual.id,{accion:"estado",estado:nuevo});if(j.ok){const s=todas.find(x=>x.id===actual.id);if(s)s.estado=nuevo;
+      if(nuevo==="entregada"){document.body.classList.remove("abierta");abierta=null;actual=null;$("#det").innerHTML=`<div class="vacio"><img src="/marca/mart-guino-v2.png" alt="" width="290" height="300">¡Listo! El pedido pasó a <b>Entregadas</b>.</div>`;pintarLista();toast("📦 Entregado. Lo encuentras en la pestaña Entregadas.")}
+      else{actual.estado=nuevo;pintarLista();pintarDet();toast("Regresó a Confirmadas")}return}}catch(e){}t.disabled=false;toast("No se pudo cambiar. Revisa tu conexión.");return}
   if(t.id==="entregar"){try{const j=await api("/api/dueno/cotizaciones/"+actual.id,{accion:"estado",estado:"entregada"});if(j.ok){actual.estado="entregada";toast("Marcado como entregado");await cargar();pintarDet()}}catch(e){}return}
   if(t.id==="archivar"){const nuevo=actual.estado==="archivada"?(actual.respuesta?"respondida":"pendiente"):"archivada";
     try{const j=await api("/api/dueno/cotizaciones/"+actual.id,{accion:"estado",estado:nuevo});if(j.ok){actual.estado=nuevo;const s=todas.find(q=>q.id===actual.id);if(s)s.estado=nuevo;pintarLista();pintarDet();toast(nuevo==="archivada"?"Archivada":"De regreso en la bandeja")}}catch(err){toast("No se pudo cambiar. Inténtalo otra vez.")}return}

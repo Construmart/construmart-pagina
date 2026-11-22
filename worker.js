@@ -696,7 +696,7 @@ async function api(request, env, url) {
         if (b.accion === "borrar") { await bandeja(env).borrar(id); return json({ ok: true }); }
         if (b.accion === "estado") {
           const estado = ["pendiente", "respondida", "confirmada", "entregada", "archivada"].includes(b.estado) ? b.estado : "pendiente";
-          const q = await bandeja(env).actualizar(id, { estado });
+          const q = await bandeja(env).actualizar(id, { estado, ...(estado === "entregada" ? { entregada: Date.now() } : {}) });
           return q ? json({ ok: true }) : json({ ok: false, error: "no_encontrada" }, 404);
         }
         if (b.accion === "responder") {
