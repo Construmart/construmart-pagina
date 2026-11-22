@@ -105,6 +105,7 @@ label.l{display:grid;gap:4px;font-size:12.5px;font-weight:700}
 textarea{min-height:64px;resize:vertical}
 .acts{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .btn{border:1.5px solid var(--ink);background:transparent;border-radius:8px;padding:9px 14px;font-weight:800;font-size:13px;text-decoration:none;color:var(--ink);display:inline-flex;align-items:center;gap:7px}
+.btn.perfil{background:var(--accent);border-color:var(--accent);color:#fff;font-size:14px;padding:11px 16px}
 .btn.wa{background:var(--wa);border-color:var(--wa);color:#fff;font-size:14px;padding:11px 16px}
 .btn.wa[aria-disabled="true"]{opacity:.45;pointer-events:none}
 .btn.danger{border-color:var(--danger);color:var(--danger)}
@@ -149,6 +150,9 @@ textarea{min-height:64px;resize:vertical}
 }
 @media (prefers-reduced-motion:no-preference){.q,.tabs button{transition:border-color .15s,background .15s}}
 @media (max-width:700px){.nav{order:3;width:100%;overflow-x:auto;scrollbar-width:none;flex-wrap:nowrap}.nav::-webkit-scrollbar{display:none}.nav a{white-space:nowrap;flex:none}}
+header h1{white-space:nowrap}
+@media (max-width:1420px){header .hm{display:none}}
+@media (min-width:701px) and (max-width:1420px){header h1{display:none}}
 </style>
 </head>
 <body>
@@ -300,15 +304,15 @@ function pintarDet(){
   <label class="l vig">Precios válidos por <span class="vigbox"><input id="vig" inputmode="numeric" value="${r&&r.vigencia?r.vigencia:VIG_DEF()}" aria-label="Días de vigencia"> días</span> <span style="font-weight:500;color:var(--muted)">Después de eso el precio se puede actualizar. Se le avisa al cliente con la fecha.</span></label>
   <label class="l">Notas para el cliente <span style="font-weight:500;color:var(--muted)">(opcional)</span><textarea id="notas" placeholder="Ej. Listo para recoger hoy después de las 4 p. m.">${esc(r?r.notas:"")}</textarea></label>
   <div class="acts">
-    <a class="btn wa" id="wa" href="#" target="_blank" rel="noopener"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2z"/></svg>Guardar y mandar por WhatsApp</a>
-    <button type="button" class="btn" id="guardar">Solo guardar</button>
+    <button type="button" class="btn perfil" id="guardar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4z"/></svg>${r?"Actualizar en su perfil":"Enviar a su perfil"}</button>
+    <a class="btn wa" id="wa" href="#" target="_blank" rel="noopener"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2z"/></svg>Enviar y mandar por WhatsApp</a>
     <button type="button" class="btn" id="copiar">Copiar mensaje</button>
     ${q.estado==="confirmada"?`<button type="button" class="btn" id="entregar">Marcar como entregado</button>`:""}
     <button type="button" class="btn" id="archivar">${q.estado==="archivada"?"Sacar de archivadas":"Archivar"}</button>
     <button type="button" class="btn danger" id="borrar">Borrar</button>
   </div>
   <p class="aviso borrar"><b>Ojo:</b> si la <b>borras</b>, desaparece para siempre: para ti y para el cliente (ya no la verá en su perfil). Si solo quieres quitarla de tu bandeja, mejor <b>archívala</b>.</p>
-  ${digits(q.telefono).length<10?`<p class="aviso bad">El cliente no dejó un teléfono de 10 dígitos. Usa "Copiar mensaje" y mándaselo por otro lado.</p>`:`<p class="aviso">Al tocar el botón verde se guarda tu respuesta, se abre WhatsApp con el mensaje listo y el cliente también la ve en la página.</p>`}`;
+  ${digits(q.telefono).length<10?`<p class="aviso bad">El cliente no dejó un teléfono de 10 dígitos: no se puede por WhatsApp. Usa el botón naranja para que le llegue a su perfil, o "Copiar mensaje" y mándaselo por otro lado.</p>`:`<p class="aviso"><b>Naranja:</b> le llega a su perfil en la página. <b>Verde:</b> además se abre WhatsApp con el mensaje listo para mandárselo.</p>`}`;
   recalcular();
 }
 async function guardar(silencio){
@@ -332,7 +336,7 @@ $("#det").addEventListener("click",async e=>{
   const t=e.target.closest("button,a");if(!t)return;
   if(t.id==="atras"){document.body.classList.remove("abierta");abierta=null;pintarLista();return}
   if(t.id==="wa"){if(t.getAttribute("aria-disabled")==="true"){e.preventDefault();return}actualizarWA();guardar(true).then(ok=>{if(ok)toast("Respuesta guardada. Envía el mensaje en WhatsApp.")});return}
-  if(t.id==="guardar"){t.disabled=true;await guardar();t.disabled=false;return}
+  if(t.id==="guardar"){t.disabled=true;const ok=await guardar(true);t.disabled=false;if(ok){toast(actual.cliente?"Enviada: ya le aparece en su perfil.":"Enviada: ya le aparece en la página, en “Mis cotizaciones”.");t.lastChild.textContent="Actualizar en su perfil"}return}
   if(t.id==="copiar"){const m=mensaje();try{await navigator.clipboard.writeText(m);toast("Mensaje copiado")}catch(err){toast("No se pudo copiar en este navegador")}return}
   if(t.id==="entregar"){try{const j=await api("/api/dueno/cotizaciones/"+actual.id,{accion:"estado",estado:"entregada"});if(j.ok){actual.estado="entregada";toast("Marcado como entregado");await cargar();pintarDet()}}catch(e){}return}
   if(t.id==="archivar"){const nuevo=actual.estado==="archivada"?(actual.respuesta?"respondida":"pendiente"):"archivada";
