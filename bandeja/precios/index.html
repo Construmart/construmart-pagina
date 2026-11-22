@@ -134,7 +134,7 @@ textarea{min-height:90px;resize:vertical}
 }
 /* Precios */
 .tabla{background:var(--panel);border:1.5px solid var(--line);border-radius:10px;overflow:hidden;margin-bottom:90px}
-.th,.tr{display:grid;grid-template-columns:minmax(0,1fr) repeat(4,112px);gap:8px;align-items:center;padding:8px 10px}
+.th,.tr{display:grid;grid-template-columns:minmax(0,1fr) repeat(5,104px);gap:8px;align-items:center;padding:8px 10px}
 .th{background:var(--cream);font-size:10.5px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);font-weight:800;position:sticky;top:0}
 .th span:not(:first-child){text-align:center}
 .tr{border-top:1px solid var(--line)}
@@ -146,6 +146,7 @@ textarea{min-height:90px;resize:vertical}
 .cel input{width:auto;flex:1;min-width:0;border:0;padding:7px 5px;font-weight:700;font-variant-numeric:tabular-nums;font-size:13.5px}
 .cel:focus-within{border-color:var(--accent)}
 .cel i{display:none;font-style:normal;font-size:10px;font-weight:800;color:var(--muted);padding-left:7px}
+.cel.esp{border-style:dashed;border-color:#f7c7a6;background:#fffaf5}.th .th-esp{color:var(--accent)}
 .grupo{background:var(--ink);color:#fff;font-weight:800;font-size:12px;padding:6px 10px;letter-spacing:.3px}
 .pct{display:flex;flex-wrap:wrap;gap:8px;align-items:center;background:var(--panel);border:1.5px dashed var(--line);border-radius:10px;padding:10px 12px;font-size:12.5px;margin-bottom:12px}
 .pct input{width:64px;padding:6px 8px}
@@ -154,7 +155,8 @@ textarea{min-height:90px;resize:vertical}
 .guardar .wrap{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;color:var(--cream);font-size:13px;padding:0}
 @media (max-width:700px){
   .th{display:none}
-  .tr{grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+  .tr{grid-template-columns:repeat(5,minmax(0,1fr));gap:4px}
+  .cel span{display:none}.cel input{padding:6px 4px;font-size:13px}
   .tr>div:first-child{grid-column:1 / -1}
   .cel{flex-wrap:wrap}
   .cel i{display:block;width:100%;padding-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -190,10 +192,10 @@ textarea{min-height:90px;resize:vertical}
   </div></div>
   <div class="wrap">
     <p class="cuenta" id="cuenta">Cargando…</p>
-    <p class="cuenta" style="margin-top:-6px">Precios con IVA incluido. Nadie los ve sin cuenta: a cada cliente le sale el precio de su nivel. Enter pasa al siguiente cuadro.</p>
+    <p class="cuenta" style="margin-top:-6px">Precios con IVA incluido. Nadie los ve sin cuenta: a cada cliente le sale el precio de su nivel. Enter pasa al siguiente cuadro.<br><b>Especial</b> es el 5º precio (por ejemplo cemento y mortero): solo lo ven los clientes que tengan marcado “Precio Especial” en la pestaña Clientes. Déjalo vacío en los productos que no lo llevan.</p>
     <div class="pct"><b>Llenar rápido:</b> desde el precio público, medio mayoreo −<input id="p1" inputmode="decimal" value="5" aria-label="Porcentaje medio mayoreo">%, mayoreo −<input id="p2" inputmode="decimal" value="10" aria-label="Porcentaje mayoreo">%, ferretería −<input id="p3" inputmode="decimal" value="15" aria-label="Porcentaje ferretería">%
       <button class="btn sm" type="button" id="llenar">Llenar los vacíos de esta lista</button></div>
-    <div class="tabla"><div class="th"><span>Producto / medida</span><span>Público</span><span>Medio mayoreo</span><span>Mayoreo</span><span>Ferretería</span></div><div id="filas"></div></div>
+    <div class="tabla"><div class="th"><span>Producto / medida</span><span>Público</span><span>Medio mayoreo</span><span>Mayoreo</span><span>Ferretería</span><span class="th-esp">Especial</span></div><div id="filas"></div></div>
   </div>
 </main>
 <div class="guardar" id="barra" hidden><div class="wrap"><span id="nCambios">0 cambios sin guardar</span><span style="display:flex;gap:8px"><button class="btn sm" type="button" id="deshacer" style="color:#fff;border-color:#ffffff66">Deshacer</button><button class="btn pri" type="button" id="guardar">Guardar cambios</button></span></div></div>
@@ -204,7 +206,7 @@ const CATS=[["construccion","Construcción"],["metal","Metal"],["mallas","Mallas
 
 // Las categorías vienen de la tienda (el dueño puede agregar más en la pestaña Categorías)
 async function cargarCats(){try{const r=await fetch("/api/categorias",{cache:"no-store"});const j=await r.json();if(j&&j.ok&&Array.isArray(j.categorias)&&j.categorias.length)CATS.splice(0,CATS.length,...j.categorias.map(c=>[c.slug,c.name]))}catch(e){}}
-const NOM=["Público","Medio mayoreo","Mayoreo","Ferretería"],NOMC=["Público","Medio may.","Mayoreo","Ferretería"];
+const NOM=["Público","Medio mayoreo","Mayoreo","Ferretería","Especial"],NOMC=["Público","Medio may.","Mayoreo","Ferretería","Especial"];
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const norm=s=>String(s||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"");
@@ -229,7 +231,7 @@ async function cargar(){
   catch(e){if(e.message!=="sin_sesion")$("#cuenta").textContent="No se pudieron cargar los precios. Revisa tu conexión y recarga la página."}
 }
 const variantesDe=p=>p.variants&&p.variants.length>1?p.variants:[p.spec||(p.variants||[])[0]||""];
-const val=(id,v)=>(cambios[id]&&cambios[id][v])||(LP[id]&&LP[id][v])||[0,0,0,0];
+const val=(id,v)=>(cambios[id]&&cambios[id][v])||(LP[id]&&LP[id][v])||[0,0,0,0,0];
 function pintar(){
   const q=norm($("#q").value.trim()),c=$("#fcat").value,f=$("#fver").value;let html="",n=0,sub=null;
   for(const p of P){if(c&&p.cat!==c)continue;
@@ -238,15 +240,15 @@ function pintar(){
     if(!vs.length)continue;
     const g=p.sub||"";if(c&&g!==sub&&g){html+=`<div class="grupo">${esc(g)}</div>`}sub=g;
     for(const v of vs){n++;const a=val(p.id,v),ch=cambios[p.id]&&cambios[p.id][v];
-      html+=`<div class="tr${ch?" cambio":""}" data-id="${esc(p.id)}" data-v="${esc(v)}"><div><b>${esc(p.name)}</b><small>${v?esc(v)+" · ":""}${esc(p.brand==="Material"?"":p.brand)} · por ${esc(p.unit||"pieza")}</small></div>${a.map((x,i)=>`<label class="cel"><i>${NOMC[i]}</i><span>$</span><input inputmode="decimal" enterkeyhint="next" data-i="${i}" value="${x>0?x:""}" aria-label="${NOM[i]} de ${esc(p.name)} ${esc(v)}"></label>`).join("")}</div>`}}
+      html+=`<div class="tr${ch?" cambio":""}" data-id="${esc(p.id)}" data-v="${esc(v)}"><div><b>${esc(p.name)}</b><small>${v?esc(v)+" · ":""}${esc(p.brand==="Material"?"":p.brand)} · por ${esc(p.unit||"pieza")}</small></div>${[0,1,2,3,4].map(i=>a[i]||0).map((x,i)=>`<label class="cel${i===4?" esp":""}"><i>${NOMC[i]}</i><span>$</span><input inputmode="decimal" enterkeyhint="next" data-i="${i}" value="${x>0?x:""}" aria-label="${NOM[i]} de ${esc(p.name)} ${esc(v)}"></label>`).join("")}</div>`}}
   $("#cuenta").textContent=`${n} producto${n===1?"":"s"}/medida${n===1?"":"s"}`;
   $("#filas").innerHTML=html||`<div class="vacio" style="border:0">Ningún producto coincide.</div>`;
 }
 ["#q","#fcat","#fver"].forEach(s=>$(s).addEventListener(s==="#q"?"input":"change",pintar));
 function nCambios(){return Object.values(cambios).reduce((a,o)=>a+Object.keys(o).length,0)}
 function barra(){const n=nCambios();$("#barra").hidden=!n;$("#nCambios").textContent=`${n} cambio${n===1?"":"s"} sin guardar`}
-function poner(row,i,x){const id=row.dataset.id,v=row.dataset.v;const a=[...val(id,v)];a[i]=x>0?Math.round(x*100)/100:0;
-  const orig=(LP[id]&&LP[id][v])||[0,0,0,0];(cambios[id]=cambios[id]||{});
+function poner(row,i,x){const id=row.dataset.id,v=row.dataset.v;const a=[0,1,2,3,4].map(k=>val(id,v)[k]||0);a[i]=x>0?Math.round(x*100)/100:0;
+  const orig=(LP[id]&&LP[id][v])||[0,0,0,0,0];(cambios[id]=cambios[id]||{});
   if(a.every((y,k)=>y===(orig[k]||0))){delete cambios[id][v];if(!Object.keys(cambios[id]).length)delete cambios[id];row.classList.remove("cambio")}else{cambios[id][v]=a;row.classList.add("cambio")}barra()}
 $("#filas").addEventListener("input",e=>{const i=e.target.closest("input[data-i]");if(!i)return;poner(i.closest(".tr"),+i.dataset.i,Number(i.value.replace(/[$,\s]/g,"")))});
 $("#filas").addEventListener("keydown",e=>{if(e.key!=="Enter"||e.isComposing)return;const i=e.target.closest("input[data-i]");if(!i)return;e.preventDefault();

@@ -208,11 +208,13 @@ textarea{min-height:90px;resize:vertical}
     <label class="l">Usuario <small>Con el que entra. Sin espacios ni acentos.</small><input id="e-usuario" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="ej. ferrelopez"></label>
     <div class="l" style="display:grid;gap:4px;font-size:12.5px;font-weight:700"><span id="claveTit">Clave <small style="font-weight:500;color:var(--muted)">Mínimo 6 letras o números.</small></span>
       <div class="clave"><input id="e-clave" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="Escribe una o toca Generar"><button class="btn sm" type="button" id="gen">Generar</button></div></div>
-    <label class="l">Precio que le toca <small>Ve el precio de su nivel en todos los productos que ya tengan precio en la pestaña Precios.</small><select id="e-nivel"><option value="publico">Público</option><option value="medio">Medio mayoreo</option><option value="mayoreo">Mayoreo</option><option value="ferreteria">Ferretería</option><option value="">Sin nivel (solo sus precios especiales)</option></select></label>
+    <label class="l">Precio que le toca <small>Ve el precio de su nivel en todos los productos que ya tengan precio en la pestaña Precios.</small><select id="e-nivel"><option value="publico">Público</option><option value="medio">Medio mayoreo</option><option value="mayoreo">Mayoreo</option><option value="ferreteria">Ferretería</option><option value="">Sin nivel (solo sus precios propios)</option></select></label>
+    <div class="l" style="display:grid;gap:6px;font-size:12.5px;font-weight:700"><span>Otro precio en algunas categorías <small style="font-weight:500;color:var(--muted)">(opcional) Ej. Medio mayoreo en todo, pero Mayoreo en Construcción.</small></span><div id="e-nc" style="display:grid;gap:6px"></div><button class="btn sm" type="button" id="ncAdd" style="justify-self:start">+ Agregar categoría</button></div>
+    <label class="chk"><input type="checkbox" id="e-esp"><span>Precio Especial (cemento y mortero)<small style="display:block;font-weight:500;color:var(--muted)">Ve el precio de la columna “Especial” de la pestaña Precios en los productos que lo tengan. En lo demás, su precio normal.</small></span></label>
     <div class="l" style="display:grid;gap:6px;font-size:12.5px;font-weight:700"><span>Sus categorías principales <small style="font-weight:500;color:var(--muted)">Es lo primero que ve al entrar y lo que sale en su Pedido rápido. Lo demás lo sigue teniendo a la mano.</small></span><div class="ccats" id="e-cats"></div></div>
     <label class="chk"><input type="checkbox" id="e-activo" checked><span>Puede entrar a ver sus precios<small style="display:block;font-weight:500;color:var(--muted)">Quítale la palomita para pausar su acceso sin borrarlo.</small></span></label>
     <div style="display:grid;gap:8px">
-      <b style="font-size:12.5px">Precios especiales <small style="font-weight:500;color:var(--muted)">(opcional) Solo si a este cliente le das un precio distinto al de su nivel; este manda sobre el de su nivel.</small> <small style="font-weight:500;color:var(--muted)" id="nota">Con IVA incluido. Los productos sin precio le salen como “Precio por confirmar”.</small></b>
+      <b style="font-size:12.5px">Precios solo para este cliente <small style="font-weight:500;color:var(--muted)">(opcional) Solo si a este cliente le das un precio distinto al de su nivel; este manda sobre el de su nivel.</small> <small style="font-weight:500;color:var(--muted)" id="nota">Con IVA incluido. Los productos sin precio le salen como “Precio por confirmar”.</small></b>
       <div class="ptools">
         <input type="search" id="pq" placeholder="Buscar producto o medida…" aria-label="Buscar producto">
         <select id="pcat" aria-label="Categoría"><option value="">Todas las categorías</option></select>
@@ -279,7 +281,7 @@ function pintar(){
   $("#cuenta").textContent=`${L.length} cliente${L.length===1?"":"s"} de mayoreo`;
   $("#lista").innerHTML=L.length?L.map(c=>{const n=Object.keys(c.precios||{}).length;
     return `<div class="crow"><div class="av">${esc((c.nombre||"?").trim()[0]||"?").toUpperCase()}</div>
-    <div><b>${esc(c.nombre)} <span class="est${c.activo?"":" off"}">${c.activo?"Activo":"Pausado"}</span></b><small>${c.persona?esc(c.persona)+" · ":""}Usuario: <b style="display:inline">${esc(c.usuario)}</b>${c.wa?" · WhatsApp "+esc(c.wa):""}</small><small>Precio: <b style="display:inline">${esc(NIVEL_TXT[c.nivel]||"sin nivel")}</b>${n?` · ${n} precio${n===1?"":"s"} especial${n===1?"":"es"}`:""}</small></div>
+    <div><b>${esc(c.nombre)} <span class="est${c.activo?"":" off"}">${c.activo?"Activo":"Pausado"}</span></b><small>${c.persona?esc(c.persona)+" · ":""}Usuario: <b style="display:inline">${esc(c.usuario)}</b>${c.wa?" · WhatsApp "+esc(c.wa):""}</small><small>Precio: <b style="display:inline">${esc(NIVEL_TXT[c.nivel]||"sin nivel")}</b>${c.nc&&Object.keys(c.nc).length?` · otro precio en ${Object.keys(c.nc).length} categoría${Object.keys(c.nc).length===1?"":"s"}`:""}${c.esp?" · <b style=\"display:inline;color:var(--accent)\">Especial</b>":""}${n?` · ${n} precio${n===1?"":"s"} solo suyo${n===1?"":"s"}`:""}</small></div>
     <div class="acts"><button class="btn sm" type="button" data-edit="${esc(c.usuario)}">Editar</button></div></div>`}).join(""):`<div class="vacio">${C.length?"Ningún cliente coincide.":"Todavía no tienes clientes de mayoreo. Toca “+ Agregar cliente”."}</div>`;
 }
 $("#q").addEventListener("input",pintar);
@@ -297,7 +299,7 @@ function abrir(c){
   $("#e-usuario").value=c?c.usuario:"";$("#e-usuario").disabled=!!c;
   $("#e-clave").value="";$("#e-clave").placeholder=c?"Déjala vacía para no cambiarla":"Escribe una o toca Generar";
   $("#claveTit").innerHTML=c?'Cambiar clave <small style="font-weight:500;color:var(--muted)">(opcional) Si le pones una nueva, la anterior deja de servir.</small>':'Clave <small style="font-weight:500;color:var(--muted)">Mínimo 6 letras o números.</small>';
-  $("#e-activo").checked=c?c.activo:true;const cs=c&&Array.isArray(c.cats)?c.cats:["construccion","metal","mallas"];$("#e-cats").innerHTML=CATS.map(([s,n])=>`<label><input type="checkbox" value="${s}"${cs.includes(s)?" checked":""}>${esc(n)}</label>`).join("");$("#e-nivel").value=c?(c.nivel||""):"mayoreo";
+  $("#e-activo").checked=c?c.activo:true;const cs=c&&Array.isArray(c.cats)?c.cats:["construccion","metal","mallas"];$("#e-cats").innerHTML=CATS.map(([s,n])=>`<label><input type="checkbox" value="${s}"${cs.includes(s)?" checked":""}>${esc(n)}</label>`).join("");$("#e-nivel").value=c?(c.nivel||""):"mayoreo";$("#e-esp").checked=!!(c&&c.esp);$("#e-nc").innerHTML="";Object.entries((c&&c.nc)||{}).forEach(([k,v])=>ncFila(k,v));
   $("#pq").value="";$("#pcat").value="";$("#psolo").checked=true;
   $("#extra").hidden=!c;$("#eerr").textContent="";$("#gdel").textContent="Borrar cliente";$("#gdel").classList.remove("sure");
   pintarPrecios();$("#veil").hidden=false;setTimeout(()=>$(c?"#e-nombre":"#e-nombre").focus(),50);
@@ -305,6 +307,12 @@ function abrir(c){
 $("#e-nombre").addEventListener("input",()=>{if(!editing&&!$("#e-usuario").dataset.toc)$("#e-usuario").value=usuarioDe($("#e-nombre").value)});
 $("#e-usuario").addEventListener("input",e=>{e.target.dataset.toc="1";const v=e.target.value.toLowerCase().replace(/\s+/g,"");if(v!==e.target.value)e.target.value=v});
 $("#gen").onclick=()=>{$("#e-clave").value=genClave();sucio=true};
+const NIV_OPC=[["publico","Público"],["medio","Medio mayoreo"],["mayoreo","Mayoreo"],["ferreteria","Ferretería"]];
+function ncFila(cat,niv){const usadas=[...document.querySelectorAll("#e-nc .ncCat")].map(s=>s.value);const libre=CATS.find(([s])=>!usadas.includes(s));if(!cat&&!libre)return;
+  $("#e-nc").insertAdjacentHTML("beforeend",`<div class="ncRow" style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto;gap:6px;align-items:center"><select class="ncCat" aria-label="Categoría">${CATS.map(([s,n])=>`<option value="${s}"${s===(cat||libre[0])?" selected":""}>${esc(n)}</option>`).join("")}</select><select class="ncNiv" aria-label="Precio en esa categoría">${NIV_OPC.map(([s,n])=>`<option value="${s}"${s===(niv||"mayoreo")?" selected":""}>${n}</option>`).join("")}</select><button class="btn sm ncDel" type="button" aria-label="Quitar">✕</button></div>`)}
+$("#ncAdd").onclick=()=>{ncFila();sucio=true};
+$("#e-nc").addEventListener("click",e=>{const d=e.target.closest(".ncDel");if(d){d.closest(".ncRow").remove();sucio=true}});
+function leerNc(){const o={};document.querySelectorAll("#e-nc .ncRow").forEach(r=>{o[r.querySelector(".ncCat").value]=r.querySelector(".ncNiv").value});return o}
 function pintarPrecios(){
   const q=norm($("#pq").value.trim()),c=$("#pcat").value,solo=$("#psolo").checked;
   const filas=[];
@@ -341,7 +349,7 @@ $("#ed").addEventListener("submit",async e=>{e.preventDefault();$("#eerr").textC
   if(wa&&digits(wa).length!==10){$("#eerr").textContent="El WhatsApp debe tener 10 dígitos.";return}
   const b=$("#gsave");b.disabled=true;b.textContent="Guardando…";
   try{
-    const j=await api("/api/dueno/clientes",{nuevo:!editing,cliente:{usuario,nombre,persona:$("#e-persona").value.trim(),wa,activo:$("#e-activo").checked,nivel:$("#e-nivel").value,cats:[...document.querySelectorAll("#e-cats input:checked")].map(i=>i.value),clave,precios}});
+    const j=await api("/api/dueno/clientes",{nuevo:!editing,cliente:{usuario,nombre,persona:$("#e-persona").value.trim(),wa,activo:$("#e-activo").checked,nivel:$("#e-nivel").value,esp:$("#e-esp").checked,nc:leerNc(),cats:[...document.querySelectorAll("#e-cats input:checked")].map(i=>i.value),clave,precios}});
     if(!j.ok){$("#eerr").textContent=j.error==="existe"?"Ya hay un cliente con ese usuario. Escoge otro.":j.error==="usuario"?"Ese usuario no se puede usar. Escoge otro.":"No se pudo guardar. Revisa los datos.";return}
     const nuevo=!editing;sucio=false;$("#veil").hidden=true;editing=null;await cargar();
     toast(nuevo?"Cliente agregado.":"Cambios guardados.");

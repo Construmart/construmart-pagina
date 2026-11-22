@@ -90,7 +90,7 @@ async function sesionDueno(request, env) {
 }
 
 const CATS_DEF = ["construccion", "metal", "mallas"];
-const publico = async (env, usuario, c) => ({ usuario, nombre: c.n, cats: Array.isArray(c.cats) ? c.cats : CATS_DEF, precios: await bandeja(env).preciosDe(c.nivel, c.p), nota: DATOS.nota || "" });
+const publico = async (env, usuario, c) => ({ usuario, nombre: c.n, cats: Array.isArray(c.cats) ? c.cats : CATS_DEF, precios: await bandeja(env).preciosDe(c.nivel, c.p, c.esp, c.nc), nota: DATOS.nota || "" });
 
 // ===== Bandeja de cotizaciones (se guarda en Cloudflare) =====
 const txt = (v, max) => String(v ?? "").slice(0, max);
@@ -131,7 +131,7 @@ export class Bandeja extends DurableObject {
   async cliente(u) { return (await this.ctx.storage.get("c:" + u)) || null; }
   async clientes() {
     const m = await this.ctx.storage.list({ prefix: "c:" });
-    return [...m.entries()].map(([k, c]) => ({ usuario: k.slice(2), nombre: c.n, persona: c.persona || "", wa: c.wa || "", activo: c.activo !== false, nivel: c.nivel || "", cats: Array.isArray(c.cats) ? c.cats : CATS_DEF, precios: c.p || {}, alta: c.alta || 0 }));
+    return [...m.entries()].map(([k, c]) => ({ usuario: k.slice(2), nombre: c.n, persona: c.persona || "", wa: c.wa || "", activo: c.activo !== false, nivel: c.nivel || "", esp: c.esp === true, nc: c.nc || {}, cats: Array.isArray(c.cats) ? c.cats : CATS_DEF, precios: c.p || {}, alta: c.alta || 0 }));
   }
   async guardarCliente(u, datos) {
     const prev = (await this.ctx.storage.get("c:" + u)) || { alta: Date.now() };
@@ -164,13 +164,21 @@ export class Bandeja extends DurableObject {
     if (borrar.length) await this.ctx.storage.delete(borrar);
     return true;
   }
-  // Precios que ve un cliente: los de su nivel y, encima, sus precios especiales
-  async preciosDe(nivel, especiales) {
+  // Precios que ve un cliente: los de su nivel; si tiene "Especial", la lista Especial (5º precio, p. ej. cemento y mortero) donde exista; y, encima, sus precios solo para él
+  // nc = otro nivel en algunas categorías, p. ej. {construccion:"mayoreo"} aunque su nivel general sea "medio"
+  async preciosDe(nivel, especiales, esp, nc) {
     const i = NIVELES.indexOf(nivel);
     const out = {};
-    if (i >= 0) {
+    const hayNc = nc && typeof nc === "object" && Object.keys(nc).length;
+    if (i >= 0 || esp || hayNc) {
       const todas = await this.listasTodas();
-      for (const [id, pm] of Object.entries(todas)) for (const [v, arr] of Object.entries(pm)) if (arr[i] > 0) out[id + "|" + v] = arr[i];
+      const catDe = {};
+      if (hayNc) { const pt = await this.productosTodos(); for (const p of pt.productos || []) catDe[p.id] = p.cat; }
+      for (const [id, pm] of Object.entries(todas)) for (const [v, arr] of Object.entries(pm)) {
+        const j = hayNc && nc[catDe[id]] ? NIVELES.indexOf(nc[catDe[id]]) : i;
+        const x = esp && arr[4] > 0 ? arr[4] : j >= 0 ? arr[j] : 0;
+        if (x > 0) out[id + "|" + v] = x;
+      }
     }
     return Object.assign(out, especiales || {});
   }
@@ -293,7 +301,7 @@ async function recibirCotizacion(request, env) {
   const items = Array.isArray(b.items) ? b.items.slice(0, 150) : [];
   if (!items.length) return json({ ok: false, error: "vacia" }, 400);
   const s = await sesionCliente(request, env);
-  const precios = s ? await bandeja(env).preciosDe(s.c.nivel, s.c.p) : {};
+  const precios = s ? await bandeja(env).preciosDe(s.c.nivel, s.c.p, s.c.esp, s.c.nc) : {};
   const q = {
     id: nuevoId(), token: nuevoToken(), fecha: Date.now(), estado: "pendiente",
     folio: txt(b.folio, 30), nombre: txt(b.nombre, 80), telefono: txt(b.telefono, 30),
@@ -502,7 +510,8 @@ async function api(request, env, url) {
       const previo = await stub.cliente(u);
       if (b.nuevo && previo) return json({ ok: false, error: "existe" }, 409);
       const okCats = await catsOk(env);
-      const datos = { n: txt(c.nombre, 80).trim() || u, persona: txt(c.persona, 80).trim(), wa: txt(c.wa, 20).trim(), activo: c.activo !== false, nivel: NIVELES.includes(c.nivel) ? c.nivel : "", cats: Array.isArray(c.cats) ? c.cats.filter((x) => okCats.includes(x)).slice(0, 40) : CATS_DEF };
+      const datos = { n: txt(c.nombre, 80).trim() || u, persona: txt(c.persona, 80).trim(), wa: txt(c.wa, 20).trim(), activo: c.activo !== false, nivel: NIVELES.includes(c.nivel) ? c.nivel : "", esp: c.esp === true, nc: {}, cats: Array.isArray(c.cats) ? c.cats.filter((x) => okCats.includes(x)).slice(0, 40) : CATS_DEF };
+      if (c.nc && typeof c.nc === "object") for (const [k, v] of Object.entries(c.nc).slice(0, 40)) if (okCats.includes(k) && NIVELES.includes(v)) datos.nc[k] = v;
       const clave = String(c.clave || "");
       if (clave) {
         if (clave.length < 6 || clave.length > 60) return json({ ok: false, error: "clave" }, 400);
@@ -610,7 +619,7 @@ async function api(request, env, url) {
         cambios[id] = {};
         for (const [v, arr] of Object.entries(pm)) {
           if (String(v).length > 80 || !Array.isArray(arr)) continue;
-          cambios[id][v] = [0, 1, 2, 3].map((i) => { const x = Math.round(Number(arr[i]) * 100) / 100; return x > 0 && x < 1e7 ? x : 0; });
+          cambios[id][v] = [0, 1, 2, 3, 4].map((i) => { const x = Math.round(Number(arr[i]) * 100) / 100; return x > 0 && x < 1e7 ? x : 0; });
           if (++n > 5000) break;
         }
       }
@@ -654,7 +663,7 @@ async function api(request, env, url) {
         const stub = bandeja(env);
         const cli = q.cliente ? await stub.cliente(q.cliente.usuario) : null;
         const nivel = cli && cli.nivel ? cli.nivel : "publico";
-        const lp = await stub.preciosDe(nivel, cli ? cli.p : null);
+        const lp = await stub.preciosDe(nivel, cli ? cli.p : null, cli && cli.esp, cli && cli.nc);
         const sug = q.items.map((it) => (it.custom ? null : lp[`${it.id}|${it.v}`] || null));
         return json({ ok: true, cotizacion: sinToken, sugeridos: sug, nivel });
       }
