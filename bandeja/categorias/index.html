@@ -240,5 +240,14 @@ $("#guardar").onclick=async()=>{const b=$("#guardar");if(C.some(c=>!c.name.trim(
 window.addEventListener("beforeunload",e=>{if(JSON.stringify(C)!==orig){e.preventDefault();e.returnValue=""}});
 (async()=>{try{const r=await fetch("/api/dueno/sesion",{credentials:"same-origin",cache:"no-store"});r.ok?verApp():verLogin()}catch(e){verLogin()}})();
 </script>
+<script>
+// Enter pasa a la siguiente casilla (en vez de guardar o enviar)
+(()=>{const CAMPO="input:not([type=hidden]):not([type=file]):not([type=checkbox]):not([type=radio]):not([disabled]),select:not([disabled]),textarea:not([disabled])";
+const ok=t=>t&&t.matches&&t.matches("input:not([type=checkbox]):not([type=radio]):not([type=search]):not([type=file]),select")&&!t.closest("#fLogin");
+document.addEventListener("focusin",e=>{if(ok(e.target)&&!e.target.getAttribute("enterkeyhint"))e.target.setAttribute("enterkeyhint","next")});
+document.addEventListener("keydown",e=>{if(e.key!=="Enter"||e.isComposing||e.defaultPrevented||e.shiftKey||e.ctrlKey||e.metaKey)return;const t=e.target;if(!ok(t))return;
+  const zona=t.closest("form,.sheet,#app,main")||document.body;const f=[...zona.querySelectorAll(CAMPO)].filter(x=>x.offsetParent!==null&&!x.closest("[hidden]"));
+  e.preventDefault();const n=f[f.indexOf(t)+1];if(n){n.focus();if(n.tagName==="INPUT"&&n.select)try{n.select()}catch(_){}}else t.blur()});})();
+</script>
 </body>
 </html>
