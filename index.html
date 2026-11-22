@@ -192,6 +192,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .card{position:relative}
 .rapido{position:absolute;top:8px;left:8px;z-index:2;display:inline-flex;align-items:center;gap:4px;background:#16a34a;color:#fff;font-size:11px;font-weight:700;border-radius:20px;padding:3px 9px 3px 7px;line-height:1.2;box-shadow:0 2px 6px rgba(22,163,74,.35);pointer-events:none}
 .rapido svg{width:12px;height:12px}
+.rapido[hidden]{display:none!important}
 .side a.rap{color:#15803d;font-weight:600}
 .side a.rap svg.ic{color:#16a34a}
 .side a.rap:hover,.side a.rap[aria-current="page"]{background:#16a34a14;color:#15803d}
@@ -1301,7 +1302,11 @@ function updateBadge(){$("#badge").textContent=quote.reduce((a,i)=>a+1,0)}
 
 // ===== ⚡ Entrega inmediata (se marca en el Catálogo con el rayo verde) =====
 const RAYO=`<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>`;
-const rapBadge=p=>(p.rapido?`<span class="rapido">${RAYO}Entrega inmediata</span>`:"")+nuevoBadge(p);
+const rvTxt=p=>{const l=p.rapidoV||[];const t=l.join(", ");return t.length<=12?t:"en algunas"};
+const rapBadge=p=>(p.rapido?(p.rapidoV&&p.rapidoV.length?`<span class="rapido" data-rv="1">${RAYO}<span>Inmediata ${esc(rvTxt(p))}</span></span>`:`<span class="rapido">${RAYO}Entrega inmediata</span>`):"")+nuevoBadge(p);
+const esRap=(p,v)=>!!p.rapido&&(!p.rapidoV||!p.rapidoV.length||p.rapidoV.includes(v));
+document.addEventListener("change",e=>{const c=e.target.closest&&e.target.closest(".card[data-id]");if(!c||e.target.tagName!=="SELECT")return;const p=byId(c.dataset.id);const b=c.querySelector(".rapido[data-rv]");if(!p||!b)return;const v=e.target.value;const sp=b.querySelector("span");
+  if(!v){b.hidden=false;sp.textContent="Inmediata "+rvTxt(p)}else if(esRap(p,v)){b.hidden=false;sp.textContent="Inmediata"}else b.hidden=true});
 const RAPIDOS=()=>P.filter(p=>p.rapido&&!p.hidden);
 // ===== Tarjetas =====
 function cardSmall(p){ // estilo "Productos destacados" de la maqueta
@@ -1313,7 +1318,7 @@ function cardSmall(p){ // estilo "Productos destacados" de la maqueta
 const galeria=p=>[...new Set([p.photo,...(p.photos||[])].filter(Boolean))];
 const rotHTML=(p,fs)=>fs.map((f,i)=>`<img class="ph${i?"":" on"}" src="${esc(f)}" alt="${i?"":esc(p.name)}" loading="lazy">`).join("")+`<span class="rdots" aria-hidden="true">${fs.map((_,i)=>`<i${i?"":' class="on"'}></i>`).join("")}</span>`;
 function cardFull(p){ // con cantidad, para la vista de categoría
-  const sel=p.variants&&p.variants.length>1?`${p.elige?`<label class="elige" for="v-${p.id}">${esc(p.elige)}</label>`:""}<select id="v-${p.id}" required aria-label="${esc(p.elige||"Presentación")}"><option value="" disabled selected>Selecciona una opción</option>${p.variants.map(v=>`<option>${esc(v)}</option>`).join("")}</select>`:"";
+  const sel=p.variants&&p.variants.length>1?`${p.elige?`<label class="elige" for="v-${p.id}">${esc(p.elige)}</label>`:""}<select id="v-${p.id}" required aria-label="${esc(p.elige||"Presentación")}"><option value="" disabled selected>Selecciona una opción</option>${p.variants.map(v=>`<option value="${esc(v)}">${esc(v)}${p.rapidoV&&p.rapidoV.length&&p.rapidoV.includes(v)?" ⚡ Inmediata":""}</option>`).join("")}</select>`:"";
   const spec=p.spec||(p.variants&&p.variants.length===1?p.variants[0]:"");
   return `<article class="card" data-id="${p.id}">${rapBadge(p)}${galeria(p).length>1?`<div class="pic rot">${rotHTML(p,galeria(p))}</div>`:`<div class="pic">${p.variants&&p.variants.length>1&&!p.photo?picV(p,p.variants[0]):pic(p)}</div>`}
   <div class="brand${p.brand==="Material"?" generic":""}">${p.brand==="Material"?"Material de obra":esc(p.brand)}</div><div class="ctit"><h3>${p.name}</h3>${dudaLink(p)}</div><div class="cdesc">${descBox(p.desc)}</div>${spec?`<div class="spec">${esc(spec)}</div>`:""}${sel}${!sel&&p.elige?`<label class="elige elige-qty" for="n-${p.id}">${esc(p.elige)}</label>`:""}
@@ -1921,7 +1926,7 @@ document.addEventListener("change",e=>{if(e.target.name==="fent"){form.entrega=e
   const lp=$("#lbPick");if(lp)lp.textContent=env?"¿Cuándo lo necesitas?":"¿Cuándo pasarías por tu pedido?";renderQuote();if(env&&d)setTimeout(()=>$("#fdir").focus(),30)}});
 document.addEventListener("click",e=>{const a=e.target.closest("[data-envio]");if(a){form.entrega="envio";try{const f=JSON.parse(localStorage.getItem("cm-form")||"{}");f.entrega="envio";localStorage.setItem("cm-form",JSON.stringify(f))}catch(err){}}});
 // ===== Lo nuevo: Mart acomodó productos nuevos (se calcula solo con la fecha de alta de cada producto) =====
-let ACTUALIZADO=1795374473122;const DIA=864e5;
+let ACTUALIZADO=1795377049235;const DIA=864e5;
 function fechaAlta(p){if(!p||!/^p[0-9a-z]{7,10}$/.test(p.id))return 0;const t=parseInt(p.id.slice(1),36);return t>1.6e12&&t<Date.now()+DIA?t:0}
 const NUEVOS=(dias=7)=>P.filter(p=>!p.hidden&&fechaAlta(p)>=Date.now()-dias*DIA).sort((a,b)=>fechaAlta(b)-fechaAlta(a));
 function nuevoBadge(p){return fechaAlta(p)>=Date.now()-7*DIA?`<span class="nuevo-tag">Nuevo</span>`:""}

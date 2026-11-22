@@ -378,7 +378,11 @@ function limpiarProducto(b, previo, CATS_OK) {
   const elige = txt(b.elige, 120).trim(); if (elige) p.elige = elige;
   const sub = txt(b.sub, 60).trim(); if (sub) p.sub = sub;
   const foto = rutaFoto(b.photo); if (foto) p.photo = foto;
-  if (b.rapido) p.rapido = true;
+  if (b.rapido) {
+    p.rapido = true;
+    // Entrega inmediata solo en algunas medidas
+    if (p.variants && Array.isArray(b.rapidoV)) { const rv = p.variants.filter((v) => b.rapidoV.includes(v)); if (rv.length && rv.length < p.variants.length) p.rapidoV = rv; }
+  }
   return p;
 }
 async function productosPublicos(request, env, url) {

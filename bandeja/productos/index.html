@@ -86,7 +86,10 @@ textarea{min-height:90px;resize:vertical}
 .draft{display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:var(--accent-soft);border:1px solid #f7c7a6;border-radius:8px;padding:10px 12px;font-size:13px}
 .draft span{flex:1 1 180px}
 .mtable{border:1.5px solid var(--line);border-radius:10px;overflow:hidden;background:var(--panel)}
-.mhead,.mrow{display:grid;grid-template-columns:46px 56px minmax(0,1fr) minmax(0,1fr) 84px 30px;align-items:center}
+.mhead,.mrow{display:grid;grid-template-columns:46px 56px minmax(0,1fr) minmax(0,1fr) 84px 38px 30px;align-items:center}
+.mrap{border:0;border-left:1px solid var(--line);background:var(--panel);height:100%;display:grid;place-items:center;color:#c9bfb2;padding:0}
+.mrap.on{color:#fff;background:var(--ok)}
+.mrap svg{width:16px;height:16px}
 .mhead{background:var(--cream);font-size:10.5px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);font-weight:800}
 .mhead span{padding:7px 8px}
 .mrow{border-top:1px solid var(--line)}
@@ -129,7 +132,7 @@ textarea{min-height:90px;resize:vertical}
   .row{grid-template-columns:48px minmax(0,1fr)}
   .row img,.row .nof{width:48px;height:48px}
   .row .acts{grid-column:1 / -1;justify-content:flex-end}
-  .mhead,.mrow{grid-template-columns:40px 48px minmax(0,1fr) minmax(0,1fr) 66px 26px}
+  .mhead,.mrow{grid-template-columns:40px 48px minmax(0,1fr) minmax(0,1fr) 66px 32px 26px}
   .mrow select.mt{font-size:11.5px}
 }
 @media (max-width:700px){.nav{order:3;width:100%;overflow-x:auto;scrollbar-width:none;flex-wrap:nowrap}.nav::-webkit-scrollbar{display:none}.nav a{white-space:nowrap;flex:none}}
@@ -197,10 +200,10 @@ header h1{white-space:nowrap}
     <label class="l">Categoría <small>Al elegirla se pone sola la marca principal (Plomería: Foset · Material eléctrico: Volteck · Limpieza: Klintek · las demás: Truper); puedes cambiarla.</small><select id="e-cat"></select></label>
     <label class="l">Subcategoría <small>(opcional) Agrupa productos dentro de la categoría. Ej. “CPVC” o “Cementos y morteros”. Escríbela igual en todos los del grupo.</small><input id="e-sub" list="subs" spellcheck="true" lang="es" placeholder="Ej. Cementos y morteros"></label>
     <datalist id="subs"></datalist>
-    <label class="chk"><input type="checkbox" id="e-rap"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13 2 4 18h7l-1 8 9-12h-7z"/></svg><span>Entrega inmediata<small style="display:block;font-weight:500;color:var(--muted)">Lo tenemos en físico en la tienda. En la página sale con el rayo verde.</small></span></label>
+    <label class="chk"><input type="checkbox" id="e-rap"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13 2 4 18h7l-1 8 9-12h-7z"/></svg><span>Entrega inmediata<small style="display:block;font-weight:500;color:var(--muted)">Lo tenemos en físico en la tienda. En la página sale con el rayo verde. Si solo tienes algunas medidas, usa el ⚡ de cada renglón abajo.</small></span></label>
     <div style="display:grid;gap:6px">
       <b style="font-size:12.5px">Códigos y medidas <small style="font-weight:500;color:var(--muted)">Una medida o color por renglón. Para la foto de cada medida: copia la imagen en Truper, da clic en “📋 Pega aquí” de ese renglón y Ctrl+V; o usa la cámara para elegir un archivo. El código es opcional. Enter pasa al siguiente. Si escribes 1/2 o 3/4 sin comillas, se las ponemos al guardar.</small></b>
-      <div class="mtable"><div class="mhead"><span title="Foto de la medida">Foto</span><span title="Clic aquí y Ctrl+V para pegar la foto de esta medida">Pegar</span><span>Código</span><span>Medida</span><span>Tipo</span><span></span></div><div id="mrows"></div></div>
+      <div class="mtable"><div class="mhead"><span title="Foto de la medida">Foto</span><span title="Clic aquí y Ctrl+V para pegar la foto de esta medida">Pegar</span><span>Código</span><span>Medida</span><span>Tipo</span><span title="Entrega inmediata de esta medida">⚡</span><span></span></div><div id="mrows"></div></div>
       <div class="mfill"><button class="madd" type="button" id="madd">+ Agregar medida</button><button class="mseq" type="button" id="mseq" title="Sigue la secuencia de medidas y códigos">⚡ Rellenar en secuencia</button><label class="mseqn">agregar <select id="mseqN" aria-label="Cuántas medidas agregar"><option>0</option><option>1</option><option selected>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>8</option><option>10</option></select> más</label></div>
       <small style="color:var(--muted);font-size:11.5px">Escribe el primer código y su medida (ej. 10001 y 1/2") y toca ⚡: llena los renglones vacíos y agrega los que elijas siguiendo la secuencia (3/4", 1"… y 10002, 10003…). Revisa los códigos que Truper no tenga seguidos.</small>
     </div>
@@ -283,7 +286,7 @@ $("#lista").addEventListener("click",async e=>{
   const du=e.target.closest("[data-dup]");if(du){duplicar(P.find(p=>p.id===du.dataset.dup));return}
   const r=e.target.closest("[data-rayo]");if(!r)return;
   const p=P.find(x=>x.id===r.dataset.rayo);if(!p)return;r.disabled=true;
-  try{const n={...p};if(n.rapido)delete n.rapido;else n.rapido=true;await guardarP(n);pintar();toast(n.rapido?"⚡ Entrega inmediata: "+p.name:"Se quitó el ⚡ de "+p.name)}
+  try{const n={...p};delete n.rapidoV;if(p.rapido)delete n.rapido;else n.rapido=true;await guardarP(n);pintar();toast(n.rapido?"⚡ Entrega inmediata: "+p.name:"Se quitó el ⚡ de "+p.name)}
   catch(err){if(err.message!=="sin_sesion")toast("No se pudo guardar. Inténtalo otra vez.");r.disabled=false}
 });
 
@@ -293,20 +296,23 @@ const PRINCIPALES=new Set([MARCA_DEF,...Object.values(MARCA_CAT)].map(m=>m.toLow
 const quitaInt=c=>String(c||"").replace(/\s*\(interno\)$/,"");
 function filasDe(p){
   if(!p)return [];
-  if(p.variants&&p.variants.length>1)return p.variants.map((m,i)=>{const c=(p.codes||[])[i]||"";return {m,c:quitaInt(c),t:/\(interno\)$/.test(c)?"interno":"truper",f:(p.photos||[])[i]||""}});
-  if(p.spec||p.code)return [{m:p.spec||"",c:quitaInt(p.code),t:/\(interno\)$/.test(p.code||"")?"interno":"truper",f:""}];
+  if(p.variants&&p.variants.length>1)return p.variants.map((m,i)=>{const c=(p.codes||[])[i]||"";return {m,c:quitaInt(c),t:/\(interno\)$/.test(c)?"interno":"truper",f:(p.photos||[])[i]||"",r:!!p.rapido&&(!p.rapidoV||p.rapidoV.includes(m))}});
+  if(p.spec||p.code)return [{m:p.spec||"",c:quitaInt(p.code),t:/\(interno\)$/.test(p.code||"")?"interno":"truper",f:"",r:!!p.rapido}];
   return [];
 }
 const CAM=`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>`;
 const MPZ_TXT="📋 Pega aquí";
 const MPZ=`<div class="mpz" contenteditable="true" inputmode="none" spellcheck="false" role="textbox" aria-label="Pegar foto de esta medida" title="Clic aquí y Ctrl+V (o mantén presionado → Pegar)">${MPZ_TXT}</div>`;
 function mphHTML(f){return f?`<img src="${esc(src(f))}" alt="">`:CAM}
-function filaHTML(r){return `<div class="mrow" data-f="${esc(r.f||"")}"><div class="mphw"><button type="button" class="mph" title="Foto de esta medida" aria-label="Foto de esta medida">${mphHTML(r.f)}</button><button type="button" class="mphx" aria-label="Quitar foto de esta medida"${r.f?"":" hidden"}>✕</button></div>${MPZ}<input class="mc" value="${esc(r.c)}" placeholder="Ej. 14502" autocomplete="off" enterkeyhint="next" aria-label="Código"><input class="mm" value="${esc(r.m)}" placeholder='Ej. 2"' autocapitalize="sentences" spellcheck="true" lang="es" enterkeyhint="next" aria-label="Medida"><select class="mt${r.t==="interno"?" int":""}" aria-label="Tipo de código"><option value="truper">Truper</option><option value="interno"${r.t==="interno"?" selected":""}>Interno</option></select><button type="button" class="mdel" aria-label="Quitar esta medida">✕</button></div>`}
-function setFilas(fs){$("#mrows").innerHTML=(fs.length?fs:[{m:"",c:""}]).map(filaHTML).join("")}
+function filaHTML(r){return `<div class="mrow" data-f="${esc(r.f||"")}"><div class="mphw"><button type="button" class="mph" title="Foto de esta medida" aria-label="Foto de esta medida">${mphHTML(r.f)}</button><button type="button" class="mphx" aria-label="Quitar foto de esta medida"${r.f?"":" hidden"}>✕</button></div>${MPZ}<input class="mc" value="${esc(r.c)}" placeholder="Ej. 14502" autocomplete="off" enterkeyhint="next" aria-label="Código"><input class="mm" value="${esc(r.m)}" placeholder='Ej. 2"' autocapitalize="sentences" spellcheck="true" lang="es" enterkeyhint="next" aria-label="Medida"><select class="mt${r.t==="interno"?" int":""}" aria-label="Tipo de código"><option value="truper">Truper</option><option value="interno"${r.t==="interno"?" selected":""}>Interno</option></select><button type="button" class="mrap${r.r?" on":""}" aria-pressed="${r.r?"true":"false"}" title="Entrega inmediata de esta medida" aria-label="Entrega inmediata de esta medida"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg></button><button type="button" class="mdel" aria-label="Quitar esta medida">✕</button></div>`}
+function setFilas(fs){$("#mrows").innerHTML=(fs.length?fs:[{m:"",c:""}]).map(filaHTML).join("");syncRap()}
+// La palomita de arriba = todas las medidas; los rayitos de cada renglón = medida por medida
+function syncRap(){const bs=[...document.querySelectorAll("#mrows .mrap")],n=bs.filter(b=>b.classList.contains("on")).length,ck=$("#e-rap");if(!ck||bs.length<2)return;ck.checked=n>0&&n===bs.length;ck.indeterminate=n>0&&n<bs.length}
+document.addEventListener("change",e=>{if(e.target.id!=="e-rap")return;e.target.indeterminate=false;document.querySelectorAll("#mrows .mrap").forEach(b=>{b.classList.toggle("on",e.target.checked);b.setAttribute("aria-pressed",String(e.target.checked))})});
 // Si la medida es solo pulgadas (1/2, 3/4, 1 1/2, 2…) y le faltan las comillas, se las pone
 const PUL=/^(\d+(?: \d+\/\d+)?|\d+\/\d+)(?!["”'])(\s*(?:\(.*\))?)$/;
 const pulgadas=m=>{const r=m.match(/^(.+?)\s+a\s+(.+)$/i);if(r&&PUL.test(r[1].replace(/["”]$/,""))&&PUL.test(r[2].replace(/["”]$/,"")))return pulgadas(r[1].replace(/["”]$/,""))+" a "+pulgadas(r[2].replace(/["”]$/,""));return m.replace(PUL,'$1"$2')};
-function leerFilas(){return [...document.querySelectorAll("#mrows .mrow")].map(r=>({m:pulgadas(r.querySelector(".mm").value.trim()),c:r.querySelector(".mc").value.trim(),t:r.querySelector(".mt").value,f:r.dataset.f||""})).filter(r=>r.m||r.c||r.f)}
+function leerFilas(){return [...document.querySelectorAll("#mrows .mrow")].map(r=>({m:pulgadas(r.querySelector(".mm").value.trim()),c:r.querySelector(".mc").value.trim(),t:r.querySelector(".mt").value,f:r.dataset.f||"",r:r.querySelector(".mrap").classList.contains("on")})).filter(r=>r.m||r.c||r.f)}
 $("#mrows").addEventListener("change",e=>{if(e.target.classList.contains("mt"))e.target.classList.toggle("int",e.target.value==="interno")});
 function nuevaFila(){$("#mrows").insertAdjacentHTML("beforeend",filaHTML({m:"",c:""}));const r=$("#mrows").lastElementChild;r.querySelector(".mc").focus();return r}
 function enterFila(t){
@@ -346,6 +352,7 @@ $("#mseq").onclick=()=>{
   marcarCambio();toast(llenos?"Listo: revisa las medidas y códigos":"Escribe primero una medida o un código");
 };
 $("#mrows").addEventListener("click",e=>{
+  const rz=e.target.closest(".mrap");if(rz){const on=!rz.classList.contains("on");rz.classList.toggle("on",on);rz.setAttribute("aria-pressed",String(on));syncRap();marcarCambio();return}
   const b=e.target.closest(".mph");if(b){filaFoto=b.closest(".mrow");$("#mfile").click();return}
   const x=e.target.closest(".mphx");if(x){const r=x.closest(".mrow");r.dataset.f="";r.querySelector(".mph").innerHTML=CAM;x.hidden=true;marcarCambio();return}
   const d=e.target.closest(".mdel");if(d){const row=d.closest(".mrow");if($("#mrows").children.length>1)row.remove();else{row.querySelector(".mm").value="";row.querySelector(".mc").value="";row.dataset.f="";row.querySelector(".mph").innerHTML=CAM;row.querySelector(".mphx").hidden=true}marcarCambio()}
@@ -493,7 +500,7 @@ $("#ed").addEventListener("click",e=>{if(e.target.closest("#madd,#punto"))setTim
 $("#draftYes").onclick=()=>{const b=leerBorrador();if(!b)return;const d=b.d;
   $("#e-name").value=d.name||"";$("#e-brand").value=d.brand||"";$("#e-unit").value=d.unit||"pieza";if(d.cat)$("#e-cat").value=d.cat;pintarSubs();
   $("#e-sub").value=d.sub||"";$("#e-elige").value=d.elige||"";$("#e-desc").value=d.desc||"";$("#e-rap").checked=!!d.rap;
-  setFilas((d.filas||[]).map(r=>({m:r.m||"",c:r.c||"",t:r.t==="interno"?"interno":"truper",f:r.f||""})));
+  setFilas((d.filas||[]).map(r=>({m:r.m||"",c:r.c||"",t:r.t==="interno"?"interno":"truper",f:r.f||"",r:!!r.r})));
   fotoMain=d.foto||"";verFoto();$("#draftBar").hidden=true;sucio=true;toast("Borrador recuperado. Revisa y toca Guardar.")};
 $("#draftNo").onclick=()=>{borrarBorrador(claveBorrador());$("#draftBar").hidden=true};
 
@@ -522,7 +529,7 @@ async function bulkRayo(b,v){
     clearTimeout(b._t);b._t=setTimeout(()=>{if(!bulkBusy)pintarBulk()},4000);return}
   clearTimeout(b._t);bulkBusy=true;$("#bulkOn").disabled=$("#bulkOff").disabled=true;
   let bien=0,mal=0;const paso=()=>{b.textContent=`Guardando… ${bien+mal} de ${lista.length}`};paso();
-  for(const p of lista){try{const n={...p};if(v)n.rapido=true;else delete n.rapido;await guardarP(n);bien++}catch(e){mal++;if(e.message==="sin_sesion")break}paso()}
+  for(const p of lista){try{const n={...p};delete n.rapidoV;if(v)n.rapido=true;else delete n.rapido;await guardarP(n);bien++}catch(e){mal++;if(e.message==="sin_sesion")break}paso()}
   bulkBusy=false;$("#bulkOn").disabled=$("#bulkOff").disabled=false;pintar();
   toast((v?`⚡ Entrega inmediata en ${bien} productos de ${catName(c)}`:`Se quitó ⚡ a ${bien} productos de ${catName(c)}`)+(mal?` · ${mal} no se pudieron, inténtalo otra vez`:""));
 }
@@ -540,7 +547,8 @@ function armar(){
   if(rs.length>1){p.variants=rs.map(r=>r.m||r.c);if(rs.some(r=>r.c))p.codes=rs.map(cod);if(rs.some(r=>r.f))p.photos=rs.map(r=>r.f)}
   else if(rs.length===1){const r=rs[0];if(r.m)p.spec=r.m;if(r.c)p.code=cod(r);if(!foto&&r.f)foto=r.f}
   if(foto)p.photo=foto;
-  if($("#e-rap").checked)p.rapido=true;
+  if(rs.length>1){const on=rs.filter(r=>r.r);if(on.length){p.rapido=true;if(on.length<rs.length)p.rapidoV=on.map(r=>r.m||r.c)}}
+  else if($("#e-rap").checked)p.rapido=true;
   return p;
 }
 $("#ed").addEventListener("submit",async e=>{e.preventDefault();
