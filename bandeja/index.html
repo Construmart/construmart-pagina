@@ -52,6 +52,20 @@ main.bandeja{display:grid;grid-template-columns:minmax(0,380px) minmax(0,1fr);ga
 .tabs button.on{background:var(--ink);border-color:var(--ink);color:#fff}
 .tabs b{font-variant-numeric:tabular-nums}
 .lista{display:grid;gap:8px}
+.busca{display:grid;gap:6px;margin-bottom:10px}
+.busca2{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.busca2 select{padding:8px 10px;font-size:13px}
+.busca input.on,.busca select.on{border-color:var(--accent);background:var(--accent-soft)}
+.clibox{background:var(--ink);color:#fff;border-radius:12px;padding:12px 14px;margin-bottom:10px;display:grid;gap:8px}
+.clibox .ch{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.clibox b{font-size:15px}.clibox small{display:block;color:#ffffffaa;font-size:12px;margin-top:2px}
+.clibox button{border:1px solid #ffffff55;background:transparent;color:#fff;border-radius:8px;padding:5px 10px;font-weight:700;font-size:12px;white-space:nowrap}
+.clibox .st{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.clibox .st div{background:#ffffff14;border-radius:8px;padding:6px 8px}
+.clibox .st strong{display:block;font-size:15px;font-variant-numeric:tabular-nums}
+.clibox .st span{font-size:11px;color:#ffffffaa}
+.verCli{margin-top:6px;border:1.5px solid var(--accent);color:var(--accent);background:var(--accent-soft);border-radius:8px;padding:6px 10px;font-weight:800;font-size:12.5px}
+mark{background:#ffe1c7;color:inherit;border-radius:3px;padding:0 1px}
 .q{display:grid;gap:3px;text-align:left;width:100%;background:var(--panel);border:1.5px solid var(--line);border-radius:10px;padding:10px 12px}
 .q.on{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
 .q .t{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
@@ -178,6 +192,12 @@ header h1{white-space:nowrap}
 
 <main class="wrap bandeja" id="app" hidden>
   <div class="col-lista">
+    <div class="busca">
+      <input type="search" id="bq" placeholder="Buscar nombre, teléfono, folio o producto…" aria-label="Buscar cotización" autocomplete="off">
+      <div class="busca2"><select id="bsuc" aria-label="Sucursal"><option value="">Las dos sucursales</option><option value="suchiate">Río Suchiate</option><option value="armadillo">Armadillo</option></select>
+      <select id="bfecha" aria-label="Fecha"><option value="">Todas las fechas</option><option value="hoy">Hoy</option><option value="semana">Últimos 7 días</option><option value="mes">Este mes</option><option value="mesant">Mes pasado</option></select></div>
+    </div>
+    <div class="clibox" id="clibox" hidden></div>
     <div class="tabs" role="group" aria-label="Filtrar">
       <button type="button" class="on" data-f="pendiente">Pendientes <b id="n-pendiente">0</b></button>
       <button type="button" data-f="respondida">Respondidas <b id="n-respondida">0</b></button>
@@ -237,14 +257,47 @@ async function cargar(aviso){
   try{const j=await api("/api/dueno/cotizaciones");todas=j.cotizaciones||[];pintarLista();if(aviso)toast("Bandeja actualizada")}
   catch(e){if(e.message!=="sin_sesion")toast("No se pudo cargar la bandeja. Revisa tu conexión.")}
 }
+// ===== Buscador y filtros =====
+let cliFiltro=null; // {clave, nombre}
+const normB=s=>String(s||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+const claveCli=q=>q.usuario?"u:"+q.usuario:digits(q.telefono).length>=10?"t:"+digits(q.telefono).slice(-10):"n:"+normB(q.cliente||q.nombre).trim();
+function rangoFecha(v){const d=new Date();d.setHours(0,0,0,0);const t=d.getTime();
+  if(v==="hoy")return [t,Infinity];if(v==="semana")return [t-6*864e5,Infinity];
+  if(v==="mes")return [new Date(d.getFullYear(),d.getMonth(),1).getTime(),Infinity];
+  if(v==="mesant")return [new Date(d.getFullYear(),d.getMonth()-1,1).getTime(),new Date(d.getFullYear(),d.getMonth(),1).getTime()];return null}
+function pasaFiltros(q){
+  if(cliFiltro&&claveCli(q)!==cliFiltro.clave)return false;
+  const suc=$("#bsuc").value;if(suc&&!normB(q.sucursal).includes(suc))return false;
+  const rf=rangoFecha($("#bfecha").value);if(rf&&!(q.fecha>=rf[0]&&q.fecha<rf[1]))return false;
+  const t=normB($("#bq").value.trim());if(t){const dq=digits(t);
+    const hay=normB([q.cliente,q.nombre,q.folio,q.usuario,q.prods,q.sucursal].join(" "));
+    const ok=t.split(/\s+/).every(w=>hay.includes(w))||(dq.length>=3&&digits(q.telefono).includes(dq));if(!ok)return false}
+  return true}
+function marcar(txt){const t=$("#bq").value.trim();const e=esc(txt);if(!t)return e;
+  const ws=normB(t).split(/\s+/).filter(w=>w.length>1);if(!ws.length)return e;
+  try{const n=normB(e);let out="",i=0;const re=new RegExp(ws.map(w=>w.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")).join("|"),"g");let m;
+    while((m=re.exec(n))){if(!m[0].length){re.lastIndex++;continue}out+=e.slice(i,m.index)+"<mark>"+e.slice(m.index,m.index+m[0].length)+"</mark>";i=m.index+m[0].length}return out+e.slice(i)}catch(_){return e}}
+function pintarCli(base){const el=$("#clibox");if(!cliFiltro){el.hidden=true;return}
+  const Q=todas.filter(q=>claveCli(q)===cliFiltro.clave);const conf=Q.filter(q=>q.estado==="confirmada"||q.estado==="entregada");
+  const sumConf=conf.reduce((a,q)=>a+(q.total||0),0),sumResp=Q.reduce((a,q)=>a+(q.total||0),0);
+  const ult=Q.length?Math.max(...Q.map(q=>q.fecha)):0;
+  el.innerHTML=`<div class="ch"><div><b>${esc(cliFiltro.nombre)}</b><small>${Q.length} cotizaci${Q.length===1?"ón":"ones"}${ult?" · la última "+esc(hace(ult)):""}</small></div><button type="button" id="cliX">✕ Ver todos</button></div>
+    <div class="st"><div><strong>${conf.length}</strong><span>confirmadas</span></div><div><strong>${pesos(sumConf)}</strong><span>en pedidos confirmados</span></div><div><strong>${pesos(sumResp)}</strong><span>cotizado en total</span></div></div>`;el.hidden=false}
+function verCliente(q){cliFiltro={clave:claveCli(q),nombre:q.cliente&&q.cliente.nombre?q.cliente.nombre:(q.cliente||q.nombre||"Sin nombre")};
+  filtro="";document.querySelectorAll(".tabs button").forEach(x=>x.classList.toggle("on",x.dataset.f===""));
+  document.body.classList.remove("abierta");pintarLista();window.scrollTo({top:0})}
+document.addEventListener("click",e=>{if(e.target.id==="cliX"){cliFiltro=null;pintarLista()}});
+["#bq","#bsuc","#bfecha"].forEach(s=>$(s).addEventListener(s==="#bq"?"input":"change",()=>{$(s).classList.toggle("on",!!$(s).value);pintarLista()}));
 function pintarLista(){
-  ["pendiente","respondida","confirmada","entregada","archivada"].forEach(k=>$("#n-"+k).textContent=todas.filter(q=>q.estado===k).length);
-  const L=todas.filter(q=>!filtro||q.estado===filtro);
+  const base=todas.filter(pasaFiltros);pintarCli();
+  ["pendiente","respondida","confirmada","entregada","archivada"].forEach(k=>$("#n-"+k).textContent=base.filter(q=>q.estado===k).length);
+  const L=base.filter(q=>!filtro||q.estado===filtro);
+  const buscando=$("#bq").value.trim()||$("#bsuc").value||$("#bfecha").value||cliFiltro;
   $("#lista").innerHTML=L.length?L.map(q=>`<button type="button" class="q${abierta===q.id?" on":""}" data-id="${esc(q.id)}">
-    <span class="t"><b>${esc(q.cliente||q.nombre||"Sin nombre")}</b><time datetime="${new Date(q.fecha).toISOString()}" title="${esc(fecha(q.fecha))}">${hace(q.fecha)}</time></span>
-    <small>${esc(q.folio)} · ${q.productos} producto${q.productos===1?"":"s"} · ${esc(q.sucursal)}${q.total!=null?" · "+pesos(q.total):""}</small>
-    <span class="chips">${q.estado==="pendiente"?`<i class="chip pend">Por contestar</i>`:q.estado==="respondida"?`<i class="chip resp">Respondida</i>`:q.estado==="confirmada"?`<i class="chip conf">✅ Pedido confirmado</i>`:q.estado==="entregada"?`<i class="chip">Entregada</i>`:`<i class="chip">Archivada</i>`}${q.cliente?`<i class="chip may">Mayoreo</i>`:""}${q.factura?`<i class="chip fac">Factura</i>`:""}${q.entrega==="envio"?`<i class="chip env">Envío</i>`:q.entrega==="cotizar"?`<i class="chip">Solo cotiza</i>`:""}${q.telefono?"":`<i class="chip">Sin teléfono</i>`}</span>
-  </button>`).join(""):`<div class="vacio"><img src="/marca/mart-guino-v2.png" alt="" width="290" height="300">${filtro==="pendiente"?"No tienes cotizaciones por contestar. ¡Al corriente!":"No hay cotizaciones aquí."}</div>`;
+    <span class="t"><b>${marcar(q.cliente||q.nombre||"Sin nombre")}</b><time datetime="${new Date(q.fecha).toISOString()}" title="${esc(fecha(q.fecha))}">${hace(q.fecha)}</time></span>
+    <small>${marcar(q.folio)} · ${q.productos} producto${q.productos===1?"":"s"} · ${esc(q.sucursal)}${q.total!=null?" · "+pesos(q.total):""}</small>
+    <span class="chips">${q.estado==="pendiente"?`<i class="chip pend">Por contestar</i>`:q.estado==="respondida"?`<i class="chip resp">Respondida</i>`:q.estado==="confirmada"?`<i class="chip conf">✅ Pedido confirmado</i>`:q.estado==="entregada"?`<i class="chip">Entregada</i>`:`<i class="chip">Archivada</i>`}${q.cliente?`<i class="chip may">Mayoreo</i>`:""}${q.factura?`<i class="chip fac">Factura</i>`:""}${q.entrega==="envio"?`<i class="chip env">Envío</i>`:q.entrega==="cotizar"?`<i class="chip">Solo cotiza</i>`:""}${q.telefono?"":`<i class="chip">Sin teléfono</i>`}</span>${(()=>{if(!$("#bq").value.trim())return "";const m=marcar(q.prods||"");return m.includes("<mark>")?`<small style="font-size:11.5px">🔎 ${m}</small>`:""})()}
+  </button>`).join(""):`<div class="vacio"><img src="/marca/mart-guino-v2.png" alt="" width="290" height="300">${buscando?"Ninguna cotización coincide con tu búsqueda.":filtro==="pendiente"?"No tienes cotizaciones por contestar. ¡Al corriente!":"No hay cotizaciones aquí."}</div>`;
 }
 document.querySelector(".tabs").addEventListener("click",e=>{const b=e.target.closest("[data-f]");if(!b)return;filtro=b.dataset.f;document.querySelectorAll(".tabs button").forEach(x=>x.classList.toggle("on",x===b));pintarLista()});
 $("#lista").addEventListener("click",e=>{const b=e.target.closest(".q");if(b)abrir(b.dataset.id)});
@@ -288,7 +341,7 @@ function mensaje(){
 function actualizarWA(){const a=$("#wa");if(!a)return;const d=digits(actual.telefono);a.setAttribute("aria-disabled",String(d.length<10));a.href=d.length>=10?`https://wa.me/52${d.slice(-10)}?text=${encodeURIComponent(mensaje())}`:"#"}
 function pintarDet(){
   const q=actual,r=q.respuesta;
-  $("#det").innerHTML=`<div class="det-h"><div><h2>${esc(q.cliente?q.cliente.nombre:q.nombre||"Sin nombre")}</h2><p>${esc(q.folio)} · llegó ${esc(fecha(q.fecha))}${r?` · respondida ${esc(fecha(r.fecha))}`:""}</p></div>
+  $("#det").innerHTML=`<div class="det-h"><div><h2>${esc(q.cliente?q.cliente.nombre:q.nombre||"Sin nombre")}</h2><p>${esc(q.folio)} · llegó ${esc(fecha(q.fecha))}${r?` · respondida ${esc(fecha(r.fecha))}`:""}</p><button type="button" class="verCli" id="verCli">Ver todas de este cliente</button></div>
     <button type="button" class="btn atras" id="atras">← Volver a la lista</button></div>
   <div class="datos"><div><span>Nombre</span><b>${esc(q.nombre||"—")}</b></div><div><span>Teléfono</span><b>${esc(q.telefono||"No lo dejó")}</b></div><div><span>Sucursal</span><b>${esc(q.sucursal||"—")}</b></div>${q.entrega==="envio"?`<div><span>Entrega</span><b>🚚 Envío a domicilio</b></div><div style="grid-column:1/-1"><span>Dirección</span><b>${esc(q.direccion||"No la escribió")}</b></div><div><span>Lo necesita</span><b>${esc(q.recoge||"—")}</b></div>`:q.entrega==="cotizar"?`<div><span>Entrega</span><b>Solo quiere cotizar</b></div>`:`<div><span>¿Cuándo pasa?</span><b>${esc(q.recoge||"—")}</b></div>`}<div><span>Factura</span><b>${q.factura?"Sí, la pidió":"No"}</b></div>${q.cliente?`<div><span>Cliente de mayoreo</span><b>${esc(q.cliente.nombre)} (${esc(q.cliente.usuario)})</b></div>`:""}</div>
   ${q.confirmada?`<div class="conf-box"><span>✅ El cliente confirmó este pedido el ${esc(fecha(q.confirmada.fecha))}${q.confirmada.notas?` · “${esc(q.confirmada.notas)}”`:""}</span>${q.estado==="entregada"?"<span>📦 Entregado</span>":""}</div>`:""}
@@ -334,6 +387,7 @@ $("#det").addEventListener("keydown",e=>{
 });
 $("#det").addEventListener("click",async e=>{
   const t=e.target.closest("button,a");if(!t)return;
+  if(t.id==="verCli"){const s=todas.find(x=>x.id===actual.id)||actual;verCliente(s);return}
   if(t.id==="atras"){document.body.classList.remove("abierta");abierta=null;pintarLista();return}
   if(t.id==="wa"){if(t.getAttribute("aria-disabled")==="true"){e.preventDefault();return}actualizarWA();guardar(true).then(ok=>{if(ok)toast("Respuesta guardada. Envía el mensaje en WhatsApp.")});return}
   if(t.id==="guardar"){t.disabled=true;const ok=await guardar(true);t.disabled=false;if(ok){toast(actual.cliente?"Enviada: ya le aparece en su perfil.":"Enviada: ya le aparece en la página, en “Mis cotizaciones”.");t.lastChild.textContent="Actualizar en su perfil"}return}

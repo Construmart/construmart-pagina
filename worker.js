@@ -100,6 +100,7 @@ const bandeja = (env) => env.BANDEJA.get(env.BANDEJA.idFromName("principal"));
 const resumen = (q) => ({
   id: q.id, folio: q.folio, fecha: q.fecha, nombre: q.nombre, telefono: q.telefono, sucursal: q.sucursal,
   recoge: q.recoge, factura: !!q.factura, entrega: q.entrega || "recoger", cliente: q.cliente ? q.cliente.nombre : "", productos: q.items.length, estado: q.estado,
+  usuario: q.cliente ? q.cliente.usuario : "", prods: q.items.map((it) => it.n + (it.v ? " " + it.v : "")).join(" · ").slice(0, 600),
   total: q.respuesta ? q.respuesta.total : null, respondida: q.respuesta ? q.respuesta.fecha : null, confirmada: q.confirmada ? q.confirmada.fecha : null,
 });
 
@@ -668,7 +669,7 @@ async function api(request, env, url) {
       return json({ ok: true, ruta: "/api/foto/" + id });
     }
     if (ruta === "/api/dueno/cotizaciones" && metodo === "GET") {
-      return json({ ok: true, cotizaciones: await bandeja(env).listar(300) });
+      return json({ ok: true, cotizaciones: await bandeja(env).listar(1500) });
     }
     const m = ruta.match(/^\/api\/dueno\/cotizaciones\/([a-z0-9-]{6,40})$/);
     if (m) {
