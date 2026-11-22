@@ -206,6 +206,8 @@ export class Bandeja extends DurableObject {
   async guardarContacto(c) { await this.ctx.storage.put("contacto", c); return true; }
 
   // ===== Preguntas frecuentes (Pregúntale a Mart) =====
+  async notas() { return (await this.ctx.storage.get("notas")) || []; }
+  async guardarNotas(l) { await this.ctx.storage.put("notas", l); return true; }
   async dudas() { return (await this.ctx.storage.get("dudas")) || null; }
   async guardarDudas(lista) { await this.ctx.storage.put("dudas", lista); return true; }
 
@@ -575,6 +577,18 @@ async function api(request, env, url) {
       return json({ ok: true, contacto: c });
     }
     // --- Dueño: preguntas frecuentes ---
+    // --- Dueño: notas y pendientes (solo él las ve) ---
+    if (ruta === "/api/dueno/notas" && metodo === "GET") return json({ ok: true, notas: await bandeja(env).notas() });
+    if (ruta === "/api/dueno/notas" && metodo === "POST") {
+      let b = {};
+      try { b = await request.json(); } catch (e) {}
+      const lista = (Array.isArray(b.notas) ? b.notas : []).slice(0, 500).map((x) => ({
+        id: String((x && x.id) || "").slice(0, 20), t: String((x && x.t) || "").slice(0, 500), h: !!(x && x.h),
+        f: /^\d{4}-\d\d-\d\d$/.test(String((x && x.f) || "")) ? x.f : "", c: Number(x && x.c) || 0, hc: Number(x && x.hc) || 0,
+      })).filter((x) => /^[a-z0-9]{1,20}$/.test(x.id) && x.t.trim());
+      await bandeja(env).guardarNotas(lista);
+      return json({ ok: true, n: lista.length });
+    }
     if (ruta === "/api/dueno/dudas" && metodo === "POST") {
       let b = {};
       try { b = await request.json(); } catch (e) {}

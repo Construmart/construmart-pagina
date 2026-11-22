@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Notas · Panel Construmart</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800;900&display=swap">
+<link rel="icon" href="/favicon.ico">
+<style>
+/* Panel del dueño, pestaña Productos: barra para buscar/filtrar, lista de productos y panel lateral para editar uno. */
+:root{
+  --bg:#FBF6EE; --panel:#ffffff; --ink:#343639; --muted:#6d6862; --line:#eadfcf; --cream:#F5EBDD;
+  --accent:#FF6A00; --accent-soft:#FFF1E4; --ok:#16a34a; --danger:#c0392b;
+  --display:"Montserrat","Segoe UI",Arial,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 var(--display)}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+[hidden]{display:none!important}
+img{max-width:100%;height:auto}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+h1,h2,h3{margin:0;text-wrap:balance}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header{background:var(--ink);color:var(--cream);position:sticky;top:0;z-index:5}
+header .wrap{display:flex;align-items:center;gap:12px;padding-block:12px;flex-wrap:wrap}
+header img{width:40px;height:auto}
+header h1{font-weight:900;font-size:19px;flex:1;min-width:0}
+header h1 span{color:var(--accent)}
+.nav{display:flex;gap:4px;background:#ffffff14;border-radius:30px;padding:3px}
+.nav a{color:var(--cream);text-decoration:none;font-weight:800;font-size:12.5px;padding:6px 12px;border-radius:30px}
+.nav a.on{background:var(--accent);color:#fff}
+.hbtn{border:1px solid #ffffff55;background:transparent;color:#fff;border-radius:8px;padding:6px 12px;font-weight:700;font-size:12.5px}
+.login{min-height:70vh;display:grid;place-items:center;padding:24px 16px}
+.login form{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:24px 22px;width:min(360px,100%);display:grid;gap:12px;text-align:center}
+.login img{width:96px;justify-self:center}
+.login h2{font-weight:900;font-size:22px}
+.login p{margin:0;color:var(--muted);font-size:13px}
+input,select,textarea{border:1.5px solid var(--line);border-radius:8px;padding:10px 12px;background:var(--panel);font-size:14px;min-width:0;width:100%}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent)}
+.go{background:var(--accent);color:#fff;border:0;border-radius:8px;padding:12px;font-weight:800;font-size:15px}
+.err{color:var(--danger);font-weight:700;font-size:13px;min-height:1em;margin:0}
+/* Barra */
+.tools{position:sticky;top:64px;z-index:4;background:var(--bg);padding-block:12px;border-bottom:1px solid var(--line)}
+.tw{display:flex;gap:8px;flex-wrap:wrap}
+.tools input{flex:1 1 220px;width:auto}
+.tools select{flex:0 1 210px;width:auto}
+.btn{border:1.5px solid var(--ink);background:transparent;border-radius:8px;padding:9px 14px;font-weight:800;font-size:13px;color:var(--ink);display:inline-flex;align-items:center;justify-content:center;gap:7px;white-space:nowrap}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.sm{padding:6px 10px;font-size:12px}
+.btn.danger{border-color:var(--danger);color:var(--danger)}
+.btn.sure{background:var(--danger);color:#fff}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.cuenta{font-size:12.5px;color:var(--muted);margin:10px 0}
+/* Lista */
+.lista{display:grid;gap:8px;padding-bottom:40px}
+.row{display:grid;grid-template-columns:56px minmax(0,1fr) auto;gap:12px;align-items:center;background:var(--panel);border:1.5px solid var(--line);border-radius:10px;padding:8px 10px}
+.row img,.row .nof{width:56px;height:56px;border-radius:8px;object-fit:contain;background:#fff;border:1px solid var(--line)}
+.row .nof{display:grid;place-items:center;font-size:10px;color:var(--muted);text-align:center;border-style:dashed}
+.row b{display:block;font-weight:800;overflow-wrap:anywhere}
+.row small{color:var(--muted);font-size:12px}
+.marca{font-size:11px;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:.3px}
+.row .acts{display:flex;gap:6px;align-items:center}
+.rayo{border:1.5px solid var(--line);background:var(--panel);border-radius:8px;padding:6px 8px;color:var(--muted);display:inline-flex}
+.rayo.on{background:var(--ok);border-color:var(--ok);color:#fff}
+.vacio{background:var(--panel);border:1.5px dashed var(--line);border-radius:10px;padding:26px 16px;text-align:center;color:var(--muted)}
+/* Editor */
+.veil{position:fixed;inset:0;background:#0007;z-index:20;display:flex;justify-content:flex-end}
+.sheet{background:var(--bg);width:min(560px,100%);height:100%;overflow-y:auto;overscroll-behavior:contain;padding:18px max(18px,env(safe-area-inset-right,0px)) calc(24px + env(safe-area-inset-bottom,0px)) 18px;display:grid;gap:14px;align-content:start}
+.sheet h2{font-weight:900;font-size:22px}
+label.l{display:grid;gap:4px;font-size:12.5px;font-weight:700}
+label.l small{font-weight:500;color:var(--muted)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+textarea{min-height:90px;resize:vertical}
+.foto{display:grid;grid-template-columns:110px minmax(0,1fr);gap:12px;align-items:center}
+.foto .box{width:110px;height:110px;border:1.5px dashed var(--line);border-radius:10px;background:#fff;display:grid;place-items:center;overflow:hidden;color:var(--muted);font-size:12px;text-align:center}
+.foto .box img{width:100%;height:100%;object-fit:contain}
+.foto .bts{display:flex;gap:8px;flex-wrap:wrap}
+.pastez{border:1.5px dashed #f7c7a6;background:var(--accent-soft);border-radius:8px;padding:8px 10px;font-size:12px;line-height:1.3;cursor:text;max-width:280px;caret-color:transparent;outline:none}
+.pastez span{color:var(--muted);font-size:11px}
+.pastez:focus{border-color:var(--accent);box-shadow:0 0 0 2px #FF6A0033}
+.draft{display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:var(--accent-soft);border:1px solid #f7c7a6;border-radius:8px;padding:10px 12px;font-size:13px}
+.draft span{flex:1 1 180px}
+.mtable{border:1.5px solid var(--line);border-radius:10px;overflow:hidden;background:var(--panel)}
+.mhead,.mrow{display:grid;grid-template-columns:46px 56px minmax(0,1fr) minmax(0,1fr) 84px 30px;align-items:center}
+.mhead{background:var(--cream);font-size:10.5px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);font-weight:800}
+.mhead span{padding:7px 8px}
+.mrow{border-top:1px solid var(--line)}
+.mrow input{border:0;border-radius:0;padding:9px 8px;min-width:0;background:var(--panel)}
+.mrow input+input{border-left:1px solid var(--line)}
+.mrow input:focus{outline:2px solid var(--accent);outline-offset:-2px}
+.mrow select.mt{border:0;border-left:1px solid var(--line);border-radius:0;padding:9px 4px;background:var(--panel);font-size:12.5px;min-width:0;height:100%}
+.mrow select.mt.int{color:var(--accent);font-weight:700}
+.mpz{height:100%;min-height:42px;display:grid;place-items:center;text-align:center;border-right:1px solid var(--line);background:var(--accent-soft);color:var(--accent);font-size:10.5px;font-weight:700;line-height:1.15;cursor:text;caret-color:transparent;outline:none;user-select:none;padding:2px}
+.mpz:focus{box-shadow:inset 0 0 0 2px var(--accent);background:#fff}
+.mphw{position:relative;height:100%;display:grid;place-items:center;border-right:1px solid var(--line)}
+.mph{width:36px;height:36px;border:1px dashed var(--line);border-radius:6px;background:#fff;color:var(--muted);display:grid;place-items:center;padding:0;overflow:hidden}
+.mph img{width:100%;height:100%;object-fit:contain}
+.mph.busy{opacity:.5}
+.mphx{position:absolute;top:1px;right:1px;width:16px;height:16px;border-radius:50%;border:0;background:var(--ink);color:#fff;font-size:9px;line-height:16px;padding:0}
+.mdel{border:0;background:none;color:var(--muted);font-size:15px;height:100%;border-left:1px solid var(--line)}
+.mdel:hover{color:var(--danger)}
+.madd{justify-self:start;background:none;border:0;color:var(--accent);font-weight:800;font-size:13px;padding:4px 0}
+.mfill{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.mseq{background:var(--accent-soft);border:1px solid #f7c7a6;color:var(--accent);font-weight:700;font-size:12.5px;border-radius:20px;padding:4px 12px}
+.mseqn{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--muted)}
+.mseqn select{padding:3px 6px;font-size:12.5px;width:auto}
+.bulk{border-color:var(--ok);color:var(--ok)}
+.bulk.off{border-color:var(--line);color:var(--muted)}
+.bulk.sure{background:var(--ok);color:#fff}
+.bulk.off.sure{background:var(--ink);border-color:var(--ink);color:#fff}
+.chk{display:flex;align-items:center;gap:10px;font-weight:700;border:1.5px solid #16a34a55;background:#16a34a12;border-radius:10px;padding:10px 12px}
+.chk svg{color:var(--ok);flex:none}
+.chk input{width:20px;height:20px;accent-color:var(--ok)}
+.bar{display:flex;gap:8px;flex-wrap:wrap}
+.bar .grow{flex:1}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--cream);padding:10px 18px;border-radius:30px;font-size:13px;z-index:30;max-width:calc(100% - 32px)}
+@media (max-width:600px){
+  header h1{font-size:16px}
+  header .hm{display:none}
+  header img{width:32px}
+  .tools{position:static}
+  .tw select{flex:1 1 140px}
+  .tw .btn{flex:1 1 100%}
+  .row{grid-template-columns:48px minmax(0,1fr)}
+  .row img,.row .nof{width:48px;height:48px}
+  .row .acts{grid-column:1 / -1;justify-content:flex-end}
+  .mhead,.mrow{grid-template-columns:40px 48px minmax(0,1fr) minmax(0,1fr) 66px 26px}
+  .mrow select.mt{font-size:11.5px}
+}
+/* Teléfonos */
+.sucbox{display:grid;gap:10px}.sucbox+.sucbox{border-top:1.5px dashed var(--line);padding-top:14px}
+.st{font-size:15px}
+.cjs{display:grid;gap:10px}
+.cj{border:1.5px solid var(--line);border-radius:12px;padding:12px;background:#fff;display:grid;gap:10px}
+.cjh{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto;gap:8px;align-items:center}
+.cjq{border:0;background:none;color:var(--muted);font-weight:700;font-size:12.5px}
+.cjq:hover{color:var(--danger)}
+.dias{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+.dias label{display:grid;gap:3px;font-size:11px;font-weight:800;color:var(--muted);text-align:center}
+.dias select{padding:6px 2px;font-size:12px;text-align:center}
+.dias select.x{color:var(--muted);background:#f3efe9}
+.dias select.h{color:var(--accent);font-weight:700;border-color:#f7c7a6}
+@media (max-width:700px){.cjh{grid-template-columns:1fr 1fr}.cjh .cjq{grid-column:1/-1;justify-self:end}.dias{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.bloque{background:var(--panel);border:1.5px solid var(--line);border-radius:14px;padding:18px;margin-bottom:14px;display:grid;gap:12px}
+.bloque h2{font-size:19px;font-weight:900;margin:0}
+.bloque p.tip{margin:0;font-size:13px;color:var(--muted)}
+.fila{display:grid;grid-template-columns:200px minmax(0,1fr);gap:12px;align-items:center}
+.fila b{font-size:14.5px}
+.modo{display:flex;gap:8px;flex-wrap:wrap}
+.modo label{display:flex;gap:8px;align-items:center;border:1.5px solid var(--line);border-radius:10px;padding:10px 14px;font-weight:700;cursor:pointer;background:#fff}
+.modo input{width:auto!important;height:auto!important;margin:0;flex:none;accent-color:var(--accent)}
+.modo label.on{border-color:var(--accent);background:var(--accent-soft)}
+.mini{font-size:12px;color:var(--muted);font-weight:600}
+input.mal{border-color:var(--danger)!important;background:#fff5f5}
+.suc{border:1.5px dashed var(--line);border-radius:12px;padding:14px;display:grid;gap:10px}
+@media (max-width:700px){.fila{grid-template-columns:1fr;gap:4px}}
+.guardar{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--ink);padding:10px max(16px,env(safe-area-inset-left,0px)) calc(10px + env(safe-area-inset-bottom,0px))}
+.guardar .wrap{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;color:var(--cream);font-size:13px;padding:0}
+.ayuda{background:var(--panel);border:1.5px dashed var(--line);border-radius:10px;padding:12px 14px;font-size:13px;margin-bottom:12px}
+@media (max-width:700px){.nav{order:3;width:100%;overflow-x:auto;scrollbar-width:none;flex-wrap:nowrap}.nav::-webkit-scrollbar{display:none}.nav a{white-space:nowrap;flex:none}}
+@media (max-width:700px){.nav{order:3;width:100%;overflow-x:auto;scrollbar-width:none;flex-wrap:nowrap}.nav::-webkit-scrollbar{display:none}.nav a{white-space:nowrap;flex:none}}
+.notas-wrap{max-width:760px;margin:0 auto;padding:16px 16px 60px}
+.nueva{display:grid;grid-template-columns:minmax(0,1fr) 150px auto;gap:8px;background:var(--panel);border:1.5px solid var(--line);border-radius:12px;padding:10px}
+.nueva input{font-size:15px}
+.filtros{display:flex;gap:6px;flex-wrap:wrap;margin:14px 0 8px;align-items:center}
+.filtros button{border:1.5px solid var(--line);background:var(--panel);border-radius:20px;padding:6px 12px;font-weight:700;font-size:12.5px;color:var(--ink)}
+.filtros button.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.filtros .cnt{margin-left:auto;font-size:12px;color:var(--muted);font-weight:600}
+.lista{display:grid;gap:6px}
+.nota{display:grid;grid-template-columns:26px minmax(0,1fr) auto auto;gap:8px;align-items:center;background:var(--panel);border:1.5px solid var(--line);border-radius:10px;padding:6px 8px 6px 10px}
+.nota input[type=checkbox]{width:20px;height:20px;accent-color:var(--ok);margin:0}
+.nota .txt{min-height:0!important;margin:0;border:0;background:transparent;padding:6px 4px;font-size:14.5px;font-weight:600;width:100%;resize:none;overflow:hidden;line-height:1.35;font-family:inherit;color:var(--ink)}
+.nota .txt:focus{outline:2px solid var(--accent-soft);border-radius:6px;background:#fff}
+.nota input[type=date]{border:1.5px solid var(--line);border-radius:8px;padding:5px 6px;font-size:12px;width:128px;color:var(--muted);background:#fff}
+.nota input[type=date].tiene{color:var(--ink);font-weight:700}
+.nota.vence input[type=date]{border-color:var(--danger);color:var(--danger)}
+.nota.hoy input[type=date]{border-color:var(--accent);color:var(--accent)}
+.nota.hecha{opacity:.6}.nota.hecha .txt{text-decoration:line-through}
+.nota .del{border:0;background:none;color:var(--muted);font-size:16px;padding:4px 6px}
+.nota .del:hover{color:var(--danger)}
+.sep{font-size:11px;text-transform:uppercase;letter-spacing:.6px;font-weight:800;color:var(--muted);margin:14px 2px 2px;display:flex;justify-content:space-between;align-items:center}
+.sep button{border:0;background:none;color:var(--danger);font-weight:700;font-size:12px;text-transform:none;letter-spacing:0}
+.vacio-n{text-align:center;color:var(--muted);padding:30px 10px;font-size:14px}
+.estado{font-size:12px;color:var(--muted);font-weight:600;min-height:1.2em;text-align:right;margin-top:6px}
+@media (max-width:600px){.nueva{grid-template-columns:1fr 1fr}.nueva input:first-child{grid-column:1/-1}.nota{grid-template-columns:26px minmax(0,1fr) auto}.nota input[type=date]{grid-column:2;width:auto;justify-self:start}.nota .del{grid-row:1;grid-column:3}}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <img src="/marca/mart-lentes-v2.png" alt="" width="295" height="300">
+  <h1><b class="hm">Construmart · </b><span>Panel del dueño</span></h1>
+  <nav class="nav" id="nav" hidden><a href="/bandeja/">Cotizaciones</a><a href="/bandeja/productos/">Productos</a><a href="/bandeja/categorias/">Categorías</a><a href="/bandeja/precios/">Precios</a><a href="/bandeja/clientes/">Clientes</a><a href="/bandeja/banners/">Banners</a><a href="/bandeja/preguntas/">Preguntas</a><a href="/bandeja/telefonos/">Teléfonos</a><a href="/bandeja/notas/" class="on">Notas</a><a href="/">Ver página</a></nav>
+  <button class="hbtn" id="salir" type="button" hidden>Salir</button>
+</div></header>
+<section class="login" id="login" hidden>
+  <form id="fLogin" autocomplete="on">
+    <img src="/marca/mart-lentes-v2.png" alt="" width="295" height="300">
+    <h2>Panel del dueño</h2>
+    <p>Entra con tu clave para ver tus notas y pendientes.</p>
+    <input type="text" name="username" value="dueño" autocomplete="username" hidden>
+    <input type="password" id="clave" name="password" autocomplete="current-password" placeholder="Tu clave de dueño" required aria-label="Clave de dueño">
+    <p class="err" id="lerr" role="alert"></p>
+    <button class="go" type="submit" id="lgo">Entrar</button>
+  </form>
+</section>
+<main id="app" hidden><div class="notas-wrap">
+  <h2 style="margin:4px 0 10px;font-size:20px">Mis notas y pendientes</h2>
+  <form class="nueva" id="fNueva" autocomplete="off">
+    <input id="nTxt" placeholder="Escribe un pendiente… ej. Pedir cemento a Moctezuma" maxlength="500" enterkeyhint="done" aria-label="Nuevo pendiente">
+    <input id="nFecha" type="date" aria-label="Para cuándo (opcional)" title="Para cuándo (opcional)">
+    <button class="btn pri" type="submit">Agregar</button>
+  </form>
+  <div class="filtros" id="filtros"><button type="button" data-f="pend" class="on">Pendientes</button><button type="button" data-f="todas">Todas</button><button type="button" data-f="hechas">Hechas</button><span class="cnt" id="cnt"></span></div>
+  <div class="lista" id="lista"></div>
+  <p class="estado" id="estado"></p>
+  <p class="mini" style="margin-top:10px">Solo tú las ves. Se guardan solas en cuanto escribes, y las ves igual desde el celular o la computadora.</p>
+</div></main>
+<div class="toast" id="toast" hidden></div>
+<script>
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function toast(t){const el=$("#toast");el.textContent=t;el.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>el.hidden=true,3200)}
+async function api(path,body){const r=await fetch(path,body?{method:"POST",credentials:"same-origin",headers:{"content-type":"application/json"},body:JSON.stringify(body)}:{credentials:"same-origin",cache:"no-store"});
+  const j=await r.json().catch(()=>({}));if(r.status===401&&!path.endsWith("/entrar")){verLogin();throw new Error("sin_sesion")}return j}
+function verLogin(){$("#login").hidden=false;$("#app").hidden=true;$("#nav").hidden=$("#salir").hidden=true;setTimeout(()=>$("#clave").focus(),50)}
+function verApp(){$("#login").hidden=true;$("#app").hidden=false;$("#nav").hidden=$("#salir").hidden=false;cargar()}
+$("#fLogin").addEventListener("submit",async e=>{e.preventDefault();const b=$("#lgo");b.disabled=true;b.textContent="Revisando…";$("#lerr").textContent="";
+  try{const j=await api("/api/dueno/entrar",{clave:$("#clave").value});if(j.ok){$("#clave").value="";verApp()}else $("#lerr").textContent="Clave incorrecta. Revísala e intenta otra vez."}
+  catch(err){$("#lerr").textContent="No se pudo entrar. Revisa tu conexión."}finally{b.disabled=false;b.textContent="Entrar"}});
+$("#salir").onclick=async()=>{try{await guardarYa()}catch(e){}try{await api("/api/dueno/salir",{})}catch(e){}verLogin()};
+
+let N=[],filtro="pend",pendiente=false,tGuardar=null;
+const hoyStr=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")};
+const nid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+async function cargar(){$("#lista").innerHTML='<p class="vacio-n">Cargando…</p>';
+  try{const j=await api("/api/dueno/notas");if(!j.ok)throw 0;N=j.notas||[];pintar()}
+  catch(e){if(e.message!=="sin_sesion")$("#lista").innerHTML='<p class="vacio-n">No se pudieron cargar tus notas. Revisa tu conexión y recarga la página.</p>'}}
+function orden(a,b){if(a.h!==b.h)return a.h?1:-1;if(a.h)return (b.hc||0)-(a.hc||0);const fa=a.f||"9999",fb=b.f||"9999";return fa<fb?-1:fa>fb?1:(b.c||0)-(a.c||0)}
+function filaHTML(n){const hoy=hoyStr(),cls=n.h?" hecha":n.f&&n.f<hoy?" vence":n.f===hoy?" hoy":"";
+  return `<div class="nota${cls}" data-id="${n.id}"><input type="checkbox"${n.h?" checked":""} aria-label="Marcar como hecho"><textarea class="txt" rows="1" maxlength="500" aria-label="Pendiente">${esc(n.t)}</textarea><input type="date" class="${n.f?"tiene":""}" value="${n.f||""}" aria-label="Para cuándo" title="${n.f&&n.f<hoy&&!n.h?"Ya se pasó la fecha":"Para cuándo (opcional)"}"><button class="del" type="button" aria-label="Borrar">✕</button></div>`}
+function pintar(){const ps=N.filter(n=>!n.h).sort(orden),hs=N.filter(n=>n.h).sort(orden);
+  $("#cnt").textContent=`${ps.length} pendiente${ps.length===1?"":"s"} · ${hs.length} hecha${hs.length===1?"":"s"}`;
+  let h="";
+  if(filtro!=="hechas")h+=ps.length?ps.map(filaHTML).join(""):'<p class="vacio-n">No tienes pendientes. ¡Bien, patrón!</p>';
+  if(filtro!=="pend"&&hs.length)h+=`<div class="sep"><span>Hechas</span><button type="button" id="borrarHechas">Borrar las hechas</button></div>`+hs.map(filaHTML).join("");
+  if(filtro==="hechas"&&!hs.length)h='<p class="vacio-n">Todavía no marcas nada como hecho.</p>';
+  $("#lista").innerHTML=h;document.querySelectorAll("#lista .txt").forEach(alto)}
+function alto(t){t.style.height="auto";t.style.height=t.scrollHeight+"px"}
+function guardarLuego(){pendiente=true;$("#estado").textContent="Guardando…";clearTimeout(tGuardar);tGuardar=setTimeout(guardarYa,700)}
+async function guardarYa(){clearTimeout(tGuardar);if(!pendiente)return;pendiente=false;
+  try{const j=await api("/api/dueno/notas",{notas:N});if(!j.ok)throw 0;$("#estado").textContent="Guardado ✓"}
+  catch(e){if(e.message!=="sin_sesion"){pendiente=true;$("#estado").textContent="No se pudo guardar. Revisa tu conexión.";tGuardar=setTimeout(guardarYa,5000)}}}
+$("#fNueva").addEventListener("submit",e=>{e.preventDefault();const t=$("#nTxt").value.trim();if(!t){$("#nTxt").focus();return}
+  N.push({id:nid(),t,f:$("#nFecha").value||"",h:false,c:Date.now()});$("#nTxt").value="";$("#nFecha").value="";if(filtro==="hechas")filtro="pend",marcarFiltro();pintar();guardarLuego();$("#nTxt").focus()});
+$("#nTxt").addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.isComposing){e.preventDefault();$("#fNueva").requestSubmit()}});
+function marcarFiltro(){document.querySelectorAll("#filtros [data-f]").forEach(b=>b.classList.toggle("on",b.dataset.f===filtro))}
+$("#filtros").addEventListener("click",e=>{const b=e.target.closest("[data-f]");if(!b)return;filtro=b.dataset.f;marcarFiltro();pintar()});
+const deFila=el=>N.find(n=>n.id===el.closest(".nota").dataset.id);
+$("#lista").addEventListener("change",e=>{const t=e.target;if(!t.closest(".nota"))return;const n=deFila(t);if(!n)return;
+  if(t.type==="checkbox"){n.h=t.checked;n.hc=t.checked?Date.now():0;guardarLuego();toast(t.checked?"¡Hecho! Lo pasé a Hechas.":"Regresó a pendientes.");setTimeout(pintar,350)}
+  else if(t.type==="date"){n.f=t.value||"";guardarLuego();pintar()}});
+$("#lista").addEventListener("input",e=>{const t=e.target;if(!t.classList.contains("txt"))return;const n=deFila(t);if(!n)return;n.t=t.value.slice(0,500);alto(t);guardarLuego()});
+$("#lista").addEventListener("keydown",e=>{const t=e.target;if(t.classList.contains("txt")&&e.key==="Enter"&&!e.shiftKey&&!e.isComposing){e.preventDefault();t.blur()}});
+$("#lista").addEventListener("focusout",e=>{const t=e.target;if(!t.classList.contains("txt"))return;const n=deFila(t);if(n&&!n.t.trim()){N=N.filter(x=>x!==n);guardarLuego();pintar()}});
+$("#lista").addEventListener("click",e=>{const d=e.target.closest(".del");if(d){const n=deFila(d);const i=N.indexOf(n);N.splice(i,1);guardarLuego();pintar();
+    deshacer(()=>{N.splice(i,0,n);guardarLuego();pintar()},"Nota borrada.");return}
+  if(e.target.id==="borrarHechas"){const quitadas=N.filter(n=>n.h);N=N.filter(n=>!n.h);guardarLuego();pintar();deshacer(()=>{N.push(...quitadas);guardarLuego();pintar()},`Se borraron ${quitadas.length} hecha${quitadas.length===1?"":"s"}.`)}});
+function deshacer(fn,msg){const el=$("#toast");el.innerHTML=esc(msg)+' <button type="button" style="margin-left:8px;border:0;background:none;color:#ffb37a;font-weight:800">Deshacer</button>';el.hidden=false;clearTimeout(toast.t);
+  el.querySelector("button").onclick=()=>{fn();el.hidden=true};toast.t=setTimeout(()=>el.hidden=true,6000)}
+window.addEventListener("beforeunload",e=>{if(pendiente){guardarYa();e.preventDefault();e.returnValue=""}});
+document.addEventListener("visibilitychange",()=>{if(document.hidden)guardarYa()});
+(async()=>{try{const r=await fetch("/api/dueno/sesion",{credentials:"same-origin",cache:"no-store"});r.ok?verApp():verLogin()}catch(e){verLogin()}})();
+</script>
+</body>
+</html>
