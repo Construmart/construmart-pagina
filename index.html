@@ -206,6 +206,10 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .rapido{position:absolute;top:8px;left:8px;z-index:2;display:inline-flex;align-items:center;gap:4px;background:#16a34a;color:#fff;font-size:11px;font-weight:700;border-radius:20px;padding:3px 9px 3px 7px;line-height:1.2;box-shadow:0 2px 6px rgba(22,163,74,.35);pointer-events:none}
 .rapido svg{width:12px;height:12px}
 .rapido[hidden]{display:none!important}
+.req{color:var(--accent)}
+#fname.mal,#fphone.mal{border-color:#d93025!important;background:#fff5f4}
+.ferr{color:#b3261e;font-size:13px;font-weight:700;margin:0 0 8px;line-height:1.35}
+#waBtn.faltan{opacity:.75}
 .hero:not(:has(.slide)){display:none}
 .side a.rap{color:#15803d;font-weight:600}
 .side a.rap svg.ic{color:#16a34a}
@@ -1541,8 +1545,8 @@ function viewQuote(){
     </div>
     </div>
     <form class="panel form" id="qform"><h2>Tus datos</h2>
-      <label for="fname">Nombre<input id="fname" placeholder="Ej. Juan Pérez" value="${esc(form.name)}"></label>
-      <label for="fphone">Teléfono<input id="fphone" inputmode="tel" placeholder="Ej. 311 123 4567" value="${esc(form.phone)}"></label>
+      <label for="fname">Nombre <b class="req">*</b><input id="fname" autocomplete="name" placeholder="Ej. Juan Pérez" value="${esc(form.name)}"></label>
+      <label for="fphone">WhatsApp <b class="req">*</b><input id="fphone" inputmode="tel" autocomplete="tel" placeholder="Ej. 311 123 4567" value="${esc(form.phone)}"></label>
       <fieldset class="fent"><legend>¿Qué necesitas?</legend><label><input type="radio" name="fent" value="cotizar"${form.entrega!=="envio"&&form.entrega!=="recoger"?" checked":""}><span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4M9 12h7M9 16h5"/></svg>Solo cotizar</span></label><label><input type="radio" name="fent" value="recoger"${form.entrega==="recoger"?" checked":""}><span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 10 12 3l9 7v10H3z"/><path d="M9 20v-6h6v6"/></svg>Recoger en sucursal</span></label><label><input type="radio" name="fent" value="envio"${form.entrega==="envio"?" checked":""}><span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 6h11v10H2zM13 9h4l4 4v3h-8z"/><circle cx="6" cy="17.5" r="1.8"/><circle cx="17" cy="17.5" r="1.8"/></svg>Envío a domicilio</span></label></fieldset>
       <label for="fdir" id="fdirBox"${form.entrega==="envio"?"":" hidden"}>Dirección de entrega<textarea id="fdir" placeholder="Calle y número, colonia, ciudad y una referencia">${esc(form.dir||"")}</textarea><small class="fdir-n">Te confirmamos el costo y el día de entrega por WhatsApp.</small></label>
       <label for="fbranch"><span id="lbBranch">${form.entrega==="envio"?"¿De qué sucursal te lo enviamos?":form.entrega==="recoger"?"¿En qué sucursal recoges?":"¿Qué sucursal te queda mejor?"}</span><select id="fbranch">${SUCURSALES.map(b=>`<option value="${b.id}"${b.id===form.branch?" selected":""}>${esc(b.nombre)} · ${esc(b.direccion)}</option>`).join("")}</select></label>
@@ -1569,10 +1573,11 @@ function renderQuote(){
     <td><div class="qty" style="width:max-content"><button type="button" data-q="${ix}" data-step="-1" aria-label="Menos">−</button><input id="q-${ix}" type="number" min="1" value="${it.qty}" data-q="${ix}" aria-label="Cantidad"><button type="button" data-q="${ix}" data-step="1" aria-label="Más">+</button></div><small>${unitOf(p,it.qty)}</small></td>
     <td><button type="button" class="rm" data-rm="${ix}">Quitar</button></td></tr>`}).join("");
   cliQuote();
-  const m=msg(),ok=quote.length>0;
+  const m=msg(),ok=quote.length>0,dok=datosOk();
   $("#preview").textContent=m;
-  $("#waBtn").setAttribute("aria-disabled",String(!ok));
-  $("#waBtn").href=ok?`https://wa.me/52${digits(waCotiz(form.branch))}?text=${encodeURIComponent(m)}`:"#";
+  $("#waBtn").setAttribute("aria-disabled",String(!ok));$("#waBtn").classList.toggle("faltan",ok&&!dok);
+  if(dok){$("#fname")&&$("#fname").classList.remove("mal");$("#fphone")&&$("#fphone").classList.remove("mal");const fe=$("#fErr");if(fe)fe.hidden=true}
+  $("#waBtn").href=ok&&dok?`https://wa.me/52${digits(waCotiz(form.branch))}?text=${encodeURIComponent(m)}`:"#";
   const wn=$("#waNote");if(wn)wn.textContent=(RECIBE_COTIZACIONES||WA_COTIZ[form.branch])?(form.entrega==="envio"?`Tu cotización llegará al WhatsApp de Construmart, con envío a domicilio desde ${branchOf(form.branch).nombre}.`:form.entrega==="recoger"?`Tu cotización llegará al WhatsApp de Construmart para recoger en ${branchOf(form.branch).nombre}.`:`Tu cotización llegará al WhatsApp de Construmart (${branchOf(form.branch).nombre}). Sin compromiso de compra.`):`Se enviará al WhatsApp de ${branchOf(form.branch).nombre}: ${branchOf(form.branch).wa[0]}`;
   updateBadge();save();
 }
@@ -1592,6 +1597,12 @@ function renderHist(){
   </details>`}).join("")}</div>`;
   cotizHist();
 }
+function datosOk(){return String(form.name||"").trim().length>=2&&digits(form.phone||"").length===10}
+function marcarFaltan(){const n=String(form.name||"").trim().length>=2,t=digits(form.phone||"").length===10;
+  $("#fname").classList.toggle("mal",!n);$("#fphone").classList.toggle("mal",!t);
+  let fe=$("#fErr");if(!fe){$("#waBtn").insertAdjacentHTML("beforebegin",'<p class="ferr" id="fErr" role="alert"></p>');fe=$("#fErr")}
+  fe.textContent=!n&&!t?"Escribe tu nombre y tu WhatsApp (10 dígitos) para mandarte precio y existencia.":!n?"Escribe tu nombre para saber a quién le cotizamos.":"Escribe tu WhatsApp a 10 dígitos para mandarte precio y existencia.";fe.hidden=false;
+  (n?$("#fphone"):$("#fname")).focus()}
 function recordSend(){
   if(!quote.length)return;
   hist.unshift({folio,date:Date.now(),items:JSON.parse(JSON.stringify(quote)),notes:form.notes||""});
@@ -1950,7 +1961,7 @@ document.addEventListener("change",e=>{if(e.target.name==="fent"){form.entrega=e
   const lp=$("#lbPick");if(lp)lp.textContent=env?"¿Cuándo lo necesitas?":"¿Cuándo pasarías por tu pedido?";renderQuote();if(env&&d)setTimeout(()=>$("#fdir").focus(),30)}});
 document.addEventListener("click",e=>{const a=e.target.closest("[data-envio]");if(a){form.entrega="envio";try{const f=JSON.parse(localStorage.getItem("cm-form")||"{}");f.entrega="envio";localStorage.setItem("cm-form",JSON.stringify(f))}catch(err){}}});
 // ===== Lo nuevo: Mart acomodó productos nuevos (se calcula solo con la fecha de alta de cada producto) =====
-let ACTUALIZADO=1795454365156;const DIA=864e5;
+let ACTUALIZADO=1795468487608;const DIA=864e5;
 function fechaAlta(p){if(!p||!/^p[0-9a-z]{7,10}$/.test(p.id))return 0;const t=parseInt(p.id.slice(1),36);return t>1.6e12&&t<Date.now()+DIA?t:0}
 const NUEVOS=(dias=7)=>P.filter(p=>!p.hidden&&fechaAlta(p)>=Date.now()-dias*DIA).sort((a,b)=>fechaAlta(b)-fechaAlta(a));
 function nuevoBadge(p){return fechaAlta(p)>=Date.now()-7*DIA?`<span class="nuevo-tag">Nuevo</span>`:""}
@@ -2163,7 +2174,7 @@ $("#searchForm").addEventListener("submit",e=>{e.preventDefault();const q=$("#q"
 document.addEventListener("click",e=>{
   if(e.target.closest("#sentClose")){$("#sentMsg").hidden=true;return}
   const br=e.target.closest("[data-branch]");if(br){form.branch=br.dataset.branch}
-  const wb=e.target.closest("#waBtn");if(wb&&quote.length){recordSend();return}
+  const wb=e.target.closest("#waBtn");if(wb&&quote.length){if(!datosOk()){e.preventDefault();marcarFaltan();return}recordSend();return}
   const ro=e.target.closest("[data-reorder]");
   if(ro){const h=hist[ro.dataset.reorder];let n=0;h.items.forEach(it=>{if(!it.custom&&!byId(it.id))return;n++;const ex=quote.find(q=>it.custom?(q.custom&&norm(q.name)===norm(it.name)):(q.id===it.id&&q.variant===it.variant));ex?ex.qty+=it.qty:quote.push({...it})});
     renderQuote();toast(`Se agregaron ${n} producto${n===1?"":"s"} a tu lista. Ajusta cantidades si hace falta.`);document.querySelector(".quote").scrollIntoView({behavior:"smooth",block:"start"});return}

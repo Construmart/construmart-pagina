@@ -56,6 +56,10 @@ main.bandeja{display:grid;grid-template-columns:minmax(0,380px) minmax(0,1fr);ga
 .busca2{display:grid;grid-template-columns:1fr 1fr;gap:6px}
 .busca2 select{padding:8px 10px;font-size:13px}
 .busca input.on,.busca select.on{border-color:var(--accent);background:var(--accent-soft)}
+.tipos{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;background:var(--panel);border:1.5px solid var(--line);border-radius:10px;padding:4px;margin-bottom:10px}
+.tipos button{border:0;background:none;border-radius:7px;padding:7px 4px;font-weight:700;font-size:12.5px;color:var(--muted)}
+.tipos button.on{background:var(--ink);color:#fff}
+.hacerCli{margin-top:6px;margin-left:6px;border:1.5px solid var(--ink);color:var(--ink);background:#fff;border-radius:8px;padding:6px 10px;font-weight:800;font-size:12.5px;text-decoration:none;display:inline-block}
 .clibox{background:var(--ink);color:#fff;border-radius:12px;padding:12px 14px;margin-bottom:10px;display:grid;gap:8px}
 .clibox .ch{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
 .clibox b{font-size:15px}.clibox small{display:block;color:#ffffffaa;font-size:12px;margin-top:2px}
@@ -168,7 +172,8 @@ textarea{min-height:64px;resize:vertical}
 @media (max-width:700px){.nav{order:3;width:100%;overflow-x:auto;scrollbar-width:none;flex-wrap:nowrap}.nav::-webkit-scrollbar{display:none}.nav a{white-space:nowrap;flex:none}}
 header h1{white-space:nowrap}
 @media (max-width:1420px){header .hm{display:none}}
-@media (min-width:701px) and (max-width:1420px){header h1{display:none}}
+@media (min-width:701px){header h1{display:none}header .nav{margin-left:auto}}
+header h1{overflow:hidden;text-overflow:ellipsis}
 </style>
 </head>
 <body>
@@ -199,6 +204,8 @@ header h1{white-space:nowrap}
       <div class="busca2"><select id="bsuc" aria-label="Sucursal"><option value="">Las dos sucursales</option><option value="suchiate">Río Suchiate</option><option value="armadillo">Armadillo</option></select>
       <select id="bfecha" aria-label="Fecha"><option value="">Todas las fechas</option><option value="hoy">Hoy</option><option value="semana">Últimos 7 días</option><option value="mes">Este mes</option><option value="mesant">Mes pasado</option></select></div>
     </div>
+    <div class="tipos" role="group" aria-label="Tipo de cliente"><button type="button" data-tipo="" class="on">Todos los clientes</button><button type="button" data-tipo="sin">Sin cuenta</button><button type="button" data-tipo="con">Con cuenta</button></div>
+    <div class="clibox" id="tipobox" hidden></div>
     <div class="clibox" id="clibox" hidden></div>
     <div class="tabs" role="group" aria-label="Filtrar">
       <button type="button" class="on" data-f="pendiente">Pendientes <b id="n-pendiente">0</b></button>
@@ -267,7 +274,9 @@ function rangoFecha(v){const d=new Date();d.setHours(0,0,0,0);const t=d.getTime(
   if(v==="hoy")return [t,Infinity];if(v==="semana")return [t-6*864e5,Infinity];
   if(v==="mes")return [new Date(d.getFullYear(),d.getMonth(),1).getTime(),Infinity];
   if(v==="mesant")return [new Date(d.getFullYear(),d.getMonth()-1,1).getTime(),new Date(d.getFullYear(),d.getMonth(),1).getTime()];return null}
+let tipoCli="";
 function pasaFiltros(q){
+  if(tipoCli==="sin"&&q.usuario)return false;if(tipoCli==="con"&&!q.usuario)return false;
   if(cliFiltro&&claveCli(q)!==cliFiltro.clave)return false;
   const suc=$("#bsuc").value;if(suc&&!normB(q.sucursal).includes(suc))return false;
   const rf=rangoFecha($("#bfecha").value);if(rf&&!(q.fecha>=rf[0]&&q.fecha<rf[1]))return false;
@@ -290,8 +299,15 @@ function verCliente(q){cliFiltro={clave:claveCli(q),nombre:q.cliente&&q.cliente.
   document.body.classList.remove("abierta");pintarLista();window.scrollTo({top:0})}
 document.addEventListener("click",e=>{if(e.target.id==="cliX"){cliFiltro=null;pintarLista()}});
 ["#bq","#bsuc","#bfecha"].forEach(s=>$(s).addEventListener(s==="#bq"?"input":"change",()=>{$(s).classList.toggle("on",!!$(s).value);pintarLista()}));
+function pintarTipo(base){const el=$("#tipobox");if(!tipoCli||cliFiltro){el.hidden=true;return}
+  const conf=base.filter(q=>q.estado==="confirmada"||q.estado==="entregada"),sc=conf.reduce((a,q)=>a+(q.total||0),0),st=base.reduce((a,q)=>a+(q.total||0),0);
+  const personas=new Set(base.map(claveCli)).size;
+  el.innerHTML=`<div class="ch"><div><b>${tipoCli==="sin"?"Clientes sin cuenta":"Clientes con cuenta"}</b><small>${base.length} cotizaci${base.length===1?"ón":"ones"} de ${personas} persona${personas===1?"":"s"} · incluye archivadas y entregadas</small></div></div>
+    <div class="st"><div><strong>${conf.length}</strong><span>confirmadas</span></div><div><strong>${pesos(sc)}</strong><span>en pedidos confirmados</span></div><div><strong>${pesos(st)}</strong><span>cotizado en total</span></div></div>`;el.hidden=false}
+document.addEventListener("click",e=>{const b=e.target.closest("[data-tipo]");if(!b)return;tipoCli=b.dataset.tipo;document.querySelectorAll("[data-tipo]").forEach(x=>x.classList.toggle("on",x===b));
+  if(tipoCli){filtro="";document.querySelectorAll(".tabs button").forEach(x=>x.classList.toggle("on",x.dataset.f===""))}pintarLista()});
 function pintarLista(){
-  const base=todas.filter(pasaFiltros);pintarCli();
+  const base=todas.filter(pasaFiltros);pintarCli();pintarTipo(base);
   ["pendiente","respondida","confirmada","entregada","archivada"].forEach(k=>$("#n-"+k).textContent=base.filter(q=>q.estado===k).length);
   const L=base.filter(q=>!filtro||q.estado===filtro);
   const buscando=$("#bq").value.trim()||$("#bsuc").value||$("#bfecha").value||cliFiltro;
@@ -343,7 +359,7 @@ function mensaje(){
 function actualizarWA(){const a=$("#wa");if(!a)return;const d=digits(actual.telefono);a.setAttribute("aria-disabled",String(d.length<10));a.href=d.length>=10?`https://wa.me/52${d.slice(-10)}?text=${encodeURIComponent(mensaje())}`:"#"}
 function pintarDet(){
   const q=actual,r=q.respuesta;
-  $("#det").innerHTML=`<div class="det-h"><div><h2>${esc(q.cliente?q.cliente.nombre:q.nombre||"Sin nombre")}</h2><p>${esc(q.folio)} · llegó ${esc(fecha(q.fecha))}${r?` · respondida ${esc(fecha(r.fecha))}`:""}</p><button type="button" class="verCli" id="verCli">Ver todas de este cliente</button></div>
+  $("#det").innerHTML=`<div class="det-h"><div><h2>${esc(q.cliente?q.cliente.nombre:q.nombre||"Sin nombre")}</h2><p>${esc(q.folio)} · llegó ${esc(fecha(q.fecha))}${r?` · respondida ${esc(fecha(r.fecha))}`:""}</p><button type="button" class="verCli" id="verCli">Ver todas de este cliente</button>${q.cliente?"":`<a class="hacerCli" href="/bandeja/clientes/?nuevo=1&nombre=${encodeURIComponent(q.nombre||"")}&wa=${encodeURIComponent(q.telefono||"")}">+ Hacer cliente</a>`}</div>
     <button type="button" class="btn atras" id="atras">← Volver a la lista</button></div>
   <div class="datos"><div><span>Nombre</span><b>${esc(q.nombre||"—")}</b></div><div><span>Teléfono</span><b>${esc(q.telefono||"No lo dejó")}</b></div><div><span>Sucursal</span><b>${esc(q.sucursal||"—")}</b></div>${q.entrega==="envio"?`<div><span>Entrega</span><b>🚚 Envío a domicilio</b></div><div style="grid-column:1/-1"><span>Dirección</span><b>${esc(q.direccion||"No la escribió")}</b></div><div><span>Lo necesita</span><b>${esc(q.recoge||"—")}</b></div>`:q.entrega==="cotizar"?`<div><span>Entrega</span><b>Solo quiere cotizar</b></div>`:`<div><span>¿Cuándo pasa?</span><b>${esc(q.recoge||"—")}</b></div>`}<div><span>Factura</span><b>${q.factura?"Sí, la pidió":"No"}</b></div>${q.cliente?`<div><span>Cliente de mayoreo</span><b>${esc(q.cliente.nombre)} (${esc(q.cliente.usuario)})</b></div>`:""}</div>
   ${q.confirmada||q.estado==="confirmada"||q.estado==="entregada"?`<div class="conf-box"><span>${q.confirmada?`✅ El cliente confirmó este pedido el ${esc(fecha(q.confirmada.fecha))}${q.confirmada.notas?` · “${esc(q.confirmada.notas)}”`:""}`:"✅ Pedido confirmado"}</span>${q.estado==="confirmada"?`<button type="button" class="btn entregado" id="entregar2">📦 Entregado</button>`:q.estado==="entregada"?`<span class="ent-ok">📦 Entregado${q.entregada?" el "+esc(fecha(q.entregada)):""} <button type="button" class="btn sm" id="desentregar">Regresar a confirmadas</button></span>`:""}</div>`:""}

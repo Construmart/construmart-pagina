@@ -167,7 +167,8 @@ textarea{min-height:90px;resize:vertical}
 .npProd.mal{border-color:var(--danger,#c0392b)!important;background:#fff5f4}
 header h1{white-space:nowrap}
 @media (max-width:1420px){header .hm{display:none}}
-@media (min-width:701px) and (max-width:1420px){header h1{display:none}}
+@media (min-width:701px){header h1{display:none}header .nav{margin-left:auto}}
+header h1{overflow:hidden;text-overflow:ellipsis}
 </style>
 </head>
 <body>
@@ -277,6 +278,8 @@ async function cargar(){
     if(!j.ok)throw 0;C=j.clientes||[];P=(r&&r.productos)||[];if(j.nota)$("#nota").textContent=j.nota+" Los productos sin precio le salen como “Precio por confirmar”.";
     $("#pcat").innerHTML='<option value="">Todas las categorías</option>'+CATS.map(([s,n])=>`<option value="${s}">${esc(n)}</option>`).join("");
     pintar();
+    // Viene de Cotizaciones con "Hacer cliente": abre el alta con nombre y WhatsApp ya puestos
+    const qs=new URLSearchParams(location.search);if(qs.get("nuevo")&&!cargar.hecho){cargar.hecho=true;abrir(null);$("#e-nombre").value=qs.get("nombre")||"";$("#e-persona").value=qs.get("nombre")||"";$("#e-wa").value=qs.get("wa")||"";$("#e-nombre").dispatchEvent(new Event("input"));history.replaceState(null,"",location.pathname)}
   }catch(e){if(e.message!=="sin_sesion")$("#cuenta").textContent="No se pudieron cargar los clientes. Revisa tu conexión y recarga la página."}
 }
 function pintar(){
