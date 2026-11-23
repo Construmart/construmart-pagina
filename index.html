@@ -227,8 +227,8 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 
 /* Vista categoría */
 .crumbs{font-size:12.5px;color:var(--muted);padding-block:16px 6px;display:flex;gap:8px;flex-wrap:wrap}
-.crumbs a{text-decoration:none;color:var(--muted)}
-.crumbs a:hover{color:var(--accent)}
+.crumbs a{text-decoration:none;color:var(--accent);font-weight:700}
+.crumbs a:hover{color:var(--accent);text-decoration:underline}
 .cat-banner{background:var(--band);color:#fff;border-radius:8px;padding:22px 26px;display:flex;align-items:center;gap:18px;margin-bottom:16px}
 .cat-banner svg{width:42px;height:42px;color:var(--accent);flex:none}
 .cat-banner h1{font-family:var(--display);font-size:32px;font-weight:800;text-transform:uppercase;letter-spacing:.3px;line-height:1}
@@ -1950,7 +1950,7 @@ document.addEventListener("change",e=>{if(e.target.name==="fent"){form.entrega=e
   const lp=$("#lbPick");if(lp)lp.textContent=env?"¿Cuándo lo necesitas?":"¿Cuándo pasarías por tu pedido?";renderQuote();if(env&&d)setTimeout(()=>$("#fdir").focus(),30)}});
 document.addEventListener("click",e=>{const a=e.target.closest("[data-envio]");if(a){form.entrega="envio";try{const f=JSON.parse(localStorage.getItem("cm-form")||"{}");f.entrega="envio";localStorage.setItem("cm-form",JSON.stringify(f))}catch(err){}}});
 // ===== Lo nuevo: Mart acomodó productos nuevos (se calcula solo con la fecha de alta de cada producto) =====
-let ACTUALIZADO=1795449615828;const DIA=864e5;
+let ACTUALIZADO=1795454365156;const DIA=864e5;
 function fechaAlta(p){if(!p||!/^p[0-9a-z]{7,10}$/.test(p.id))return 0;const t=parseInt(p.id.slice(1),36);return t>1.6e12&&t<Date.now()+DIA?t:0}
 const NUEVOS=(dias=7)=>P.filter(p=>!p.hidden&&fechaAlta(p)>=Date.now()-dias*DIA).sort((a,b)=>fechaAlta(b)-fechaAlta(a));
 function nuevoBadge(p){return fechaAlta(p)>=Date.now()-7*DIA?`<span class="nuevo-tag">Nuevo</span>`:""}
