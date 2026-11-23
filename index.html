@@ -1862,6 +1862,15 @@ document.addEventListener("click",async e=>{
 });
 (async()=>{try{const r=await fetch("/api/sesion",{credentials:"same-origin",cache:"no-store"});if(!r.ok)return;const j=await r.json();if(!j||j.ok!==true)return;
   $("#cliBtn").hidden=false;SRV=true;cotizHist();try{if(location.search)history.replaceState(null,"",location.pathname+location.hash)}catch(e){}catsServidor();dudasServidor();contactoServidor();prodServidor();bannersServidor();if(j.cliente)cliSet(j.cliente);if(j.dueno)duenoSet(true)}catch(e){}})();
+// ===== Precios del cliente al día: si el dueño cambia precios, se ven al volver a la página o cada 2 minutos =====
+let _cliHora=Date.now();
+async function cliRefrescar(){if(!CLI||!SRV||Date.now()-_cliHora<30000)return;_cliHora=Date.now();
+  try{const r=await fetch("/api/sesion",{credentials:"same-origin",cache:"no-store"});if(!r.ok)return;const j=await r.json();if(!j||j.ok!==true)return;
+    if(!j.cliente){cliSet(null);return}
+    if(JSON.stringify(j.cliente)!==JSON.stringify(CLI)){const y=scrollY;cliSet(j.cliente);if(typeof route==="function"&&!$("#qbody")){route();window.scrollTo(0,y)}}}catch(e){}}
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")cliRefrescar()});
+window.addEventListener("focus",cliRefrescar);
+setInterval(()=>{if(document.visibilityState==="visible")cliRefrescar()},120000);
 // ===== Productos al día: en internet la página pide la lista que el dueño edita en su panel =====
 async function prodServidor(){
   try{const r=await fetch("/api/productos",{credentials:"same-origin"});if(!r.ok)return;const j=await r.json();
