@@ -666,7 +666,7 @@ details[open]>summary .dchev{transform:rotate(180deg)}
 .band-items>a,.band-items>span{height:44px}
 .band-items>span{order:2}.band-items>span:last-child{order:1}
 footer .fsoc{display:grid;gap:10px;align-content:start;max-width:340px}
-.fsoc-top{display:flex;align-items:flex-end;gap:10px;margin-bottom:4px}.fsoc-top img{width:78px;height:auto;flex:none}
+.fsoc-top{display:flex;align-items:flex-end;gap:10px;margin-bottom:4px}.fsoc-top img{width:84px;height:auto;flex:none}
 .fsoc-sub{font-size:12.5px;line-height:1.35;margin-top:4px!important}
 .soc-link span{display:flex;flex-direction:column;line-height:1.2}.soc-link small{font-weight:500;color:#9e9992;font-size:12px}
 .soc-link{display:inline-flex;align-items:center;gap:8px;color:#F5EBDD;text-decoration:none;font-weight:700}
@@ -2001,7 +2001,7 @@ const ICON_RED={
   tiktok:'<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.6 2h-3.4v13.4a2.9 2.9 0 1 1-2.1-2.8V9.1a6.4 6.4 0 1 0 5.5 6.3V8.6a7.9 7.9 0 0 0 4.4 1.3V6.5a4.4 4.4 0 0 1-4.4-4.5z"/></svg>',
   youtube:'<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M22 8.2a3 3 0 0 0-2.1-2.1C18 5.6 12 5.6 12 5.6s-6 0-7.9.5A3 3 0 0 0 2 8.2 31 31 0 0 0 1.6 12 31 31 0 0 0 2 15.8a3 3 0 0 0 2.1 2.1c1.9.5 7.9.5 7.9.5s6 0 7.9-.5a3 3 0 0 0 2.1-2.1 31 31 0 0 0 .4-3.8 31 31 0 0 0-.4-3.8zM10 15V9l5.2 3z"/></svg>'};
 function redesHTML(cls){return REDES.map(r=>`<a class="${cls} r-${r.red}" href="${r.url}" target="_blank" rel="noopener" aria-label="${r.nombre}: ${r.usuario}">${ICON_RED[r.red]||""}<span>${r.usuario}${cls==="soc-link"&&r.desc?`<small>${r.desc}</small>`:""}</span></a>`).join("")}
-(()=>{const f=document.getElementById("fsoc");if(f&&REDES.length){f.innerHTML=`<div class="fsoc-top"><div><strong>Síguenos</strong><p class="fsoc-sub">Tips de obra, promociones y productos nuevos cada semana.</p></div><img src="marca/mart-redes.png" alt="" width="${212}" height="${240}" loading="lazy"></div>`+redesHTML("soc-link")}else if(f)f.remove()})();
+(()=>{const f=document.getElementById("fsoc");if(f&&REDES.length){f.innerHTML=`<div class="fsoc-top"><div><strong>Síguenos</strong><p class="fsoc-sub">Tips de obra, promociones y productos nuevos cada semana.</p></div><img src="marca/mart-redes.webp" alt="" width="239" height="270" loading="lazy"></div>`+redesHTML("soc-link")}else if(f)f.remove()})();
 // ===== Clientes de mayoreo: su inicio con sus materiales y el Pedido rápido =====
 const cliCats=()=>(CLI&&Array.isArray(CLI.cats)&&CLI.cats.length?CLI.cats:["construccion","metal","mallas"]).filter(s=>catBy(s));
 const cliVars=p=>p.variants&&p.variants.length>1?p.variants:[p.spec||(p.variants||[])[0]||""];
