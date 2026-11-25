@@ -208,6 +208,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .rapido[hidden]{display:none!important}
 .req{color:var(--accent)}
 #fname.mal,#fphone.mal{border-color:#d93025!important;background:#fff5f4}
+.opc{font-weight:500;color:#8a857e;font-size:.85em}
 .ferr{color:#b3261e;font-size:13px;font-weight:700;margin:0 0 8px;line-height:1.35}
 #waBtn.faltan{opacity:.75}
 .hero:not(:has(.slide)){display:none}
@@ -1551,7 +1552,7 @@ function viewQuote(){
     </div>
     <form class="panel form" id="qform"><h2>Tus datos</h2>
       <label for="fname">Nombre <b class="req">*</b><input id="fname" autocomplete="name" placeholder="Ej. Juan Pérez" value="${esc(form.name)}"></label>
-      <label for="fphone">WhatsApp <b class="req">*</b><input id="fphone" inputmode="tel" autocomplete="tel" placeholder="Ej. 311 123 4567" value="${esc(form.phone)}"></label>
+      <label for="fphone">WhatsApp <small class="opc">(opcional)</small><input id="fphone" inputmode="tel" autocomplete="tel" placeholder="Ej. 311 123 4567" value="${esc(form.phone)}"></label>
       <fieldset class="fent"><legend>¿Qué necesitas?</legend><label><input type="radio" name="fent" value="cotizar"${form.entrega!=="envio"&&form.entrega!=="recoger"?" checked":""}><span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4M9 12h7M9 16h5"/></svg>Solo cotizar</span></label><label><input type="radio" name="fent" value="recoger"${form.entrega==="recoger"?" checked":""}><span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 10 12 3l9 7v10H3z"/><path d="M9 20v-6h6v6"/></svg>Recoger en sucursal</span></label><label><input type="radio" name="fent" value="envio"${form.entrega==="envio"?" checked":""}><span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 6h11v10H2zM13 9h4l4 4v3h-8z"/><circle cx="6" cy="17.5" r="1.8"/><circle cx="17" cy="17.5" r="1.8"/></svg>Envío a domicilio</span></label></fieldset>
       <label for="fdir" id="fdirBox"${form.entrega==="envio"?"":" hidden"}>Dirección de entrega<textarea id="fdir" placeholder="Calle y número, colonia, ciudad y una referencia">${esc(form.dir||"")}</textarea><small class="fdir-n">Te confirmamos el costo y el día de entrega por WhatsApp.</small></label>
       <label for="fbranch"><span id="lbBranch">${form.entrega==="envio"?"¿De qué sucursal te lo enviamos?":form.entrega==="recoger"?"¿En qué sucursal recoges?":"¿Qué sucursal te queda mejor?"}</span><select id="fbranch">${SUCURSALES.map(b=>`<option value="${b.id}"${b.id===form.branch?" selected":""}>${esc(b.nombre)} · ${esc(b.direccion)}</option>`).join("")}</select></label>
@@ -1602,11 +1603,12 @@ function renderHist(){
   </details>`}).join("")}</div>`;
   cotizHist();
 }
-function datosOk(){return String(form.name||"").trim().length>=2&&digits(form.phone||"").length===10}
-function marcarFaltan(){const n=String(form.name||"").trim().length>=2,t=digits(form.phone||"").length===10;
+const telOk=()=>{const d=digits(form.phone||"").length;return d===0||d===10};
+function datosOk(){return String(form.name||"").trim().length>=2&&telOk()}
+function marcarFaltan(){const n=String(form.name||"").trim().length>=2,t=telOk();
   $("#fname").classList.toggle("mal",!n);$("#fphone").classList.toggle("mal",!t);
   let fe=$("#fErr");if(!fe){$("#waBtn").insertAdjacentHTML("beforebegin",'<p class="ferr" id="fErr" role="alert"></p>');fe=$("#fErr")}
-  fe.textContent=!n&&!t?"Escribe tu nombre y tu WhatsApp (10 dígitos) para mandarte precio y existencia.":!n?"Escribe tu nombre para saber a quién le cotizamos.":"Escribe tu WhatsApp a 10 dígitos para mandarte precio y existencia.";fe.hidden=false;
+  fe.textContent=!n&&!t?"Escribe tu nombre y revisa tu WhatsApp (10 dígitos).":!n?"Escribe tu nombre para saber a quién le cotizamos.":"Tu WhatsApp debe tener 10 dígitos (o déjalo vacío).";fe.hidden=false;
   (n?$("#fphone"):$("#fname")).focus()}
 function recordSend(){
   if(!quote.length)return;
