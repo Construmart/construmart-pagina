@@ -1,0 +1,182 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8">
+<style>
+@font-face{font-family:I;src:url(file:///usr/share/fonts/opentype/inter/Inter-SemiBold.otf);font-weight:600}
+@font-face{font-family:I;src:url(file:///usr/share/fonts/opentype/inter/Inter-Bold.otf);font-weight:700}
+@font-face{font-family:I;src:url(file:///usr/share/fonts/opentype/inter/Inter-ExtraBold.otf);font-weight:800}
+@font-face{font-family:I;src:url(file:///usr/share/fonts/opentype/inter/Inter-Black.otf);font-weight:900}
+*{box-sizing:border-box;margin:0}
+html,body{width:1080px;height:1920px;overflow:hidden;font-family:I,sans-serif;background:#FF6A00}
+.sc{position:absolute;inset:0;overflow:hidden;display:none}
+.abs{position:absolute}
+.big{font-weight:900;color:#fff;text-align:center;line-height:.95;letter-spacing:-2px;text-shadow:0 10px 0 rgba(0,0,0,.18)}
+.dk{color:#2E3033;text-shadow:none}
+#cap{position:absolute;left:60px;right:60px;top:1420px;text-align:center;z-index:50}
+#cap span.p{display:inline;background:rgba(30,31,34,.9);box-decoration-break:clone;-webkit-box-decoration-break:clone;padding:10px 22px;border-radius:18px;line-height:1.7;font-weight:800;font-size:56px;color:#fff}
+#cap b{color:#FFD23F}
+.chip{position:absolute;font-weight:900;font-size:110px;color:#fff;background:#2E3033;padding:16px 44px;border-radius:26px;transform-origin:center;letter-spacing:-2px}
+#paper{position:absolute;left:470px;top:-40px;width:480px;background:#fffdf7;border-radius:0 0 18px 18px;box-shadow:0 20px 40px rgba(0,0,0,.25);overflow:hidden}
+#paper .roll{height:60px;background:linear-gradient(#e9e2d3,#fffdf7,#d8cfbd);border-radius:30px;position:absolute;left:-10px;right:-10px;top:0}
+#items{position:absolute;left:40px;right:30px;top:80px;font-weight:700;font-size:42px;color:#2E3033;line-height:78px}
+#items div{border-bottom:3px dashed #e3d9c6}
+#items div::before{content:"☐ ";color:#FF6A00}
+.drop{position:absolute;width:30px;height:44px;background:#5ec8ff;border-radius:50% 50% 50% 50%/60% 60% 40% 40%}
+.car{position:absolute;width:300px;height:130px}
+.car .b{position:absolute;inset:36px 0 26px 0;border-radius:28px}
+.car .t{position:absolute;left:60px;right:70px;top:0;height:60px;border-radius:28px 28px 0 0}
+.car .w{position:absolute;bottom:0;width:62px;height:62px;border-radius:50%;background:#222;border:12px solid #555}
+.honk{position:absolute;font-weight:900;font-size:64px;color:#fff;-webkit-text-stroke:3px #2E3033}
+#phone{position:absolute;left:300px;top:300px;width:560px;height:1100px;background:#1b1c1e;border-radius:70px;padding:22px;box-shadow:0 40px 80px rgba(0,0,0,.35)}
+#screen{position:relative;width:100%;height:100%;border-radius:50px;overflow:hidden;background:#fff}
+#screen img{position:absolute;left:0;top:0;width:100%}
+#notch{position:absolute;left:50%;top:34px;width:150px;height:34px;margin-left:-75px;background:#1b1c1e;border-radius:20px;z-index:3}
+#finger{position:absolute;width:110px;height:110px;border-radius:50%;background:rgba(255,255,255,.55);border:8px solid #fff;box-shadow:0 0 0 6px rgba(255,106,0,.6);z-index:5;margin:-55px 0 0 -55px}
+.badge{position:absolute;font-weight:900;font-size:50px;color:#fff;padding:18px 30px;border-radius:999px;box-shadow:0 14px 28px rgba(0,0,0,.25);white-space:nowrap;z-index:6}
+#chat{position:absolute;left:330px;top:330px;width:700px;background:#ECE5DD;border-radius:40px;overflow:hidden;box-shadow:0 30px 60px rgba(0,0,0,.3)}
+#chat .hd{background:#075E54;color:#fff;font-weight:800;font-size:42px;padding:26px 32px;display:flex;align-items:center;gap:20px}
+#chat .hd img{width:74px;height:74px;border-radius:50%;background:#fff}
+#chat .body{padding:30px;height:620px;position:relative}
+.bub{position:absolute;max-width:600px;font-size:36px;font-weight:600;line-height:1.35;padding:20px 26px;border-radius:24px;color:#1f2326;box-shadow:0 3px 0 rgba(0,0,0,.08)}
+.bub.me{right:30px;background:#DCF8C6}.bub.yo{left:30px;background:#fff}
+.bub small{display:block;text-align:right;font-size:24px;color:#7b8a8c;font-weight:600;margin-top:6px}
+#house{position:absolute;left:640px;top:880px;width:380px;height:420px}
+#house .roof{position:absolute;left:-20px;top:0;width:0;height:0;border-left:210px solid transparent;border-right:210px solid transparent;border-bottom:160px solid #2E3033}
+#house .wall{position:absolute;left:0;top:150px;width:380px;height:270px;background:#FBF6EE;border-radius:8px}
+#house .door{position:absolute;left:150px;top:250px;width:90px;height:170px;background:#7a4a2c;border-radius:10px 10px 0 0}
+#house .win{position:absolute;top:200px;width:80px;height:80px;background:#9ed8ff;border:8px solid #fff;border-radius:8px}
+#truck{position:absolute;top:1040px;width:520px;height:260px}
+#truck .box{position:absolute;left:0;top:0;width:330px;height:200px;background:#FF6A00;border-radius:16px;color:#fff;font-weight:900;font-size:40px;display:flex;align-items:center;justify-content:center;text-align:center;line-height:1.05}
+#truck .cab{position:absolute;left:336px;top:60px;width:160px;height:140px;background:#2E3033;border-radius:16px 50px 16px 16px}
+#truck .cab i{position:absolute;right:16px;top:18px;width:70px;height:52px;background:#9ed8ff;border-radius:8px 30px 8px 8px}
+#truck .w{position:absolute;bottom:0;width:80px;height:80px;border-radius:50%;background:#222;border:14px solid #666}
+.url{position:absolute;left:90px;right:90px;text-align:center;background:#2E3033;color:#fff;font-weight:900;font-size:84px;padding:24px 0;border-radius:30px;letter-spacing:-1px}
+#flash{position:absolute;inset:0;background:#fff;z-index:60;pointer-events:none}
+</style></head><body>
+
+<!-- 1 ALTO -->
+<div class="sc" id="s1">
+  <div class="abs" style="inset:0;background:repeating-linear-gradient(135deg,#FF6A00 0 90px,#f25f00 90px 180px)"></div>
+  <div class="big abs" id="alto" style="left:0;right:0;top:150px;font-size:300px;color:#fff;-webkit-text-stroke:10px #2E3033;text-shadow:0 16px 0 #2E3033">¡ALTO!</div>
+  <img class="abs" id="m1" src="mart-alto.png" style="width:820px;left:130px;top:560px">
+</div>
+<!-- 2 CALOR -->
+<div class="sc" id="s2">
+  <div class="abs" style="inset:0;background:linear-gradient(#ffd23f,#ff8a1e)"></div>
+  <div id="rays" class="abs" style="display:none"></div>
+  <div class="abs" id="sun" style="display:none;left:290px;top:-50px;width:500px;height:500px;border-radius:50%;background:radial-gradient(#fff6b0,#ffd23f 60%,#ffb800)"></div>
+  <img class="abs" id="m2" src="mart-calor.png" style="width:1000px;left:40px;top:430px">
+  <div class="drop" id="d1" style="display:none"></div><div class="drop" id="d2" style="display:none"></div><div class="drop" id="d3" style="display:none"></div>
+  <div class="chip" id="c2" style="left:0;right:0;margin:auto;width:520px;text-align:center;top:200px;background:#d93025">CALOR</div>
+</div>
+<!-- 3 TRAFICO -->
+<div class="sc" id="s3">
+  <div class="abs" style="inset:0;background:#8fd3ff"></div>
+  <div class="abs" style="left:0;right:0;top:520px;height:1400px;background:#5b5d61"></div>
+  <div id="lanes"></div><div id="cars"></div>
+  <div class="honk" id="hk1" style="left:120px;top:640px">¡PIII!</div><div class="honk" id="hk2" style="left:640px;top:980px">¡PIIII!</div>
+  <div class="chip" id="c3" style="left:0;right:0;margin:auto;width:640px;text-align:center;top:250px">TRÁFICO</div>
+</div>
+<!-- 4 DISTANCIA -->
+<div class="sc" id="s4">
+  <div class="abs" style="inset:0;background:#efe6d6"></div>
+  <div class="abs" style="inset:0;background:repeating-linear-gradient(0deg,transparent 0 150px,#fff 150px 170px),repeating-linear-gradient(90deg,transparent 0 170px,#fff 170px 190px)"></div>
+  <svg class="abs" style="left:0;top:0" width="1080" height="1920"><path id="route" d="M180 1260 C 180 1000, 520 1080, 500 860 S 160 640, 330 520 S 900 560, 860 380" fill="none" stroke="#FF6A00" stroke-width="26" stroke-linecap="round" stroke-dasharray="40 26"/></svg>
+  <div class="abs" style="left:110px;top:1260px;width:140px;height:140px;border-radius:50%;background:#2E3033;color:#fff;font-weight:900;font-size:40px;display:flex;align-items:center;justify-content:center">TU<br>CASA</div>
+  <div class="abs" id="pin" style="left:790px;top:250px;width:140px;height:140px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);background:#d93025"></div>
+  <div class="chip" id="c4" style="left:0;right:0;margin:auto;width:520px;text-align:center;top:1000px;background:#FF6A00">15 km</div>
+</div>
+<!-- 5 LISTA -->
+<div class="sc" id="s5">
+  <div class="abs" style="inset:0;background:#ffcf9e"></div>
+  <img class="abs" id="m5" src="mart-checklist.png" style="width:520px;left:-20px;top:620px">
+  <div id="paper"><div class="roll"></div><div id="items">
+    <div>Cemento gris</div><div>Varilla 3/8</div><div>Tubo PVC</div><div>Codos 90°</div><div>Pegamento</div><div>Brochas</div><div>Clavos</div><div>Alambre</div><div>Mortero</div><div>Cinta teflón</div><div>Llave de paso</div><div>Pintura</div><div>Lija</div><div>Block</div><div>Arena</div><div>Grava</div><div>Malla</div><div>Taquetes</div><div>Tornillos</div><div>Silicón</div><div>Cable</div><div>Foco</div><div>Y MÁS...</div>
+  </div></div>
+</div>
+<!-- 6 CELULAR -->
+<div class="sc" id="s6">
+  <div class="abs" style="inset:0;background:#FBF6EE"></div>
+  <div class="abs" style="left:-200px;top:-200px;width:700px;height:700px;border-radius:50%;background:#ffe3cc"></div>
+  <div class="abs" style="right:-260px;bottom:200px;width:800px;height:800px;border-radius:50%;background:#ffe3cc"></div>
+  <div class="big abs dk" id="h6" style="left:0;right:0;top:60px;font-size:96px;letter-spacing:-3px">COTIZA DESDE<br><span style="color:#FF6A00">TU CASA</span></div>
+  <div id="phone"><div id="notch"></div><div id="screen">
+    <img id="i1" src="s_home.jpg"><img id="i2" src="s_cat.jpg"><img id="i3" src="s_cat2.jpg"><img id="i4" src="s_lista.jpg"><img id="i5" src="s_enviar.jpg">
+  </div></div>
+  <img class="abs" id="m6" src="mart-laptop.png" style="width:470px;left:-30px;top:1000px;z-index:4">
+  <div id="finger"></div>
+  <div class="badge" id="b1" style="left:30px;top:560px;background:#1e9e4a">GRATIS</div>
+  <div class="badge" id="b2" style="right:20px;top:760px;background:#2E3033">SIN INICIAR SESIÓN</div>
+  <div class="badge" id="b3" style="right:40px;top:960px;background:#FF6A00">RÁPIDO</div>
+</div>
+<!-- 7 WHATSAPP -->
+<div class="sc" id="s7">
+  <div class="abs" style="inset:0;background:linear-gradient(#bff0d0,#e9fbef)"></div>
+  <img class="abs" id="m7" src="mart-telefono.png" style="width:560px;left:-40px;top:780px">
+  <div id="chat"><div class="hd"><img src="mart-feliz-v2.png">Construmart</div><div class="body">
+    <div class="bub me" id="bu1" style="top:30px">Hola, les mando mi lista<small>11:02 ✓✓</small></div>
+    <div class="bub yo" id="bu2" style="top:180px">¡Hola! Ya está tu cotización ✅<br>Todo hay en existencia.<br>¿Te lo llevamos?<small>11:05</small></div>
+    <div class="bub me" id="bu3" style="top:470px">¡Sí, porfa! 🙌<small>11:05 ✓✓</small></div>
+  </div></div>
+</div>
+<!-- 8 ENTREGA -->
+<div class="sc" id="s8">
+  <div class="abs" style="inset:0;background:linear-gradient(#bfe6ff,#e8f6ff)"></div>
+  <div class="abs" style="left:0;right:0;height:640px;bottom:0;background:#e9dccb"></div>
+  <div id="house"><div class="roof"></div><div class="wall"></div><div class="win" style="left:40px"></div><div class="win" style="right:40px"></div><div class="door"></div></div>
+  <div id="truck"><div class="box">CONSTRU<br>MART</div><div class="cab"><i></i></div><div class="w" style="left:40px"></div><div class="w" style="left:380px"></div></div>
+  <img class="abs" id="m8" src="mart-festeja.png" style="width:330px;left:700px;top:760px">
+  <div class="big abs" id="h8" style="left:0;right:0;top:230px;font-size:130px;color:#2E3033;text-shadow:none">¡HASTA TU<br><span style="color:#FF6A00">PUERTA!</span></div>
+</div>
+<!-- 9 CIERRE QR -->
+<div class="sc" id="s9">
+  <div class="abs" style="inset:0;background:radial-gradient(circle at 50% 50%,#ff8c33,#FF6A00 60%,#e85b00)"></div>
+  <div class="big abs" id="h9" style="left:0;right:0;top:90px;font-size:120px">SIN SALIR<br><span class="dk">DE CASA</span></div>
+  <img class="abs" id="m9" src="mart-qr-empuja.png" style="width:900px;left:90px;top:340px">
+  <div class="url" id="u9" style="top:1170px;font-size:80px">construmartmx.com</div>
+  <div class="abs" id="g9" style="left:0;right:0;top:1318px;text-align:center;color:#fff;font-weight:800;font-size:50px">Instagram @f.construmart</div>
+</div>
+<div id="cap"></div><div id="flash"></div>
+<script>
+const $=id=>document.getElementById(id);
+const cl=(x,a=0,b=1)=>Math.max(a,Math.min(b,x));
+const ease=x=>1-Math.pow(1-cl(x),3);
+const back=x=>{x=cl(x);const c=1.9;return 1+(c+1)*Math.pow(x-1,3)+c*Math.pow(x-1,2)};
+const pop=(el,t,t0,d=.3)=>{const k=back((t-t0)/d);el.style.transform=`scale(${k})`;el.style.opacity=t<t0?0:1};
+let S=[["s1",0,3.0],["s2",3.0,3.9],["s3",3.9,4.85],["s4",4.85,6.3],["s5",6.3,8.0],["s6",8.0,16.8],["s7",16.8,19.6],["s8",19.6,21.35],["s9",21.35,25.0]];
+let CAPS=[[0.0,0.45,"¡Alto!"],[0.77,2.52,"No salgas a la ferretería todavía."],[3.0,3.78,"Calor…"],[3.93,4.69,"tráfico…"],[4.93,6.3,"vueltas y vueltas de ferretería en ferretería…"],[6.3,7.7,"con una lista larguísima."],[8.11,9.59,"Mejor cotiza desde tu casa"],[10.05,13.33,"en construmartmx.com:"],[13.66,14.99,"arma tu lista y envíala."],[15.22,16.63,"Gratis y sin registrarte."],[16.95,19.48,"Te contestamos por WhatsApp con precio y existencia…"],[19.75,21.12,"y te lo llevamos hasta tu puerta."],[21.55,22.19,"Construmart."],[22.47,23.49,"Sin salir de casa."]];
+function caption(t){let c=null;for(const x of CAPS)if(t>=x[0]-0.05)c=x;if(c&&t>c[1]+0.4)c=null;if(!c){$("cap").innerHTML="";return}
+  const ws=c[2].split(" "),k=cl((t-c[0])/(c[1]-c[0]),0,.999),i=Math.floor(k*ws.length),g=Math.floor(i/5)*5;
+  $("cap").innerHTML='<span class="p">'+ws.slice(g,g+5).map((w,j)=>g+j===i?`<b>${w}</b>`:w).join(" ")+'</span>'}
+const CC=["#d93025","#1e88e5","#43a047","#8e24aa","#f4511e","#00897b","#fdd835","#3949ab"];let h="";
+for(let i=0;i<12;i++)h+=`<div class="car" id="car${i}"><div class="t" style="background:${CC[i%8]}"></div><div class="b" style="background:${CC[i%8]}"></div><div class="w" style="left:36px"></div><div class="w" style="right:36px"></div></div>`;$("cars").innerHTML=h;
+let ln="";for(let r=0;r<3;r++)ln+=`<div class="abs" style="left:0;right:0;top:${820+r*300}px;height:14px;background:repeating-linear-gradient(90deg,#fff 0 70px,transparent 70px 140px)"></div>`;$("lanes").innerHTML=ln;
+let ry="";for(let i=0;i<12;i++)ry+=`<div style="position:absolute;left:-14px;top:-420px;width:28px;height:420px;transform-origin:14px 420px;transform:rotate(${i*30}deg)"><div style="width:28px;height:110px;background:#fff6b0;border-radius:14px"></div></div>`;$("rays").innerHTML=ry;
+const routeLen=()=>$("route").getTotalLength();
+window.R=function(t){
+  for(const [id,a,b] of S)$(id).style.display=(t>=a&&t<b)?"block":"none";
+  caption(t);
+  // destello en cada corte rápido
+  const cuts=[3.0,3.9,4.85,6.3];let fl=0;for(const c of cuts){if(t>=c&&t<c+.12)fl=1-(t-c)/.12}$("flash").style.opacity=fl*.6;
+  if(t<3.0){const u=t;pop($("alto"),u,0,.25);$("alto").style.transform+=` rotate(${Math.sin(u*40)*(u<.6?4:1)}deg)`;
+    const k=ease(u/.35);$("m1").style.transform=`translateY(${(1-k)*900}px) rotate(${(1-k)*-10}deg)`;}
+  if(t>=3.0&&t<3.9){const u=t-3.0;$("rays").style.transform=`rotate(${u*40}deg)`;pop($("c2"),u,.05,.2);$("m2").style.transform=`translateX(${Math.sin(u*40)*5}px) scale(${1+u*.06})`;
+    [["d1",300,650,0],["d2",760,620,.3],["d3",330,860,.6]].forEach(([id,x,y,o])=>{const k=((u+o)%.9)/.9;const el=$(id);el.style.left=x+"px";el.style.top=(y+k*180)+"px";el.style.opacity=1-k})}
+  if(t>=3.9&&t<4.85){const u=t-3.9;pop($("c3"),u,.05,.2);
+    for(let i=0;i<12;i++){const lane=i%3,x=((i*360-u*(60+lane*25))%1440+1440)%1440-330;const el=$("car"+i);el.style.left=x+"px";el.style.top=(700+lane*300)+"px";el.style.transform=`translateY(${Math.sin(u*14+i)*3}px)`}
+    $("hk1").style.opacity=(u*4%1)<.6?1:0;$("hk2").style.opacity=((u*4+.5)%1)<.6?1:0;}
+  if(t>=4.85&&t<6.3){const u=t-4.85,L=routeLen(),k=ease(u/1.0);const r=$("route");r.style.strokeDasharray=`${L}`;r.style.strokeDashoffset=`${L*(1-k)}`;pop($("c4"),u,.5,.25);pop($("pin"),u,.9,.2);$("pin").style.transform+=" rotate(-45deg)"}
+  if(t>=6.3&&t<8.0){const u=t-6.3;$("paper").style.height=(60+ease(u/.8)*1600)+"px";$("items").style.transform=`translateY(${-Math.max(0,u-.5)*420}px)`;$("m5").style.transform=`translateX(${(1-ease(u/.3))*-500}px)`}
+  if(t>=8.0&&t<16.8){const u=t-8.0;$("phone").style.transform=`translateY(${(1-ease(u/.45))*900}px)`;pop($("h6"),u,.05,.3);
+    $("m6").style.transform=`translateX(${(1-ease((u-.3)/.4))*-500}px)`;
+    [[0,2.0],[2.0,3.25],[3.25,4.2],[4.2,5.6],[5.6,10]].forEach(([a,b],i)=>$("i"+(i+1)).style.opacity=(u>=a&&u<b)?1:0);
+    const f=$("finger");f.style.opacity=0;
+    if(u>2.85&&u<3.6){f.style.opacity=1;f.style.left="679px";f.style.top="1010px";const k=cl((u-3.15)/.25);f.style.transform=`scale(${1-.25*Math.sin(k*Math.PI)})`}
+    if(u>5.85&&u<6.8){f.style.opacity=1;f.style.left="580px";f.style.top="761px";const k=cl((u-6.2)/.25);f.style.transform=`scale(${1-.25*Math.sin(k*Math.PI)})`}
+    pop($("b1"),u,7.2,.3);pop($("b2"),u,7.55,.3);pop($("b3"),u,7.9,.3);}
+  if(t>=16.8&&t<19.6){const u=t-16.8;$("chat").style.transform=`translateY(${(1-ease(u/.4))*-700}px)`;$("m7").style.transform=`translateX(${(1-ease(u/.4))*-600}px)`;
+    pop($("bu1"),u,.3,.25);pop($("bu2"),u,.9,.3);pop($("bu3"),u,1.9,.25);}
+  if(t>=19.6&&t<21.35){const u=t-19.6;pop($("h8"),u,.05,.3);$("truck").style.left=(-560+ease(u/1.0)*700)+"px";$("truck").style.transform=`translateY(${Math.sin(u*40)*(u<1.4?3:0)}px)`;
+    $("m8").style.opacity=u>1.0?1:0;$("m8").style.transform=`translateY(${u>1.0?-Math.abs(Math.sin((u-1.0)*6))*40:0}px)`;}
+  if(t>=21.35){const u=t-21.35;pop($("h9"),u,.05,.3);$("m9").style.transform=`translateX(${(1-ease(u/.55))*-1100}px)`;pop($("u9"),u,.7,.3);$("g9").style.opacity=cl((u-1.0)/.3);}
+};
+window.R(0);
+</script></body></html>

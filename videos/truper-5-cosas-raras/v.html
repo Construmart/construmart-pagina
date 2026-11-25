@@ -1,0 +1,82 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+@font-face{font-family:I;src:url(file:///usr/share/fonts/opentype/inter/Inter-ExtraBold.otf);font-weight:800}
+@font-face{font-family:I;src:url(file:///usr/share/fonts/opentype/inter/Inter-Black.otf);font-weight:900}
+*{margin:0}html,body{width:1080px;height:1920px;overflow:hidden;background:#FBF6EE}canvas{display:block}
+</style></head><body><canvas id="c" width="1080" height="1920"></canvas>
+<script>
+const c=document.getElementById('c'),x=c.getContext('2d');
+const IM={};for(const n of ['alto','idea','festeja','pulgar','presenta','pensando','qr-pulgar','senala']){const i=new Image();i.src='mart-'+n+'.png';IM[n]=i}
+const P={};for(const n of ['domino','baraja','poker','balon','cu1','cu2','cu3','toalla','toalla2']){const i=new Image();i.src='p_'+n+'.png';P[n]=i}
+// sections: hook, #5..#1, close
+var S=[[0,4.5],[4.5,10.5],[10.5,17.0],[17.0,26.0],[26.0,40.0],[40.0,49.5],[49.5,59.0]];
+var MODELOS=36.5; // time when "varios modelos" is said
+var CAPY=1600;
+var CAPS=[[0.15,4.4,"Las 5 cosas más raras que vende Truper… y la número uno te va a sorprender."],
+[4.6,10.4,"Número 5: un dominó. El deporte oficial de las tardes de domingo… ahora con garantía Truper."],
+[10.6,16.9,"Número 4: baraja y póker. Para la hora de la comida en la obra… mientras el maestro dice: “ahorita vengo”."],
+[17.1,25.9,"Número 3: un balón de futbol. Por si la fiebre del Mundial todavía no se te quita. Ideal para la cascarita en la obra a la hora del lonche."],
+[26.1,39.9,"Número 2: un cortaúñas. Si Truper corta varilla, ¿cómo no va a poder con tus uñas? Para que el maistro deje de cortárselas con las pinzas de corte. Y viene en varios modelos… porque hasta para las uñas Truper tiene línea profesional."],
+[40.1,49.4,"Número 1: una toalla de microfibra. Hay una marca de la manzanita que vende un trapito en 549 pesos… El de Truper limpia igual, y con lo que te ahorras te alcanza para las tortas."],
+[49.6,58.6,"Todos estos productos los encuentras en Construmart. Ven a vernos a nuestras sucursales de Río Suchiate y El Armadillo, o cotízalos desde tu celular en construmartmx.com."]];
+</script>
+<script src="helpers.js"></script>
+<script>
+const GR='#1F8A4C',RD='#D93025';
+function chipX(txt,X,Y,k,bgc=DK,fg='#fff',size=48,rot=-.03){if(k<=0)return;x.save();x.translate(X,Y);const s=back(k);x.scale(s,s);x.rotate(rot);x.font=`900 ${size}px I`;const w=x.measureText(txt).width;x.fillStyle=bgc;rr(-w/2-26,-size*.75,w+52,size*1.45,18);x.fill();x.fillStyle=fg;x.textAlign='center';x.textBaseline='middle';x.fillText(txt,0,2);x.restore()}
+function pic(n,X,Y,W,k=1,rot=0){const i=IM[n];if(!i||!i.complete||k<=0)return;const H=W*i.height/i.width;x.save();x.translate(X,Y);x.rotate(rot);const s=back(k);x.scale(s,s);x.drawImage(i,-W/2,-H,W,H);x.restore()}
+function prod(n,X,Y,H,k=1,rot=0,shadow=true){const i=P[n];if(!i||!i.complete||k<=0)return;const W=H*i.width/i.height;x.save();x.translate(X,Y);x.rotate(rot);const s=back(k);x.scale(s,s);if(shadow){x.shadowColor='rgba(52,54,57,.3)';x.shadowBlur=40;x.shadowOffsetY=24}x.drawImage(i,-W/2,-H/2,W,H);x.restore()}
+function num(n,k){if(k<=0)return;x.save();x.translate(170,250);const s=lerp(2.6,1,ease(k/.5));x.scale(s,s);x.rotate(-.08);x.fillStyle=OR;x.beginPath();x.arc(0,0,120,0,7);x.fill();x.lineWidth=10;x.strokeStyle=DK;x.stroke();x.fillStyle='#fff';x.font='900 150px I';x.textAlign='center';x.textBaseline='middle';x.fillText(n,0,10);x.restore()}
+function stamp(txt,X,Y,k,col,size=80){if(k<=0)return;x.save();x.translate(X,Y);const s=lerp(2.2,1,ease(k/.5));x.scale(s,s);x.rotate(-.15);x.globalAlpha=cl(k*3);x.font=`900 ${size}px I`;const w=x.measureText(txt).width;x.strokeStyle=col;x.lineWidth=11;rr(-w/2-28,-size*.8,w+56,size*1.5,16);x.stroke();x.fillStyle=col;x.textAlign='center';x.textBaseline='middle';x.fillText(txt,0,0);x.restore()}
+function rays(t,X,Y,col='rgba(255,106,0,.10)'){x.save();x.translate(X,Y);x.rotate(t*.3);x.fillStyle=col;for(let i=0;i<14;i++){x.rotate(Math.PI/7);x.beginPath();x.moveTo(0,0);x.lineTo(1400,-120);x.lineTo(1400,120);x.closePath();x.fill()}x.restore()}
+function bubble(X,Y,k,txt,size=46){if(k<=0)return;x.save();x.translate(X,Y);const s=back(k);x.scale(s,s);x.font=`800 ${size}px I`;const w=x.measureText(txt).width+60,h=size*1.8;x.fillStyle='#fff';x.strokeStyle=DK;x.lineWidth=6;rr(-w/2,-h/2,w,h,30);x.fill();x.stroke();x.beginPath();x.moveTo(-30,h/2-3);x.lineTo(-60,h/2+40);x.lineTo(10,h/2-3);x.closePath();x.fill();x.stroke();x.fillStyle=DK;x.textAlign='center';x.textBaseline='middle';x.fillText(txt,0,2);x.restore()}
+function clock(X,Y,R,t){x.save();x.translate(X,Y);x.fillStyle='#fff';x.strokeStyle=DK;x.lineWidth=8;x.beginPath();x.arc(0,0,R,0,7);x.fill();x.stroke();x.lineCap='round';x.lineWidth=9;x.beginPath();x.moveTo(0,0);x.lineTo(Math.cos(t*8)*R*.75,Math.sin(t*8)*R*.75);x.stroke();x.lineWidth=12;x.beginPath();x.moveTo(0,0);x.lineTo(Math.cos(t)*R*.45,Math.sin(t)*R*.45);x.stroke();x.restore()}
+function thermo(X,Y,k){if(k<=0)return;x.save();x.translate(X,Y);x.fillStyle='#fff';x.strokeStyle=DK;x.lineWidth=6;rr(-26,-220,52,240,26);x.fill();x.stroke();x.beginPath();x.arc(0,40,46,0,7);x.fill();x.stroke();x.fillStyle=RD;x.beginPath();x.arc(0,40,34,0,7);x.fill();const h=200*ease(k);x.fillRect(-14,20-h,28,h);x.restore()}
+function apple(X,Y,s){x.save();x.translate(X,Y);x.scale(s,s);x.fillStyle='#E23B3B';x.beginPath();x.arc(-22,10,40,0,7);x.arc(22,10,40,0,7);x.fill();x.fillStyle='#5B3A1E';x.fillRect(-4,-50,8,30);x.fillStyle='#3FA34D';x.beginPath();x.ellipse(18,-42,20,10,-.5,0,7);x.fill();x.restore()}
+function cloth(X,Y,k){if(k<=0)return;x.save();x.translate(X,Y);const s=back(k);x.scale(s,s);x.rotate(-.06);x.fillStyle='#F4F4F4';x.strokeStyle='#bbb';x.lineWidth=4;rr(-150,-110,300,220,14);x.fill();x.stroke();x.strokeStyle='#ddd';for(let i=-120;i<140;i+=24){x.beginPath();x.moveTo(i,-100);x.lineTo(i+20,100);x.stroke()}apple(0,0,.9);x.restore()}
+function torta(X,Y,r,s){x.save();x.translate(X,Y);x.rotate(r);x.scale(s,s);x.fillStyle='#E0A458';x.strokeStyle=DK;x.lineWidth=5;x.beginPath();x.ellipse(0,-14,70,34,0,Math.PI,0);x.fill();x.stroke();x.fillStyle='#4CAF50';x.fillRect(-70,-14,140,10);x.fillStyle='#E53935';x.fillRect(-66,-4,132,9);x.fillStyle='#F4C17A';x.beginPath();x.ellipse(0,8,70,16,0,0,Math.PI);x.fill();x.stroke();x.restore()}
+function pin(X,Y,k,t1,t2){if(k<=0)return;x.save();x.translate(X,Y);const s=back(k);x.scale(s,s);x.fillStyle='#fff';x.strokeStyle=DK;x.lineWidth=5;rr(-400,-70,800,140,28);x.fill();x.stroke();x.fillStyle=OR;x.beginPath();x.arc(-330,-12,30,Math.PI,0);x.lineTo(-330,40);x.closePath();x.fill();x.fillStyle='#fff';x.beginPath();x.arc(-330,-12,12,0,7);x.fill();x.fillStyle=DK;x.textAlign='left';x.textBaseline='middle';x.font='900 44px I';x.fillText(t1,-270,-18);x.font='800 32px I';x.fillStyle='#6D6862';x.fillText(t2,-270,28);x.restore()}
+const TTP=new Path2D('M16.6 2h-3.4v13.4a2.9 2.9 0 1 1-2.1-2.8V9.1a6.4 6.4 0 1 0 5.5 6.3V8.6a7.9 7.9 0 0 0 4.4 1.3V6.5a4.4 4.4 0 0 1-4.4-4.5z');
+function icoIG(X,Y,S){x.save();x.translate(X,Y);const g=x.createRadialGradient(-S*.2,S*.55,2,-S*.2,S*.55,S*1.3);g.addColorStop(0,'#fdf497');g.addColorStop(.1,'#fdf497');g.addColorStop(.45,'#fd5949');g.addColorStop(.65,'#d6249f');g.addColorStop(1,'#285AEB');x.fillStyle=g;rr(-S/2,-S/2,S,S,S*.26);x.fill();
+ x.strokeStyle='#fff';x.lineWidth=S*.08;rr(-S*.3,-S*.3,S*.6,S*.6,S*.17);x.stroke();x.beginPath();x.arc(0,0,S*.14,0,7);x.stroke();x.fillStyle='#fff';x.beginPath();x.arc(S*.18,-S*.18,S*.04,0,7);x.fill();x.restore()}
+function icoTT(X,Y,S){x.save();x.translate(X,Y);x.fillStyle='#111';rr(-S/2,-S/2,S,S,S*.26);x.fill();const k=S/24*.72;x.translate(-12*k,-12*k);x.scale(k,k);
+ x.save();x.translate(-.7,-.6);x.fillStyle='#25F4EE';x.fill(TTP);x.restore();x.save();x.translate(.7,.6);x.fillStyle='#FE2C55';x.fill(TTP);x.restore();x.fillStyle='#fff';x.fill(TTP);x.restore()}
+function socials(X,Y,k){if(k<=0)return;x.save();x.translate(X,Y);const s=back(k);x.scale(s,s);x.font='800 40px I';x.textBaseline='middle';x.textAlign='left';
+ const a='@f.construmart',b='@construmartmx',S=64,g=14,gap=44;const wa=x.measureText(a).width,wb=x.measureText(b).width;const W=S+g+wa+gap+S+g+wb;let cx=-W/2;
+ icoIG(cx+S/2,0,S);cx+=S+g;x.fillStyle='#fff';x.fillText(a,cx,2);cx+=wa+gap;icoTT(cx+S/2,0,S);cx+=S+g;x.fillStyle='#fff';x.fillText(b,cx,2);x.restore()}
+
+const CAM=[[1,540,960],[1.12,540,820],[1.1,420,960],[1.14,660,900],[1.08,540,1060]];
+window.R=t=>{const sc=S.findIndex(([a,b])=>t>=a&&t<b),u=t-(S[sc]?S[sc][0]:0);
+ const beat=Math.floor(u/1.5),bu=u-beat*1.5;const cm=CAM[(beat+sc)%CAM.length];const zz=(beat===0||sc===6&&u>3)?1:cm[0];const z=zz*(1+0.05*Math.max(0,1-bu/0.18))+0.01*bu;
+ x.setTransform(1,0,0,1,0,0);x.fillStyle=CR;x.fillRect(0,0,1080,1920);x.setTransform(z,0,0,z,(zz===1?540:cm[1])*(1-z),(zz===1?960:cm[2])*(1-z));
+ bg(t);rays(t,540,960);
+ if(sc===0){title([["LAS 5 COSAS"],["MÁS RARAS",OR],["QUE VENDE"],["TRUPER",OR]],230,u/.5,'#fff',118);
+  const L=['domino','balon','cu3','poker','toalla2'];L.forEach((n,i)=>{const a=t*1.2+i*Math.PI*2/5;prod(n,540+Math.cos(a)*330,1130+Math.sin(a)*170,n==='domino'||n==='balon'?190:260,(u-.4-i*.12)/.3,Math.sin(t*2+i)*.2)});
+  pic('pensando',540,1560,330,(u-1.2)/.4);if(u>2.6)chipX('¿EL #1? 🤯',820,1350,(u-2.6)/.3,RD,'#fff',52,.08)}
+ if(sc===1){num('5',u);chipX('DOMINÓ',620,250,(u-.2)/.3,DK,'#fff',64);prod('domino',540,820,520,(u-.3)/.4,Math.sin(t*2)*.03);
+  if(u>1.6)chipX('🗓️ TARDES DE DOMINGO',540,1180,(u-1.6)/.3,OR,'#fff',50);if(u>3.6)stamp('GARANTÍA TRUPER ✓',460,1360,(u-3.6)/.5,GR,54);pic('festeja',930,1570,230,(u-1.8)/.4)}
+ if(sc===2){num('4',u);chipX('BARAJA Y PÓKER',660,250,(u-.2)/.3,DK,'#fff',56);prod('baraja',380,800,560,(u-.3)/.4,-.15+Math.sin(t*2)*.03);prod('poker',700,820,560,(u-.5)/.4,.15-Math.sin(t*2)*.03);
+  if(u>1.6)chipX('🥪 HORA DE LA COMIDA',540,1170,(u-1.6)/.3,OR,'#fff',50);if(u>3.8){bubble(640,1330,(u-3.8)/.3,'"Ahorita vengo…" 🙄',50);clock(200,1340,90,t)}}
+ if(sc===3){num('3',u);chipX('BALÓN DE FUTBOL',660,250,(u-.2)/.3,DK,'#fff',54);const by=820-Math.abs(Math.sin(u*3.2))*160;prod('balon',540,by,460,(u-.3)/.4,u*2.5);
+  x.fillStyle='rgba(52,54,57,.15)';x.beginPath();x.ellipse(540,1070,200-Math.abs(Math.sin(u*3.2))*60,26,0,0,7);x.fill();
+  if(u>1.6){thermo(150,1300,(u-1.6)/1.2);chipX('🔥 FIEBRE MUNDIALISTA',590,1170,(u-1.6)/.3,RD,'#fff',48)}
+  if(u>5.2){chipX('⚽ CASCARITA A LA HORA DEL LONCHE',540,1330,(u-5.2)/.3,GR,'#fff',38)}pic('festeja',900,1560,260,(u-5.4)/.4)}
+ if(sc===4){num('2',u);chipX('CORTAÚÑAS',620,250,(u-.2)/.3,DK,'#fff',64);const tm=MODELOS-S[4][0];
+  if(u<tm){prod('cu1',540,800,560,(u-.3)/.4,Math.sin(t*3)*.05);
+   if(u>1.8&&u<5.5){chipX('VARILLA ✂️ ✓',300,1170,(u-1.8)/.3,GR,'#fff',46);chipX('UÑAS ✓',800,1170,(u-2.8)/.3,OR,'#fff',46)}
+   if(u>5.5){chipX('ADIÓS PINZAS DE CORTE 👋',540,1170,(u-5.5)/.3,RD,'#fff',46);stamp('✗',860,640,(u-6.2)/.4,RD,120)}}
+  else{const k=u-tm;const L=['cu1','cu2','cu3'];for(let i=0;i<12;i++){const col=i%4,row=Math.floor(i/4);prod(L[i%3],170+col*250,580+row*330,300,(k-i*.06)/.25,((i*37)%10-5)*.04)}
+   if(k>1.2)stamp('LÍNEA PROFESIONAL 💅',540,1330,(k-1.2)/.5,OR,58)}}
+ if(sc===5){num('1',u);chipX('TOALLA DE MICROFIBRA',650,250,(u-.2)/.3,DK,'#fff',44);
+  if(u<5.0){cloth(540,760,(u-2.0)/.4);if(u>2.6)chipX('$549',540,980,(u-2.6)/.3,RD,'#fff',90);if(u>3.6){x.save();x.strokeStyle=RD;x.lineWidth=16;x.lineCap='round';const k=ease((u-3.6)/.4);x.beginPath();x.moveTo(370,940);x.lineTo(370+340*k,1020);x.stroke();x.restore()}
+   if(u<2.0)prod('toalla2',540,800,560,(u-.3)/.4)}
+  else{if(u>6.6){for(let i=0;i<10;i++){const ph=((u-6.6)*.9+i*.13)%1;torta(80+i*100+((i*53)%40),lerp(-100,1700,ph),Math.sin(t*3+i),.9)}}prod('toalla',540,760,460,(u-5.0)/.4,Math.sin(t*2)*.04);chipX('LIMPIA IGUAL ✓',540,1060,(u-5.4)/.3,GR,'#fff',56);
+   if(u>6.6){chipX('🥪 ¡TE ALCANZA PA\' LAS TORTAS!',540,1200,(u-6.8)/.3,OR,'#fff',44)}}}
+ if(sc===6){x.fillStyle=OR;x.fillRect(-200,-200,1480,2320);rays(t,540,700,'rgba(255,255,255,.08)');
+  if(u<4.2){title([["TODOS LOS",'#fff'],["ENCUENTRAS EN",'#fff'],["CONSTRUMART",YE]],230,u/.5,DK,100);
+   ['domino','balon','cu3','poker','toalla2'].forEach((n,i)=>prod(n,140+i*200,700,n==='domino'||n==='balon'?150:230,(u-.3-i*.1)/.3,0));
+   pin(540,940,(u-1.6)/.4,'Sucursal Río Suchiate','C. Río Suchiate 616 · Tepic');pin(540,1100,(u-2.0)/.4,'Sucursal El Armadillo','Palomas 636 · Tepic');pic('presenta',860,1530,250,(u-1.0)/.4)}
+  else{const k=u-4.2;title([["COTÍZALOS DESDE",'#fff'],["TU CELULAR",YE]],240,k/.4,DK,96);pic('qr-pulgar',540,1260,640,(k-.2)/.4);
+   if(k>.6){const kk=back((k-.6)/.4);x.save();x.translate(540,1390);x.scale(kk,kk);x.font='900 64px I';const w=x.measureText('construmartmx.com').width;x.fillStyle=DK;rr(-w/2-36,-56,w+72,108,30);x.fill();x.fillStyle='#fff';x.textAlign='center';x.textBaseline='middle';x.fillText('construmartmx.com',0,2);x.restore();socials(540,1490,(k-1.0)/.4)}}}
+ x.setTransform(1,0,0,1,0,0);caption(t)};
+R(0);
+</script></body></html>

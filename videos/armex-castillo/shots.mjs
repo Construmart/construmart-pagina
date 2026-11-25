@@ -1,0 +1,3 @@
+import {createRequire} from 'module';const require=createRequire('/home/claude/vid9/render.mjs');const {chromium}=require('playwright');
+const b=await chromium.launch();const p=await b.newPage({viewport:{width:1080,height:1920}});await p.goto('file:///home/claude/vid10/v.html');await p.evaluate(async()=>{await document.fonts.load('900 80px I');await document.fonts.load('800 54px I')});await p.waitForTimeout(900);
+const T=process.argv.slice(2).map(Number);let i=0;for(const t of T){await p.evaluate(t=>R(t),t);await p.screenshot({path:`sh_${String(i++).padStart(2,'0')}.jpg`,type:'jpeg',quality:80})}await b.close();

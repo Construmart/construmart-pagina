@@ -1,0 +1,219 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8">
+<style>
+@font-face{font-family:I;src:url(file:///usr/share/fonts/opentype/inter/Inter-Medium.otf);font-weight:500}
+@font-face{font-family:I;src:url(file:///usr/share/fonts/opentype/inter/Inter-SemiBold.otf);font-weight:600}
+@font-face{font-family:I;src:url(file:///usr/share/fonts/opentype/inter/Inter-Bold.otf);font-weight:700}
+@font-face{font-family:I;src:url(file:///usr/share/fonts/opentype/inter/Inter-ExtraBold.otf);font-weight:800}
+@font-face{font-family:I;src:url(file:///usr/share/fonts/opentype/inter/Inter-Black.otf);font-weight:900}
+*{box-sizing:border-box;margin:0}
+html,body{width:1080px;height:1920px;overflow:hidden;font-family:I,sans-serif;background:#FF6A00}
+.sc{position:absolute;inset:0;overflow:hidden;display:none}
+.abs{position:absolute}
+.big{font-weight:900;color:#fff;text-align:center;line-height:.95;letter-spacing:-2px;text-shadow:0 10px 0 rgba(0,0,0,.18)}
+.dk{color:#2E3033;text-shadow:none}
+/* captions */
+#cap{position:absolute;left:60px;right:60px;top:1395px;text-align:center;z-index:50}
+#cap span.p{display:inline;background:rgba(30,31,34,.88);box-decoration-break:clone;-webkit-box-decoration-break:clone;padding:10px 22px;border-radius:18px;line-height:1.7;font-weight:800;font-size:54px;color:#fff}
+#cap b{color:#FFD23F}
+/* sofa */
+.sofa{position:absolute;left:140px;width:800px;height:360px}
+.sofa .back{position:absolute;left:60px;right:60px;top:0;height:220px;background:#7a4a2c;border-radius:60px 60px 20px 20px;box-shadow:inset 0 -18px 0 rgba(0,0,0,.15)}
+.sofa .seat{position:absolute;left:40px;right:40px;top:170px;height:120px;background:#94603b;border-radius:36px}
+.sofa .arm{position:absolute;top:110px;width:120px;height:200px;background:#6b3f24;border-radius:50px}
+.sofa .leg{position:absolute;bottom:0;width:30px;height:60px;background:#3b2414;border-radius:6px}
+.zz{position:absolute;font-weight:900;color:#fff;opacity:.9}
+/* paper list */
+#paper{position:absolute;left:520px;top:-40px;width:430px;background:#fffdf7;border-radius:0 0 18px 18px;box-shadow:0 20px 40px rgba(0,0,0,.25);overflow:hidden}
+#paper .roll{height:60px;background:linear-gradient(#e9e2d3,#fffdf7,#d8cfbd);border-radius:30px;position:absolute;left:-10px;right:-10px;top:0}
+#items{position:absolute;left:40px;right:30px;top:80px;font-weight:700;font-size:40px;color:#2E3033;line-height:76px}
+#items div{border-bottom:3px dashed #e3d9c6}
+#items div::before{content:"☐ ";color:#FF6A00}
+.drop{position:absolute;width:26px;height:38px;background:#5ec8ff;border-radius:50% 50% 50% 50%/60% 60% 40% 40%}
+.car{position:absolute;width:250px;height:110px}
+.car .b{position:absolute;inset:30px 0 22px 0;border-radius:24px}
+.car .t{position:absolute;left:50px;right:60px;top:0;height:50px;border-radius:24px 24px 0 0}
+.car .w{position:absolute;bottom:0;width:52px;height:52px;border-radius:50%;background:#222;border:10px solid #555}
+.chip{position:absolute;font-weight:900;font-size:72px;color:#fff;background:#2E3033;padding:14px 34px;border-radius:22px;transform-origin:center}
+/* phone */
+#phone{position:absolute;left:260px;top:280px;width:560px;height:1100px;background:#1b1c1e;border-radius:70px;padding:22px;box-shadow:0 40px 80px rgba(0,0,0,.35)}
+#screen{position:relative;width:100%;height:100%;border-radius:50px;overflow:hidden;background:#fff}
+#screen img{position:absolute;left:0;top:0;width:100%}
+#notch{position:absolute;left:50%;top:34px;width:150px;height:34px;margin-left:-75px;background:#1b1c1e;border-radius:20px;z-index:3}
+#finger{position:absolute;width:110px;height:110px;border-radius:50%;background:rgba(255,255,255,.55);border:8px solid #fff;box-shadow:0 0 0 6px rgba(255,106,0,.6);z-index:5;margin:-55px 0 0 -55px}
+.badge{position:absolute;font-weight:900;font-size:50px;color:#fff;padding:18px 30px;border-radius:999px;box-shadow:0 14px 28px rgba(0,0,0,.25);white-space:nowrap}
+/* chat */
+#chat{position:absolute;left:110px;top:260px;width:860px;background:#ECE5DD;border-radius:40px;overflow:hidden;box-shadow:0 30px 60px rgba(0,0,0,.3)}
+#chat .hd{background:#075E54;color:#fff;font-weight:800;font-size:44px;padding:30px 36px;display:flex;align-items:center;gap:22px}
+#chat .hd img{width:80px;height:80px;border-radius:50%;background:#fff}
+#chat .body{padding:34px;min-height:560px;position:relative}
+.bub{position:absolute;max-width:720px;font-size:38px;font-weight:600;line-height:1.35;padding:22px 28px;border-radius:26px;color:#1f2326;box-shadow:0 3px 0 rgba(0,0,0,.08)}
+.bub.me{right:34px;background:#DCF8C6}
+.bub.yo{left:34px;background:#fff}
+.bub small{display:block;text-align:right;font-size:26px;color:#7b8a8c;font-weight:600;margin-top:6px}
+/* house & truck */
+#house{position:absolute;left:640px;top:880px;width:380px;height:420px}
+#house .roof{position:absolute;left:-20px;top:0;width:0;height:0;border-left:210px solid transparent;border-right:210px solid transparent;border-bottom:160px solid #2E3033}
+#house .wall{position:absolute;left:0;top:150px;width:380px;height:270px;background:#FBF6EE;border-radius:8px}
+#house .door{position:absolute;left:150px;top:250px;width:90px;height:170px;background:#7a4a2c;border-radius:10px 10px 0 0}
+#house .win{position:absolute;top:200px;width:80px;height:80px;background:#9ed8ff;border:8px solid #fff;border-radius:8px}
+#truck{position:absolute;top:1040px;width:520px;height:260px}
+#truck .box{position:absolute;left:0;top:0;width:330px;height:200px;background:#FF6A00;border-radius:16px;color:#fff;font-weight:900;font-size:40px;display:flex;align-items:center;justify-content:center;text-align:center;line-height:1.05}
+#truck .cab{position:absolute;left:336px;top:60px;width:160px;height:140px;background:#2E3033;border-radius:16px 50px 16px 16px}
+#truck .cab i{position:absolute;right:16px;top:18px;width:70px;height:52px;background:#9ed8ff;border-radius:8px 30px 8px 8px}
+#truck .w{position:absolute;bottom:0;width:80px;height:80px;border-radius:50%;background:#222;border:14px solid #666}
+.ground{position:absolute;left:0;right:0;height:640px;bottom:0;background:#e9dccb}
+.url{position:absolute;left:90px;right:90px;text-align:center;background:#2E3033;color:#fff;font-weight:900;font-size:84px;padding:26px 0;border-radius:30px;letter-spacing:-1px}
+</style></head><body>
+
+<!-- S1 flojera -->
+<div class="sc" id="s1">
+  <div class="abs" style="inset:0;background:radial-gradient(circle at 50% 60%,#ff8c33,#FF6A00 60%,#e85b00)"></div><div class="abs" style="inset:0;background:repeating-linear-gradient(135deg,rgba(255,255,255,0) 0 90px,rgba(255,255,255,.06) 90px 180px)"></div>
+  <div class="big abs" id="h1a" style="left:0;right:0;top:130px;font-size:130px">¿TE DA</div>
+  <div class="big abs dk" id="h1b" style="left:0;right:0;top:265px;font-size:180px;color:#2E3033;text-shadow:none">FLOJERA</div>
+  <div class="big abs" id="h1c" style="left:0;right:0;top:450px;font-size:130px">SALIR?</div>
+  <div class="abs" style="left:150px;top:610px;width:780px;height:780px;border-radius:50%;background:#FBF6EE;box-shadow:0 0 0 22px rgba(255,255,255,.25)"></div><img class="abs" id="m1" src="mart-sillon2.png" style="left:185px;top:655px;width:710px">
+</div>
+
+<!-- S2 calor, trafico, lista -->
+<div class="sc" id="s2">
+  <div class="abs" style="inset:0;background:linear-gradient(#ffd23f,#ff9a2e)"></div>
+  <div class="abs" id="sun" style="left:-160px;top:-160px;width:520px;height:520px;border-radius:50%;background:radial-gradient(#fff3a0,#ffd23f 55%,rgba(255,210,63,0) 72%)"></div>
+  <div id="rays" class="abs" style="left:-160px;top:-160px;width:520px;height:520px"></div>
+  <img class="abs" id="m2" src="mart-sorpresa-v2.png" style="width:400px;left:70px;top:520px">
+  <div class="drop" id="d1"></div><div class="drop" id="d2"></div><div class="drop" id="d3"></div>
+  <div id="paper"><div class="roll"></div><div id="items">
+    <div>Cemento gris</div><div>Varilla 3/8</div><div>Tubo PVC</div><div>Codos 90°</div><div>Pegamento</div><div>Brochas</div><div>Clavos</div><div>Alambre</div><div>Mortero</div><div>Cinta teflón</div><div>Llave de paso</div><div>Pintura</div><div>Lija</div><div>Block</div><div>Arena</div><div>Grava</div><div>Malla</div><div>Taquetes</div><div>Tornillos</div><div>Silicón</div><div>Impermeabilizante</div><div>Cable</div><div>Foco</div><div>Apagador</div><div>Thinner</div><div>Cubeta</div><div>Pala</div><div>Carretilla</div><div>Guantes</div><div>Y MÁS...</div>
+  </div></div>
+  <div class="chip" id="c1" style="left:70px;top:330px;background:#d93025">CALOR</div>
+  <div class="chip" id="c2" style="left:70px;top:1000px">TRÁFICO</div>
+  <div class="abs" style="left:0;right:0;top:1180px;height:200px;background:#5b5d61"></div>
+  <div class="abs" style="left:0;right:0;top:1272px;height:12px;background:repeating-linear-gradient(90deg,#fff 0 60px,transparent 60px 120px)"></div>
+  <div id="cars"></div>
+</div>
+
+<!-- S3 celular -->
+<div class="sc" id="s3">
+  <div class="abs" style="inset:0;background:#FBF6EE"></div>
+  <div class="abs" style="left:-200px;top:-200px;width:700px;height:700px;border-radius:50%;background:#ffe3cc"></div>
+  <div class="abs" style="right:-260px;bottom:200px;width:800px;height:800px;border-radius:50%;background:#ffe3cc"></div>
+  <div class="big abs dk" id="h3" style="left:0;right:0;top:60px;font-size:96px;letter-spacing:-3px">PÍDELO DESDE<br><span style="color:#FF6A00">TU CASA</span></div>
+  <div id="phone"><div id="notch"></div><div id="screen">
+    <img id="i1" src="s_home.jpg"><img id="i2" src="s_cat.jpg"><img id="i3" src="s_cat2.jpg"><img id="i4" src="s_lista.jpg"><img id="i5" src="s_enviar.jpg">
+  </div></div>
+  <div id="finger"></div>
+  <div class="badge" id="b1" style="left:40px;top:560px;background:#1e9e4a">GRATIS</div>
+  <div class="badge" id="b2" style="right:30px;top:820px;background:#2E3033">SIN INICIAR SESIÓN</div>
+  <div class="badge" id="b3" style="left:40px;top:1080px;background:#FF6A00">RÁPIDO</div>
+</div>
+
+<!-- S4 whatsapp + entrega -->
+<div class="sc" id="s4">
+  <div class="abs" style="inset:0;background:linear-gradient(#bfe6ff,#e8f6ff)"></div>
+  <div id="chatwrap">
+  <div id="chat"><div class="hd"><img src="mart-feliz-v2.png">Construmart</div>
+    <div class="body">
+      <div class="bub me" id="bu1" style="top:34px">Hola, les mando mi lista<small>11:02 ✓✓</small></div>
+      <div class="bub yo" id="bu2" style="top:190px">¡Hola Juan! Ya está tu cotización ✅<br>Todo hay en existencia.<br>¿Te lo llevamos a tu casa?<small>11:05</small></div>
+      <div class="bub me" id="bu3" style="top:470px">¡Sí, porfa! 🙌<small>11:05 ✓✓</small></div>
+    </div></div>
+  </div>
+  <div id="deliv">
+    <div class="ground"></div>
+    <div id="house"><div class="roof"></div><div class="wall"></div><div class="win" style="left:40px"></div><div class="win" style="right:40px"></div><div class="door"></div></div>
+    <div id="truck"><div class="box">CONSTRU<br>MART</div><div class="cab"><i></i></div><div class="w" style="left:40px"></div><div class="w" style="left:380px"></div></div>
+    <img class="abs" id="m4" src="mart-feliz-v2.png" style="width:220px;left:735px;top:930px">
+  </div>
+  <div class="big abs" id="h4" style="left:0;right:0;top:230px;font-size:130px;color:#2E3033;text-shadow:none">¡HASTA TU<br><span style="color:#FF6A00">PUERTA!</span></div>
+</div>
+
+<!-- S5 cierre -->
+<div class="sc" id="s5">
+  <div class="abs" style="inset:0;background:radial-gradient(circle at 50% 55%,#ff8c33,#FF6A00 60%,#e85b00)"></div>
+  <div class="abs" style="left:240px;top:90px;width:600px;height:200px;background:#fff;border-radius:40px"></div>
+  <img class="abs" src="logo-construmart.png" style="left:290px;top:112px;width:500px">
+  <div class="big abs" id="h5" style="left:0;right:0;top:360px;font-size:140px">SIN SALIR<br><span class="dk">DE CASA</span></div>
+  <div class="abs" style="left:190px;top:640px;width:700px;height:700px;border-radius:50%;background:#FBF6EE;box-shadow:0 0 0 20px rgba(255,255,255,.25)"></div><img class="abs" id="m5" src="mart-sillon2.png" style="left:215px;top:665px;width:650px">
+  <div class="url" id="u5" style="top:1560px">construmartmx.com</div>
+  <div class="abs" id="g5" style="left:0;right:0;top:1715px;text-align:center;color:#fff;font-weight:800;font-size:48px">Gratis · Sin registrarte · Rápido</div>
+</div>
+
+<div id="cap"></div>
+
+<script>
+const $=id=>document.getElementById(id);
+const cl=(x,a=0,b=1)=>Math.max(a,Math.min(b,x));
+const ease=x=>1-Math.pow(1-cl(x),3);
+const back=x=>{x=cl(x);const c=1.9;return 1+(c+1)*Math.pow(x-1,3)+c*Math.pow(x-1,2)};
+const pop=(el,t,t0,d=.35)=>{const k=back((t-t0)/d);el.style.transform=`scale(${k})`;el.style.opacity=t<t0?0:1};
+// escenas
+const S=[["s1",0,2.3],["s2",2.3,9.0],["s3",9.0,17.0],["s4",17.0,21.0],["s5",21.0,24.0]];
+// subtítulos: [inicio, fin, texto]
+let CAPS=[[0.0,1.98,"¿Te da flojera salir a buscar ferretería?"],[2.41,3.11,"Calor, tráfico…"],[3.28,8.75,"y una lista larguísima de materiales para ir de tienda en tienda preguntando precios…"],[9.23,11.25,"Con Construmart lo pides desde tu casa:"],[11.62,13.55,"entra a construmartmx.com,"],[13.76,15.1,"arma tu lista y envíala."],[15.39,16.89,"Gratis y sin registrarte."],[17.21,19.06,"Te contestamos con precio y existencia…"],[19.33,20.8,"y te lo llevamos hasta tu puerta."],[21.22,21.85,"Construmart."],[22.12,23.14,"Sin salir de casa."]];
+let WT=null; // tiempos por palabra opcionales [{w,s,e}]
+function caption(t){
+  let c=null;for(const x of CAPS)if(t>=x[0]-0.05)c=x;if(c&&t>c[1]+0.4)c=null;if(!c){$("cap").innerHTML="";return}
+  const ws=c[2].split(" ");
+  // ventana de 5 palabras alrededor de la actual
+  const k=cl((t-c[0])/(c[1]-c[0]),0,.999),i=Math.floor(k*ws.length);
+  const g=Math.floor(i/5)*5,grp=ws.slice(g,g+5);
+  $("cap").innerHTML='<span class="p">'+grp.map((w,j)=>g+j===i?`<b>${w}</b>`:w).join(" ")+'</span>';
+}
+// autos
+let carsHTML="";const CC=["#d93025","#1e88e5","#43a047","#8e24aa","#f4511e","#00897b"];
+for(let i=0;i<6;i++){carsHTML+=`<div class="car" id="car${i}"><div class="t" style="background:${CC[i]}"></div><div class="b" style="background:${CC[i]}"></div><div class="w" style="left:30px"></div><div class="w" style="right:30px"></div></div>`}
+$("cars").innerHTML=carsHTML;
+let rays="";for(let i=0;i<12;i++)rays+=`<div style="position:absolute;left:250px;top:-40px;width:20px;height:600px;transform-origin:10px 300px;transform:rotate(${i*30}deg)"><div style="width:20px;height:90px;background:#fff3a0;border-radius:10px"></div></div>`;$("rays").innerHTML=rays;
+
+window.R=function(t){
+  for(const [id,a,b] of S)$(id).style.display=(t>=a&&t<b)?"block":"none";
+  caption(t);
+  // S1
+  if(t<2.3){const u=t*1.3;
+    pop($("h1a"),u,0.0,.3);pop($("h1b"),u,0.25,.35);pop($("h1c"),u,0.5,.3);
+    $("h1b").style.transform+=` rotate(${Math.sin(u*14)*2*(u>.6?1:0)}deg)`;
+    $("m1").style.transform=`translateY(${Math.sin(u*3)*6}px) rotate(${Math.sin(u*2)*1.5}deg)`;
+    [].forEach(([id,s])=>{const k=((u-s)%1.4+1.4)%1.4/1.4;$(id).style.opacity=u<s?0:(1-k);$(id).style.transform=`translate(${k*30}px,${-k*60}px)`});
+  }
+  // S2
+  if(t>=2.3&&t<9.0){const u=t-2.3;
+    $("rays").style.transform=`rotate(${u*25}deg)`;$("sun").style.transform=`scale(${1+Math.sin(u*4)*.04})`;
+    $("m2").style.transform=`translateX(${Math.sin(u*30)*4}px)`;
+    [["d1",80,560,0],["d2",400,600,.35],["d3",110,800,.7]].forEach(([id,x,y,o])=>{const k=((u+o)%1.1)/1.1;const el=$(id);el.style.left=x+"px";el.style.top=(y+k*160)+"px";el.style.opacity=1-k});
+    // papel que se desenrolla
+    const L=ease(u/1.6);$("paper").style.height=(60+L*1400)+"px";
+    const sc=Math.max(0,(u-1.4))*300;$("items").style.transform=`translateY(${-sc}px)`;
+    pop($("c1"),u,.1,.3);pop($("c2"),u,.5,.3);
+    for(let i=0;i<6;i++){const x=((i*300-u*90)%1800+1800)%1800-300;const el=$("car"+i);el.style.left=x+"px";el.style.top=(1170+(i%2)*1)+"px";el.style.transform=`translateY(${Math.sin(u*9+i)*2}px)`}
+  }
+  // S3
+  if(t>=9.0&&t<17.0){const u=t-9.0;
+    const ph=$("phone");ph.style.transform=`translateY(${(1-ease(u/.5))*900}px)`;pop($("h3"),u,.1,.35);
+    const show=[[0,2.6],[2.6,3.75],[3.75,4.75],[4.75,5.6],[5.6,10]];
+    show.forEach(([a,b],i)=>{const el=$("i"+(i+1));el.style.opacity=(u>=a&&u<b)?1:0});
+    const f=$("finger");const taps=[[2.35,345,440],[4.75,250,770]];
+    f.style.opacity=0;
+    // tap 1 en "agregar" (aprox), tap 2 en "Enviar por WhatsApp"
+    if(u>3.0&&u<3.8){f.style.opacity=1;f.style.left="639px";f.style.top="990px";const k=cl((u-3.35)/.25);f.style.transform=`scale(${1-.25*Math.sin(k*Math.PI)})`}
+    if(u>5.75&&u<6.6){f.style.opacity=1;f.style.left="540px";f.style.top="741px";const k=cl((u-6.05)/.25);f.style.transform=`scale(${1-.25*Math.sin(k*Math.PI)})`}
+    pop($("b1"),u,6.4,.3);pop($("b2"),u,6.75,.3);pop($("b3"),u,7.1,.3);
+    ["b1","b2","b3"].forEach((id,i)=>{if(u>7.4)$(id).style.transform+=` rotate(${Math.sin(u*6+i)*3}deg)`});
+  }
+  // S4
+  if(t>=17.0&&t<21.0){const u=t-17.0;
+    const chatOn=u<2.3;$("chatwrap").style.opacity=chatOn?1:Math.max(0,1-(u-2.3)/.2);
+    $("chat").style.transform=`translateY(${(1-ease(u/.4))*-600}px)`;
+    pop($("bu1"),u,.2,.25);pop($("bu2"),u,.7,.3);pop($("bu3"),u,1.6,.25);
+    const dv=u>=2.3;$("deliv").style.opacity=dv?1:0;$("h4").style.opacity=dv?1:0;
+    if(dv){const v=u-2.3;pop($("h4"),v,.05,.35);
+      const x=-560+ease(v/1.3)*700;$("truck").style.left=x+"px";$("truck").style.transform=`translateY(${Math.sin(v*40)*(v<1.3?3:0)}px)`;
+      $("m4").style.opacity=v>1.35?1:0;pop($("m4"),v,1.35,.3);}
+  }
+  // S5
+  if(t>=21.0){const u=t-21.0;
+    pop($("h5"),u,.05,.35);
+    $("m5").style.transform=`translateY(${Math.sin(u*3)*6}px) scale(${1.06-ease(u/.6)*.06})`;$("m5").style.opacity=cl(u/.25);
+    pop($("u5"),u,.6,.35);$("g5").style.opacity=cl((u-1.0)/.3);
+  }
+};
+window.R(0);
+</script></body></html>
