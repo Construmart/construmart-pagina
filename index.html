@@ -1603,12 +1603,13 @@ function renderHist(){
   </details>`}).join("")}</div>`;
   cotizHist();
 }
-const telOk=()=>{const d=digits(form.phone||"").length;return d===0||d===10};
+const tel10=v=>{let d=digits(String(v||""));if(d.length===13&&d.startsWith("521"))d=d.slice(3);else if(d.length===12&&d.startsWith("52"))d=d.slice(2);else if(d.length===11&&d.startsWith("1"))d=d.slice(1);return d};
+const telOk=()=>{const d=tel10(form.phone);return d.length===0||d.length===10};
 function datosOk(){return String(form.name||"").trim().length>=2&&telOk()}
 function marcarFaltan(){const n=String(form.name||"").trim().length>=2,t=telOk();
   $("#fname").classList.toggle("mal",!n);$("#fphone").classList.toggle("mal",!t);
   let fe=$("#fErr");if(!fe){$("#waBtn").insertAdjacentHTML("beforebegin",'<p class="ferr" id="fErr" role="alert"></p>');fe=$("#fErr")}
-  fe.textContent=!n&&!t?"Escribe tu nombre y revisa tu WhatsApp (10 dígitos).":!n?"Escribe tu nombre para saber a quién le cotizamos.":"Tu WhatsApp debe tener 10 dígitos (o déjalo vacío).";fe.hidden=false;
+  fe.textContent=!n&&!t?"Escribe tu nombre y revisa tu WhatsApp (10 dígitos).":!n?"Escribe tu nombre para saber a quién le cotizamos.":"Revisa tu WhatsApp: 10 dígitos, ej. 311 123 4567 (o déjalo vacío).";fe.hidden=false;
   (n?$("#fphone"):$("#fname")).focus()}
 function recordSend(){
   if(!quote.length)return;
