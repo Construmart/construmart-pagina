@@ -6,9 +6,9 @@
 <script>
 const c=document.getElementById('c'),x=c.getContext('2d');
 const IM={};for(const n of ['mart-alto','mart-senala','mart-presenta','mart-qr-pulgar']){const i=new Image();i.src=n+'.png';IM[n]=i}
-var S=[[0,4.95],[4.95,9.0],[9.0,14.2],[14.2,16.2],[16.2,19.4],[19.4,24.2],[24.2,28.05],[28.05,33.4],[33.4,39.6]];
+var S=[[0, 5.8], [5.8, 10.3], [10.3, 15.5], [15.5, 20.2], [20.2, 25.9], [25.9, 31.25], [31.25, 35.8], [35.8, 41.6], [41.6, 48.5]];
 var CAPY=1730;
-var CAPS=[[0.0, 2.86, "¡Alto! ¿Usas la cinta de aislar del color que sea?"], [3.06, 4.8, "Cada color significa algo."], [5.06, 6.4, "Negro: la más común."], [6.56, 8.8, "Marca la fase, el cable que trae la corriente."], [9.1, 10.78, "Rojo: también para fase."], [10.84, 13.86, "Sirve para distinguir una segunda fase o un circuito diferente."], [14.3, 16.12, "Blanco o gris: el neutro."], [16.32, 17.98, "Verde: solo para la tierra."], [18.14, 19.3, "Nunca para otra cosa."], [19.5, 21.86, "Azul y amarillo: para identificar otras fases"], [21.88, 24.12, "en instalaciones trifásicas, como en talleres."], [24.3, 26.92, "Ojo: en México el neutro no es azul."], [27.02, 28.1, "Es blanco o gris."], [28.12, 31.22, "Y siempre: corta la corriente antes de trabajar,"], [31.3, 33.42, "y si tienes dudas, llama a un electricista."], [33.5, 36.72, "Cinta de aislar Truper de todos los colores, en Construmart."]];
+var CAPS=[[0.0, 2.94, "¿Sabías para qué sirve cada color de tu cinta de aislar?"], [3.18, 5.7, "Cada color avisa qué tipo de cable es."], [5.92, 7.56, "Negro: es la más común."], [7.82, 10.08, "Marca el cable con corriente, el que da toques."], [10.44, 13.1, "Rojo: también marca un cable con corriente."], [13.2, 15.22, "Se usa para no confundirlo con el negro."], [15.64, 17.68, "Blanco o gris: el neutro."], [17.86, 19.94, "Es el cable por donde regresa la corriente."], [20.32, 21.64, "Verde: la tierra."], [21.98, 24.66, "Es el cable de seguridad que te protege de una descarga."], [24.68, 25.76, "Solo para eso."], [26.02, 28.68, "Azul y amarillo: también son cables con corriente,"], [28.7, 31.2, "en instalaciones más grandes, como talleres."], [31.38, 34.28, "Ojo: en México el neutro no es azul."], [34.4, 35.82, "Es blanco o gris."], [35.92, 39.26, "Antes de tocar cualquier cable, baja el interruptor de la luz."], [39.4, 41.6, "Y si tienes dudas, llama a un electricista."], [41.74, 45.12, "Cinta de aislar Truper de todos los colores, en Construmart."]];
 </script>
 <script src="helpers.js"></script>
 <script>
@@ -20,7 +20,10 @@ function pic(n,X,Y,W,k=1,rot=0){const i=IM[n];if(!i||!i.complete||k<=0)return;co
 function stamp(txt,X,Y,k,col){if(k<=0)return;x.save();x.translate(X,Y);const s=lerp(2.2,1,ease(k/.6));x.scale(s,s);x.rotate(-.12);x.globalAlpha=cl(k*3);x.font='900 92px I';const w=x.measureText(txt).width;x.strokeStyle=col;x.lineWidth=12;rr(-w/2-30,-70,w+60,130,16);x.stroke();x.fillStyle=col;x.textAlign='center';x.textBaseline='middle';x.fillText(txt,0,0);x.restore()}
 function big(txt,X,Y,k,fill=YE,size=120,stroke=DK){if(k<=0)return;x.save();x.translate(X,Y);const s=back(k);x.scale(s,s);x.font=`900 ${size}px I`;x.textAlign='center';x.textBaseline='middle';x.lineJoin='round';x.lineWidth=size*.16;x.strokeStyle=stroke;x.strokeText(txt,0,0);x.fillStyle=fill;x.fillText(txt,0,0);x.restore()}
 function shade(h,a){const n=parseInt(h.slice(1),16);let r=n>>16,g=n>>8&255,b=n&255;r=Math.max(0,Math.min(255,r+a));g=Math.max(0,Math.min(255,g+a));b=Math.max(0,Math.min(255,b+a));return `rgb(${r},${g},${b})`}
-function roll(X,Y,R,col,k,spin){if(k<=0)return;x.save();x.translate(X,Y);const s=back(k);x.scale(s,s);x.rotate(spin);
+const TAPE={};for(const n of ['negro','rojo','blanco','amarillo','verde','azul']){const i=new Image();i.src='cintas/'+n+'.png';TAPE[n]=i}
+function roll(X,Y,R,col,k,spin,drawn){if(k<=0)return;const key=Object.keys(COL).find(q=>COL[q]===col),im=TAPE[key];
+ if(!drawn&&im&&im.complete&&im.naturalWidth){x.save();x.translate(X,Y);const s=back(k);x.scale(s,s);x.fillStyle='rgba(0,0,0,.22)';x.beginPath();x.ellipse(8,R*1.02,R*.62,R*.12,0,0,7);x.fill();x.rotate(Math.max(-.6,Math.min(.6,spin*.12)));const h=R*2.15,w=h*im.naturalWidth/im.naturalHeight;x.drawImage(im,-w/2,-h/2,w,h);x.restore();return}
+x.save();x.translate(X,Y);const s=back(k);x.scale(s,s);x.rotate(spin);
  x.fillStyle='rgba(0,0,0,.25)';x.beginPath();x.ellipse(10,R*.95,R*.9,R*.15,0,0,7);x.fill();
  x.fillStyle=col;x.strokeStyle=DK;x.lineWidth=R*.04;x.beginPath();x.arc(0,0,R,0,7);x.fill();x.stroke();
  x.strokeStyle=shade(col,col===COL.negro?40:-35);x.lineWidth=R*.02;for(let i=1;i<5;i++){x.beginPath();x.arc(0,0,R*(.62+i*.07),0,7);x.stroke()}
@@ -34,44 +37,44 @@ function wire(Y,col,k,t){const L=140,R=940;x.save();x.lineCap='round';x.strokeSt
 function bolt(X,Y,k,t){if(k<=0)return;x.save();x.translate(X,Y+Math.sin(t*12)*6);const s=back(k);x.scale(s,s);x.fillStyle=YE;x.strokeStyle=DK;x.lineWidth=6;x.beginPath();x.moveTo(10,-70);x.lineTo(-40,10);x.lineTo(0,10);x.lineTo(-15,70);x.lineTo(45,-15);x.lineTo(5,-15);x.closePath();x.fill();x.stroke();x.restore()}
 function bgCol(col,t){const g=x.createLinearGradient(0,0,0,1920);g.addColorStop(0,shade(col==='#F4F4F2'?'#d9dbe0':col,col===COL.negro?30:20));g.addColorStop(1,shade(col==='#F4F4F2'?'#b7bac0':col,-40));x.fillStyle=g;x.fillRect(-100,-100,1300,2200);
  x.fillStyle='rgba(255,255,255,.07)';for(let i=0;i<9;i++){x.beginPath();x.arc((i*233+t*20)%1300-100,(i*397)%1900,60+i*12,0,7);x.fill()}}
-function colorScene(name,col,u,t,sub1,sub2,phase){bgCol(col,t);const dark=col!==COL.blanco&&col!==COL.amarillo&&col!==COL.gris;
- roll(540,640,250,col,u/.35,(1-ease(cl(u/.6)))*-4+Math.sin(t*.8)*.05);
+function colorScene(name,col,u,t,sub1,sub2,phase,d2=1.4){bgCol(col,t);const dark=col!==COL.blanco&&col!==COL.amarillo&&col!==COL.gris;
+ roll(380,640,200,col,u/.35,(1-ease(cl(u/.6)))*-4+Math.sin(t*.8)*.05);roll(700,640,200,col,(u-.15)/.35,(1-ease(cl((u-.15)/.6)))*4,1);
  big(name,540,1000,(u-.25)/.3,'#fff',150,DK);
  wire(1240,col,(u-.9)/1.0,t);
- chipX(sub1,540,1430,(u-.6)/.3,dark?'#fff':DK,dark?DK:'#fff',60,0);if(sub2)chipX(sub2,540,1560,(u-1.4)/.3,YE,DK,40,0);
+ chipX(sub1,540,1430,(u-.6)/.3,dark?'#fff':DK,dark?DK:'#fff',60,0);if(sub2)chipX(sub2,540,1560,(u-d2)/.3,YE,DK,40,0);
  if(phase){bolt(170,1000,(u-.8)/.3,t);bolt(910,1000,(u-.95)/.3,t)}}
 window.R=t=>{const sc=Math.max(0,S.findIndex(([a,b])=>t>=a&&t<b)),u=t-S[sc][0],L=S[sc][1]-S[sc][0];
  x.setTransform(1,0,0,1,0,0);const z=(1+0.02*Math.max(0,1-u/0.2))*(1+0.025*u/L);x.setTransform(z,0,0,z,540*(1-z),900*(1-z));
- if(sc===0){x.fillStyle='#14161b';x.fillRect(-100,-100,1300,2200);if(u<.4){x.fillStyle=`rgba(217,48,37,${.7*(1-u/.4)})`;x.fillRect(-100,-100,1300,2200)}
-  big('¡ALTO!',540,300,u/.25,'#fff',190,RD);pic('mart-alto',540,1250,560,(u-.15)/.3);
-  if(u<3.0)chipX('¿CINTA DEL COLOR QUE SEA? 🤔',540,1380,(u-.8)/.3,'#fff',DK,46,0);
-  if(u>3.0){const cs=[COL.negro,COL.rojo,COL.blanco,COL.verde,COL.azul,COL.amarillo];cs.forEach((cc,i)=>roll(140+i*160,1420,72,cc,(u-3.0-i*.08)/.25,t*2));chipX('CADA COLOR SIGNIFICA ALGO',540,1580,(u-3.3)/.3,YE,DK,46,0)}}
- if(sc===1)colorScene('NEGRO',COL.negro,u,t,'⚡ FASE','EL CABLE QUE TRAE LA CORRIENTE',1);
- if(sc===2)colorScene('ROJO',COL.rojo,u,t,'⚡ FASE','2ª FASE O CIRCUITO DIFERENTE',1);
- if(sc===3){bgCol('#C9CCD2',t);roll(380,640,200,COL.blanco,u/.3,(1-ease(cl(u/.6)))*-4);roll(700,640,200,COL.gris,(u-.15)/.3,(1-ease(cl((u-.15)/.6)))*4);big('BLANCO O GRIS',540,1000,(u-.2)/.3,'#fff',112,DK);wire(1240,COL.blanco,(u-.6)/.8,t);chipX('NEUTRO',540,1430,(u-.4)/.3,DK,'#fff',70,0)}
- if(sc===4){colorScene('VERDE',COL.verde,u,t,'🌎 TIERRA','',0);if(u>1.9)stamp('¡SOLO PARA ESO!',540,1580,(u-1.9)/.3,YE)}
- if(sc===5){bgCol('#3d5a80',t);roll(370,640,200,COL.azul,u/.3,(1-ease(cl(u/.6)))*-4);roll(710,640,200,COL.amarillo,(u-.15)/.3,(1-ease(cl((u-.15)/.6)))*4);big('AZUL Y AMARILLO',540,1000,(u-.2)/.3,'#fff',100,DK);wire(1240,COL.azul,(u-.9)/1.0,t);
-  chipX('⚡ OTRAS FASES',540,1430,(u-1.0)/.3,'#fff',DK,60,0);chipX('🏭 TRIFÁSICO · TALLERES',540,1560,(u-2.8)/.3,YE,DK,42,0)}
+ if(sc===0){x.fillStyle='#14161b';x.fillRect(-100,-100,1300,2200);
+  title([["¿SABÍAS PARA QUÉ",'#fff'],["SIRVE CADA COLOR",YE],["DE TU CINTA",'#fff'],["DE AISLAR?",'#fff']],330,u/.5,'#000',88);
+  const cs=[COL.negro,COL.rojo,COL.blanco,COL.verde,COL.azul,COL.amarillo];cs.forEach((cc,i)=>roll(140+i*160,1000,72,cc,(u-.6-i*.1)/.25,t*2));
+  pic('mart-presenta',540,1500,380,(u-1.2)/.3);if(u>3.8)chipX('CADA COLOR = UN TIPO DE CABLE',540,1600,(u-3.8)/.3,YE,DK,44,0)}
+ if(sc===1)colorScene('NEGRO',COL.negro,u,t,'⚡ CABLE CON CORRIENTE','¡ES EL QUE DA TOQUES! 😬',1,3.4);
+ if(sc===2)colorScene('ROJO',COL.rojo,u,t,'⚡ CABLE CON CORRIENTE','PARA NO CONFUNDIRLO CON EL NEGRO',1,2.8);
+ if(sc===3){bgCol('#C9CCD2',t);roll(380,640,200,COL.blanco,u/.3,(1-ease(cl(u/.6)))*-4);roll(700,640,200,COL.gris,(u-.15)/.3,(1-ease(cl((u-.15)/.6)))*4);big('BLANCO O GRIS',540,1000,(u-.2)/.3,'#fff',112,DK);wire(1240,COL.blanco,(u-.6)/.8,t);chipX('NEUTRO',540,1430,(u-.6)/.3,DK,'#fff',70,0);chipX('↩️ POR AQUÍ REGRESA LA CORRIENTE',540,1560,(u-2.4)/.3,YE,DK,40,0)}
+ if(sc===4){colorScene('VERDE',COL.verde,u,t,'🛡️ TIERRA','TE PROTEGE DE UNA DESCARGA',0,2.0);if(u>4.5)stamp('¡SOLO PARA ESO!',540,230,(u-4.5)/.3,YE)}
+ if(sc===5){bgCol('#3d5a80',t);roll(150,660,120,COL.azul,u/.3,(1-ease(cl(u/.6)))*-4);roll(365,660,120,COL.azul,(u-.1)/.3,(1-ease(cl((u-.1)/.6)))*4,1);roll(715,660,120,COL.amarillo,(u-.2)/.3,(1-ease(cl((u-.2)/.6)))*-4);roll(930,660,120,COL.amarillo,(u-.3)/.3,(1-ease(cl((u-.3)/.6)))*4,1);big('AZUL Y AMARILLO',540,1000,(u-.2)/.3,'#fff',100,DK);wire(1240,COL.azul,(u-.9)/1.0,t);
+  chipX('⚡ TAMBIÉN CON CORRIENTE',540,1430,(u-1.2)/.3,'#fff',DK,54,0);chipX('🏭 INSTALACIONES GRANDES · TALLERES',540,1560,(u-3.0)/.3,YE,DK,38,0)}
  if(sc===6){x.fillStyle='#FFF3E8';x.fillRect(-100,-100,1300,2200);chipX('😮 OJO',540,200,u/.25,RD,'#fff',70,0);
   roll(540,700,220,COL.azul,(u-.1)/.3,0);chipX('NEUTRO',540,1000,(u-.9)/.3,DK,'#fff',56,0);
   if(u>1.95){x.save();x.translate(540,780);const k=ease(cl((u-1.95)/.25));x.strokeStyle=RD;x.lineWidth=40;x.lineCap='round';x.beginPath();x.moveTo(-260*k,-260*k);x.lineTo(260*k,260*k);x.moveTo(260*k,-260*k);x.lineTo(-260*k,260*k);x.stroke();x.restore()}
   if(u>2.0)stamp('❌ MITO',540,1180,(u-2.0)/.3,RD);
-  if(u>2.85){roll(380,1450,90,COL.blanco,(u-2.85)/.3,0);roll(700,1450,90,COL.gris,(u-2.95)/.3,0);chipX('NEUTRO = BLANCO O GRIS ✓',540,1610,(u-3.0)/.3,GR,'#fff',46,0)}}
+  if(u>3.0){roll(380,1450,90,COL.blanco,(u-3.0)/.3,0);roll(700,1450,90,COL.gris,(u-3.1)/.3,0);chipX('NEUTRO = BLANCO O GRIS ✓',540,1610,(u-3.2)/.3,GR,'#fff',46,0)}}
  if(sc===7){x.fillStyle='#EFE7DA';x.fillRect(-100,-100,1300,2200);
-  const off=u>1.1;x.save();x.translate(320,720);x.fillStyle='#d5d7db';x.strokeStyle=DK;x.lineWidth=8;rr(-180,-260,360,520,24);x.fill();x.stroke();x.fillStyle='#fff';rr(-80,-170,160,340,16);x.fill();x.stroke();
-   const ly=off?lerp(-90,90,ease(cl((u-1.1)/.25))):-90;x.fillStyle=off?RD:GR;rr(-60,ly-60,120,120,14);x.fill();x.stroke();x.fillStyle=DK;x.font='900 40px I';x.textAlign='center';x.fillText('ON',0,-200);x.fillText('OFF',0,230);x.restore();
-  chipX(off?'🔌 CORRIENTE CORTADA ✓':'⚡ CORRIENTE',320,1080,(u-.2)/.3,off?GR:RD,'#fff',40,0);chipX('ANTES DE TRABAJAR',320,1190,(u-1.3)/.3,DK,'#fff',36,0);
+  const off=u>2.2;x.save();x.translate(320,720);x.fillStyle='#d5d7db';x.strokeStyle=DK;x.lineWidth=8;rr(-180,-260,360,520,24);x.fill();x.stroke();x.fillStyle='#fff';rr(-80,-170,160,340,16);x.fill();x.stroke();
+   const ly=off?lerp(-90,90,ease(cl((u-2.2)/.25))):-90;x.fillStyle=off?RD:GR;rr(-60,ly-60,120,120,14);x.fill();x.stroke();x.fillStyle=DK;x.font='900 40px I';x.textAlign='center';x.fillText('ON',0,-200);x.fillText('OFF',0,230);x.restore();
+  chipX('ANTES DE TOCAR UN CABLE…',320,1080,(u-.2)/.3,DK,'#fff',36,0);chipX(off?'✓ LUZ APAGADA':'🔌 BAJA EL INTERRUPTOR',320,1190,(u-.9)/.3,off?GR:RD,'#fff',38,0);
   pic('mart-senala',800,1200,400,(u-.4)/.35);
-  if(u>3.2){chipX('¿DUDAS? 👷 LLAMA A UN',540,1430,(u-3.2)/.3,YE,DK,48,0);chipX('ELECTRICISTA',540,1560,(u-3.5)/.3,DK,'#fff',64,0)}}
- if(sc===8){if(u<3.0){x.fillStyle=OR;x.fillRect(-100,-100,1300,2200);x.save();x.translate(540,900);x.rotate(t*.25);x.fillStyle='rgba(255,255,255,.08)';for(let i=0;i<16;i++){x.rotate(Math.PI/8);x.beginPath();x.moveTo(0,0);x.lineTo(1400,-120);x.lineTo(1400,120);x.closePath();x.fill()}x.restore();
+  if(u>3.6){chipX('¿DUDAS? 👷 LLAMA A UN',540,1430,(u-3.6)/.3,YE,DK,48,0);chipX('ELECTRICISTA',540,1560,(u-3.9)/.3,DK,'#fff',64,0)}}
+ if(sc===8){if(u<3.7){x.fillStyle=OR;x.fillRect(-100,-100,1300,2200);x.save();x.translate(540,900);x.rotate(t*.25);x.fillStyle='rgba(255,255,255,.08)';for(let i=0;i<16;i++){x.rotate(Math.PI/8);x.beginPath();x.moveTo(0,0);x.lineTo(1400,-120);x.lineTo(1400,120);x.closePath();x.fill()}x.restore();
    title([["CINTA DE AISLAR",'#fff'],["TRUPER",YE]],330,u/.4,DK,100);
-   const cs=[COL.negro,COL.rojo,COL.blanco,COL.gris,COL.verde,COL.azul,COL.amarillo];cs.forEach((cc,i)=>{const a=i*Math.PI*2/7-1.57+t*.6;roll(540+Math.cos(a)*300,1000+Math.sin(a)*300,95,cc,(u-.2-i*.07)/.25,t*2)});
+   const cs=[COL.negro,COL.rojo,COL.blanco,COL.verde,COL.azul,COL.amarillo];cs.forEach((cc,i)=>{const a=i*Math.PI*2/6-1.57+t*.6;roll(540+Math.cos(a)*300,1000+Math.sin(a)*300,95,cc,(u-.2-i*.07)/.25,t*2)});
    pic('mart-presenta',540,1210,330,(u-.8)/.3);chipX('TODOS LOS COLORES · EN CONSTRUMART',540,1480,(u-1.3)/.3,DK,'#fff',40,0)}
-  else{const v=u-3.0;x.fillStyle=OR;x.fillRect(-100,-100,1300,2200);title([["COTIZA HOY",'#fff']],300,v/.4,DK,120);pic('mart-qr-pulgar',540,1330,640,(v-.2)/.4);
+  else{const v=u-3.7;x.fillStyle=OR;x.fillRect(-100,-100,1300,2200);title([["COTIZA HOY",'#fff']],300,v/.4,DK,120);pic('mart-qr-pulgar',540,1330,640,(v-.2)/.4);
    if(v>.6){const kk=back((v-.6)/.4);x.save();x.translate(540,1450);x.scale(kk,kk);x.font='900 64px I';const w=x.measureText('construmartmx.com').width;x.fillStyle=DK;rr(-w/2-36,-56,w+72,108,30);x.fill();x.fillStyle='#fff';x.textAlign='center';x.textBaseline='middle';x.fillText('construmartmx.com',0,2);x.restore()}
    socials(540,1580,(v-.9)/.4);
    if(v>1.2){const kk=back((v-1.2)/.4);x.save();x.translate(540,1720);x.scale(kk,kk);x.fillStyle='#fff';rr(-470,-60,940,120,30);x.fill();x.fillStyle=DK;x.font='900 40px I';x.textAlign='center';x.textBaseline='middle';x.fillText('📞 Río Suchiate 311-218-6196',0,-18);x.fillText('📞 Armadillo 311-170-9152',0,26);x.restore()}}}
- x.setTransform(1,0,0,1,0,0);if(!(sc===8&&u>3.0))caption(t)};
+ x.setTransform(1,0,0,1,0,0);if(!(sc===8&&u>3.7))caption(t)};
 const TTP=new Path2D('M16.6 2h-3.4v13.4a2.9 2.9 0 1 1-2.1-2.8V9.1a6.4 6.4 0 1 0 5.5 6.3V8.6a7.9 7.9 0 0 0 4.4 1.3V6.5a4.4 4.4 0 0 1-4.4-4.5z');
 function icoIG(X,Y,S){x.save();x.translate(X,Y);const g=x.createRadialGradient(-S*.2,S*.55,2,-S*.2,S*.55,S*1.3);g.addColorStop(0,'#fdf497');g.addColorStop(.1,'#fdf497');g.addColorStop(.45,'#fd5949');g.addColorStop(.65,'#d6249f');g.addColorStop(1,'#285AEB');x.fillStyle=g;rr(-S/2,-S/2,S,S,S*.26);x.fill();
  x.strokeStyle='#fff';x.lineWidth=S*.08;rr(-S*.3,-S*.3,S*.6,S*.6,S*.17);x.stroke();x.beginPath();x.arc(0,0,S*.14,0,7);x.stroke();x.fillStyle='#fff';x.beginPath();x.arc(S*.18,-S*.18,S*.04,0,7);x.fill();x.restore()}
