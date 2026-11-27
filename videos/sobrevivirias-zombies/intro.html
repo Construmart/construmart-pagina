@@ -112,11 +112,17 @@ function R(t){
  // estallido al caer
  if(land&&t<TL+.5){const k=(t-TL)/.5;x.save();x.translate(CX,CY);x.strokeStyle=YE;x.lineWidth=16*(1-k);for(let i=0;i<14;i++){const a=i*Math.PI/7,r1=RAD+40+k*120,r2=r1+90*(1-k);x.beginPath();x.moveTo(Math.cos(a)*r1,Math.sin(a)*r1);x.lineTo(Math.cos(a)*r2,Math.sin(a)*r2);x.stroke()}x.restore()}
  // Mart asomándose detrás del círculo
- const km=cl((t-TL-.12)/.3);if(km>0){const i=IM['mart-sorpresa'];if(i.complete){x.save();const X=lerp(1000,840,back(km)),Y=1235+Math.sin(t*30)*(t<TL+.6?4:0);x.translate(X,Y);x.rotate(.18);x.drawImage(i,-150,-150,300,300);x.restore()}}
+ const km=cl((t-TL-.12)/.3);if(km>0){const i=IM['mart-sorpresa'];if(i.complete){x.save();const X=lerp(1000,840,back(km)),Y=1210+Math.sin(t*30)*(t<TL+.6?4:0);x.translate(X,Y);x.rotate(.18);x.drawImage(i,-150,-150,300,300);x.restore()}}
  // letrero del tema
- const kt=cl((t-TL-.05)/.3);if(kt>0){x.save();x.translate(540,1470);const s=lerp(1.8,1,ease(kt));x.scale(s,s);x.rotate(-.04);x.globalAlpha=cl(kt*3);x.font='900 76px I';const w=x.measureText(TEMA_TXT).width;const f=Math.min(1,940/(w+80));x.scale(f,f);
+ const kt=cl((t-TL-.05)/.3);if(kt>0){x.save();x.translate(540,1440);const s=lerp(1.8,1,ease(kt));x.scale(s,s);x.rotate(-.04);x.globalAlpha=cl(kt*3);x.font='900 76px I';const w=x.measureText(TEMA_TXT).width;const f=Math.min(1,940/(w+80));x.scale(f,f);
   x.fillStyle='#1d1f24';rr(-w/2-40+8,-62+10,w+80,124,24);x.fill();x.fillStyle=ZG;rr(-w/2-40,-62,w+80,124,24);x.fill();x.lineWidth=8;x.strokeStyle='#1d1f24';x.stroke();
   x.fillStyle='#1d1f24';x.textAlign='center';x.textBaseline='middle';x.fillText(TEMA_TXT,0,4);x.restore()}
+
+ // "con productos TRUPER"
+ const kp=cl((t-.5)/.35);if(kp>0){x.save();x.translate(540,1575);const s=back(kp)*(1+.03*Math.sin(t*6));x.scale(s,s);x.rotate(.03);
+  x.font='800 50px I';const a='con productos ',wa=x.measureText(a).width;x.font='900 62px I';const b='TRUPER',wb=x.measureText(b).width;const W=wa+wb;
+  x.fillStyle='rgba(0,0,0,.5)';rr(-W/2-34+6,-48+8,W+68,96,48);x.fill();x.fillStyle='#FBF6EE';rr(-W/2-34,-48,W+68,96,48);x.fill();x.lineWidth=7;x.strokeStyle='#1d1f24';x.stroke();
+  x.textBaseline='middle';x.textAlign='left';x.fillStyle='#1d1f24';x.font='800 50px I';x.fillText(a,-W/2,3);x.fillStyle=OR;x.font='900 62px I';x.lineWidth=6;x.strokeStyle='#1d1f24';x.strokeText(b,-W/2+wa,3);x.fillText(b,-W/2+wa,3);x.restore()}
  // flash al caer
  if(t>=TL&&t<TL+.12){x.fillStyle=`rgba(255,255,255,${.7*(1-(t-TL)/.12)})`;x.fillRect(0,0,1080,1920)}
  x.restore();
