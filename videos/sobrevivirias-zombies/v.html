@@ -6,19 +6,12 @@
 <script>
 const c=document.getElementById('c'),x=c.getContext('2d');
 const IM={};
-for(const n of ['mart-sorpresa','fina-cafe','fina-senala','hormiguita-corre','m-corre','m-festeja','m-guino','m-lentes','m-manos','m-pensando','m-pulgar','m-sentado','m-sorpresa','mart-cemento','mart-pulgar','mart-qr-pulgar','v-asoma','v-brazos','v-corre','v-festeja','v-guino','v-pulgar','v-sorpresa','vigo-caja','vigo-saludo','zombie-camina','zombie-cerebros','zombie-nuca','zombie-sorpresa','zombie-toca','zombies-grupo']){const i=new Image();i.src=n+'.png';IM[n]=i}
+for(const n of ['mart-alto','mart-sorpresa','fina-cafe','fina-senala','hormiguita-corre','m-corre','m-festeja','m-guino','m-lentes','m-manos','m-pensando','m-pulgar','m-sentado','m-sorpresa','mart-cemento','mart-pulgar','mart-qr-pulgar','v-asoma','v-brazos','v-corre','v-festeja','v-guino','v-pulgar','v-sorpresa','vigo-caja','vigo-saludo','zombie-camina','zombie-cerebros','zombie-nuca','zombie-sorpresa','zombie-toca','zombies-grupo']){const i=new Image();i.src=n+'.png';IM[n]=i}
 for(const n of ['azadon','brocha','cadena','candado','cinta','desplantador','escalera','linterna','martillo','pala','parrilla','pintura']){const i=new Image();i.src='productos/'+n+'.png';IM['p-'+n]=i}
 // Escenas (borrador sin voz; se re-sincronizan con la voz)
-var S=[[0,5.2],[5.2,9.2],[9.2,12.4],[12.4,16.6],[16.6,19.6],[19.6,23.8],[23.8,28.8],[28.8,36.0],[36.0,39.4],[39.4,44.0],[44.0,49.0],[49.0,56.6],[56.6,64.6]];
+var S=[[0, 5.2], [5.2, 9.6], [9.6, 9.6], [9.6, 13.8], [13.8, 16.8], [16.8, 21.0], [21.0, 26.0], [26.0, 33.2], [33.2, 36.6], [36.6, 41.2], [41.2, 46.2], [46.2, 53.8], [53.8, 61.8]];
 var CAPY=1770;
-var CAPS=[[5.4,8.9,"Un día normal… Mart y Vigo iban a entregar un pedido."],[9.3,11.0,"Cuando de pronto… ¡ZOMBIES!"],
-[12.5,14.4,"Momento… así no se sobrevive a un apocalipsis."],[15.0,16.5,"Ahora sí. Se ven como de serie."],
-[16.7,19.5,"Por suerte… quedaron justo enfrente de una ferretería."],[19.7,22.0,"Lo primero: cadena y candado."],
-[23.9,26.0,"Martillo y clavos para las ventanas…"],[27.0,28.7,"…y botiquín, por si acaso."],
-[28.9,31.2,"Con hambre nadie sobrevive…"],[31.6,32.6,"…era eléctrica."],[34.0,35.9,"Por suerte: linterna."],
-[36.1,39.3,"¿Algo roto? Cinta plateada. Arregla todo… menos a los zombies."],[39.5,43.8,"Con la escalera, a la azotea…"],
-[44.1,48.8,"…y cuando se acabe la carne: ¡a sembrar!"],
-[56.7,60.9,"¿Tú sobrevivirías? Estos productos y muchos más los encuentras en construmartmx.com…"],[61.0,64.4,"…o visítanos en nuestras sucursales. ¡Comenta qué apocalipsis sigue!"]];
+var CAPS=[[5.3, 9.4, "Mart y Vigo iban a entregar un pedido… ¡y se toparon con un apocalipsis zombie!"], [9.7, 11.6, "Momento… así no se sobrevive a un apocalipsis."], [12.2, 13.7, "Ahora sí. ¡Como de serie!"], [13.9, 16.7, "Por suerte… quedaron justo enfrente de una ferretería."], [16.9, 19.2, "Lo primero: cadena y candado."], [21.1, 23.2, "Martillo y clavos para las ventanas…"], [24.2, 25.9, "…y botiquín, por si acaso."], [26.1, 28.4, "Con hambre nadie sobrevive…"], [28.8, 29.8, "…era eléctrica."], [31.2, 33.1, "Por suerte: linterna."], [33.3, 36.5, "¿Algo roto? Cinta plateada. Arregla todo… menos a los zombies."], [36.7, 41.0, "Con la escalera, a la azotea…"], [41.3, 46.0, "…y cuando se acabe la carne: ¡a sembrar!"], [53.9, 58.1, "¿Tú sobrevivirías? Estos productos y muchos más los encuentras en construmartmx.com…"], [58.2, 61.6, "…o visítanos en nuestras sucursales. ¡Comenta qué apocalipsis sigue!"]];
 </script>
 <script src="helpers.js"></script>
 <script src="intro.js"></script>
@@ -79,18 +72,16 @@ window.R=t=>{
  const z=(1+0.02*Math.max(0,1-u/0.2))*(1+0.02*u/L);x.setTransform(z,0,0,z,540*(1-z),900*(1-z));
  const shake=(t0,d,amp)=>{if(u>=t0&&u<t0+d){const a=(1-(u-t0)/d)*amp;x.translate(Math.sin(t*90)*a,Math.cos(t*77)*a)}};
 
- if(sc===1){street(t,0);const hk=ease(cl(u/1.1));pic('hormiguita-corre',lerp(-500,560,hk),1500,760);
-  pic('mart-pulgar',260,1700,300,(u-1.3)/.35);pic('vigo-saludo',850,1720,250,(u-1.6)/.35);
-  tag('UN DÍA NORMAL…',540,300,u/.35,'#fff','#1d1f24',64)}
- if(sc===2){shake(.15,.4,18);const n=ease(cl(u/.5));street(t,n);
-  pic('zombies-grupo',lerp(1400,720,ease(cl((u-.2)/1.4))),1720,620);pic('zombie-camina',lerp(-300,230,ease(cl((u-.5)/1.4))),1720,380);
-  if(u>.15){x.save();t3d('¡ZOMBIES!',540,420,170,(u-.15)/.3,-.05,GRN);x.restore()}
-  if(u>1.3){x.save();x.translate(540,1020);x.rotate(Math.sin(t*30)*.04);const i=IM['mart-sorpresa'];const k=back(cl((u-1.3)/.3));x.scale(k,k);x.drawImage(i,-190,-190,380,380);x.restore();bubble('¿¡Y AHORA!?',540,700,(u-1.7)/.3,560,820,60)}}
+ if(sc===1){shake(.1,.4,16);street(t,1);
+  pic('zombies-grupo',lerp(1400,760,ease(cl(u/2.2))),1560,560,1,0,false,.95);pic('zombie-camina',lerp(-300,200,ease(cl((u-.3)/2.2))),1570,330);
+  pic('mart-alto',330,1800,500,(u-.2)/.3);pic('vigo-caja',790,1800,330,(u-.35)/.3);
+  if(u>.1)t3d('¡ZOMBIES!',540,380,170,(u-.1)/.3,-.05,GRN);
+  bubble('¿¡Y AHORA!?',360,900,(u-1.6)/.3,360,1150,62)}
  if(sc===3){
-  if(u<2.0){x.save();x.filter='grayscale(1) contrast(1.1)';street(t,1);pic('zombies-grupo',720,1720,620);pic('zombie-camina',230,1720,380);x.drawImage(IM['mart-sorpresa'],350,830,380,380);x.restore();
+  if(u<2.0){x.save();x.filter='grayscale(1) contrast(1.1)';street(t,1);pic('zombies-grupo',760,1560,560);pic('zombie-camina',200,1570,330);pic('mart-alto',330,1800,500);pic('vigo-caja',790,1800,330);x.restore();
    x.fillStyle='rgba(0,0,0,.25)';x.fillRect(-100,-100,1300,2200);
    if(u<.25){x.strokeStyle='#fff';x.lineWidth=6;for(let i=0;i<8;i++){const yy=(i*263+t*4000)%1920;x.beginPath();x.moveTo(0,yy);x.lineTo(1080,yy+20);x.stroke()}}
-   tag('¿ASÍ PIENSAN SOBREVIVIR?',540,380,(u-.3)/.3,YE,'#1d1f24',52);
+   tag('¿CON UNIFORME?',540,330,(u-.3)/.3,YE,'#1d1f24',62);tag('ASÍ NO SE SOBREVIVE',540,460,(u-.7)/.3,'#fff','#1d1f24',52);
    if(u>1.0){x.save();x.translate(540,1200);x.rotate(u*14);x.fillStyle='rgba(255,255,255,.9)';for(let i=0;i<6;i++){x.rotate(Math.PI/3);x.beginPath();x.ellipse(0,-260*ease(cl((u-1)/.8)),140,60,0,0,7);x.fill()}x.restore()}}
   else{const v=u-2.0;x.fillStyle=OR;x.fillRect(-100,-100,1300,2200);rays('#fff',.12,t,540,1100);
    pic('m-pulgar',330,1700,400,v/.35,-.03);pic('v-pulgar',780,1720,380,(v-.15)/.35,.03);
