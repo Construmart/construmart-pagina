@@ -25,7 +25,7 @@ var CAPS=[[5.4,8.9,"Un día normal… Mart y Vigo iban a entregar un pedido."],[
 <script>
 const RD='#D93025',GRN='#7BC043',WD='#8B5A2B';
 function pic(n,X,Y,W,k=1,rot=0,flip=false,alpha=1){const i=IM[n];if(!i||!i.complete||k<=0)return;const H=W*i.height/i.width;x.save();x.globalAlpha=alpha;x.translate(X,Y);x.rotate(rot);const s=back(k);x.scale(flip?-s:s,s);x.drawImage(i,-W/2,-H,W,H);x.restore()}
-function prod(n,X,Y,W,k=1,rot=0){const i=IM['p-'+n];if(!i||!i.complete||k<=0)return;const H=W*i.height/i.width;x.save();x.translate(X,Y);x.rotate(rot);const s=back(k);x.scale(s,s);x.shadowColor='rgba(0,0,0,.45)';x.shadowBlur=30;x.shadowOffsetY=14;x.drawImage(i,-W/2,-H/2,W,H);x.restore()}
+function prod(n,X,Y,W,k=1,rot=0,flip=false){const i=IM['p-'+n];if(!i||!i.complete||k<=0)return;const H=W*i.height/i.width;x.save();x.translate(X,Y);x.rotate(rot);const s=back(k);x.scale(flip?-s:s,s);x.shadowColor='rgba(0,0,0,.45)';x.shadowBlur=30;x.shadowOffsetY=14;x.drawImage(i,-W/2,-H/2,W,H);x.restore()}
 function prodH(n,X,Y,H,k=1,rot=0){const i=IM['p-'+n];if(!i||!i.complete)return;prod(n,X,Y,H*i.width/i.height,k,rot)}
 function tag(txt,X,Y,k,bg=DK,fg='#fff',size=46,rot=-.03){if(k<=0)return;x.save();x.translate(X,Y);const s=back(k);x.scale(s,s);x.rotate(rot);x.font=`900 ${size}px I`;const w=x.measureText(txt).width;
  x.fillStyle='rgba(0,0,0,.35)';rr(-w/2-28+6,-size*.75+8,w+56,size*1.5,18);x.fill();x.fillStyle=bg;rr(-w/2-28,-size*.75,w+56,size*1.5,18);x.fill();x.lineWidth=6;x.strokeStyle='#1d1f24';x.stroke();
@@ -124,9 +124,9 @@ window.R=t=>{
     ptag('PARRILLA ELÉCTRICA','VOLTECK',540,1500,(u-.4)/.3);tag('¡CARNE ASADA!',540,360,(u-1.2)/.3,YE,'#1d1f24',64)}
    else{ // linterna
     const v=u-5.0;x.fillStyle='rgba(0,0,0,.6)';x.fillRect(-100,-100,1300,2200);
-    x.save();const g=x.createRadialGradient(230,1450,40,560,900,900);g.addColorStop(0,'rgba(255,248,200,.95)');g.addColorStop(1,'rgba(255,248,200,0)');x.fillStyle=g;x.beginPath();x.moveTo(250,1440);x.lineTo(1150,500);x.lineTo(1150,1250);x.closePath();x.fill();x.restore();
+    x.save();const g=x.createRadialGradient(420,1280,40,700,900,800);g.addColorStop(0,'rgba(255,248,200,.95)');g.addColorStop(1,'rgba(255,248,200,0)');x.fillStyle=g;x.beginPath();x.moveTo(420,1280);x.lineTo(1150,480);x.lineTo(1150,1420);x.closePath();x.fill();x.restore();
     pic('m-sorpresa',650,1500,330,(v-.1)/.3);pic('v-sorpresa',920,1480,300,(v-.25)/.3);
-    prod('linterna',250,1440,520,v/.3,-.75);ptag('LINTERNA','TRUPER',540,1610,(v-.3)/.3)}}
+    prod('linterna',250,1440,520,v/.3,-.8,true);ptag('LINTERNA','TRUPER',540,1610,(v-.3)/.3)}}
   else{const v=u-2.6;x.fillStyle='#000';x.fillRect(-100,-100,1300,2200);if(v<.15){x.fillStyle='rgba(255,255,255,.25)';x.fillRect(-100,-100,1300,2200)}
    tag('…ERA ELÉCTRICA',540,700,(v-.2)/.3,'#333','#fff',56);
    if(v>1.0)bubble('¡VIGOOO!',380,1050,(v-1.0)/.25,300,1250,70);
