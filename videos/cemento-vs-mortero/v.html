@@ -7,7 +7,7 @@
 const c=document.getElementById('c'),x=c.getContext('2d');
 const IM={};for(const n of ['telefono','festeja','qr-pulgar']){const i=new Image();i.src='mart-'+n+'.png';IM[n]=i}
 const SC={};for(const n of ['s_home','s_lista','s_enviar']){const i=new Image();i.src=n+'.jpg';SC[n]=i}
-const S=[[0,3.0],[3.0,8.0],[8.0,10.0],[10.0,17.5],[17.5,24.5],[24.5,27.5],[27.5,31.0],[31.0,38.5],[38.5,42.0]];
+const S=[[0,3.0],[3.0,8.0],[8.0,10.0],[10.0,17.5],[17.5,24.5],[24.5,27.5],[27.5,31.0],[31.0,38.5],[38.5,42.0],[42.0,45.6]];
 const CAPS=[[0.15,2.9,"¿Cuál es la diferencia entre cemento y mortero?"],
 [3.1,7.9,"Parecen iguales: los dos vienen en bulto gris y los dos se mezclan con arena y agua."],
 [8.1,9.9,"Pero no hacen el mismo trabajo."],
@@ -19,6 +19,7 @@ const CAPS=[[0.15,2.9,"¿Cuál es la diferencia entre cemento y mortero?"],
 [38.6,41.6,"Cemento para lo fuerte. Mortero para pegar."]];
 </script>
 <script src="helpers.js"></script>
+<script src="intro_vs.js"></script>
 <script>
 const GR='#1F8A4C',RD='#D93025';
 // ---------- bag character ----------
@@ -68,7 +69,7 @@ function bubble(X,Y,k,lines,me){if(k<=0)return;x.save();x.translate(X,Y);const s
  x.fillStyle=me?'#DCF8C6':'#fff';x.strokeStyle='rgba(52,54,57,.25)';x.lineWidth=3;rr(-w/2,-h/2,w,h,26);x.fill();x.stroke();x.fillStyle=DK;x.textAlign='left';x.textBaseline='middle';lines.forEach((l,i)=>x.fillText(l,-w/2+28,-h/2+43+i*50));x.restore()}
 function xmark(X,Y,k){if(k<=0)return;x.save();x.translate(X,Y);const s=back(k);x.scale(s,s);x.fillStyle=RD;x.beginPath();x.arc(0,0,80,0,7);x.fill();x.strokeStyle='#fff';x.lineWidth=20;x.lineCap='round';x.beginPath();x.moveTo(-32,-32);x.lineTo(32,32);x.moveTo(32,-32);x.lineTo(-32,32);x.stroke();x.restore()}
 const CAM=[[1,540,960],[1.14,540,860],[1.1,400,1000],[1.16,680,900],[1.08,540,1060]];
-window.R=t=>{const sc=S.findIndex(([a,b])=>t>=a&&t<b),u=t-(S[sc]?S[sc][0]:0);
+window.R0=t=>{const sc=S.findIndex(([a,b])=>t>=a&&t<b),u=t-(S[sc]?S[sc][0]:0);
  const beat=sc===8?0:Math.floor(u/1.6),bu=u-beat*1.6;const cm=CAM[(beat+sc)%CAM.length];const z=(beat===0?1:cm[0])*(1+0.04*Math.max(0,1-bu/0.18))+0.012*bu;
  x.setTransform(1,0,0,1,0,0);bg(t);x.setTransform(z,0,0,z,(beat===0?540:cm[1])*(1-z),(beat===0?960:cm[2])*(1-z));const blink=(t%3.1)<.12;const bob=Math.sin(t*4)*8;
  if(sc===0){const k=ease(u/.6);title([["¿CUÁL ES LA"],["DIFERENCIA?",OR]],260,u/.4,'#fff',110);
@@ -77,7 +78,7 @@ window.R=t=>{const sc=S.findIndex(([a,b])=>t>=a&&t<b),u=t-(S[sc]?S[sc][0]:0);
   pile(290,1420,(u-2.6)/.4,'#E8C98E','arena');pile(790,1420,(u-2.8)/.4,'#E8C98E','arena');drop(400,1360,(u-3.5)/.4,.8);drop(900,1360,(u-3.6)/.4,.8);chip('¿IGUALES?',330,(u-.5)/.4,DK,'#fff',90)}
  if(sc===2){bag({x:290,y:1150,kind:'c',mood:'enojado',look:1,blink,arms:'flex'});bag({x:790,y:1150,kind:'m',mood:'enojado',look:-1,blink,arms:'flex'});
   sym('≠',540,860,u/.35,RD,240);chip('NO HACEN LO MISMO',330,(u-.3)/.4,RD,'#fff',72)}
- if(sc===3){chip('CEMENTO = EL FUERTE 💪',260,u/.4,OR,'#fff',64);
+ if(sc===3){chip('CEMENTO = EL FUERTE',260,u/.4,OR,'#fff',64);
   const k1=(u-1.2)/2.6; // concrete build
   bag({x:lerp(540,240,ease((u-1.0)/.6)),y:1280+bob*.5,s:lerp(1.15,.8,ease((u-1.0)/.6)),kind:'c',mood:'feliz',arms:'flex',blink});
   pile(600,1420,(u-1.3)/.4,'#E8C98E','arena');pile(800,1420,(u-1.6)/.4,'#9C978F','grava');
@@ -87,13 +88,13 @@ window.R=t=>{const sc=S.findIndex(([a,b])=>t>=a&&t<b),u=t-(S[sc]?S[sc][0]:0);
    if(u>4.1){const k2=ease((u-4.1)/.6);rr(980-560*k2,760,560*k2,90,8);x.fill();x.stroke()}x.restore()}
   if(u>3.6)chip(u<4.2?'CASTILLOS':(u<4.8?'CASTILLOS · LOSAS':'CASTILLOS · LOSAS · FIRMES'),400,(u-3.6)/.3,DK,'#fff',48);
   if(u>5.6){const k=ease((u-5.6)/.5);x.save();x.translate(700,620-80*(1-k));x.globalAlpha=k;x.fillStyle=DK;rr(-110,-60,220,90,12);x.fill();x.fillStyle='#fff';x.font='900 52px I';x.textAlign='center';x.textBaseline='middle';x.fillText('PESO',0,-14);x.fillStyle=DK;x.beginPath();x.moveTo(-40,40);x.lineTo(40,40);x.lineTo(0,90);x.closePath();x.fill();x.restore()}}
- if(sc===4){chip('MORTERO = EL QUE PEGA 🧱',260,u/.4,RD,'#fff',60);
+ if(sc===4){chip('MORTERO = EL QUE PEGA',260,u/.4,RD,'#fff',60);
   bag({x:lerp(540,880,ease((u-.8)/.6)),y:1170+bob*.5,s:lerp(1.15,.75,ease((u-.8)/.6)),kind:'m',mood:'feliz',arms:'mano',wave:Math.sin(u*6)*.3,blink});
   blockW(120,1160,4,5,(u-1.2)/2.6,true);
   if(u>4.0){const k=cl((u-4.0)/1.6);x.save();x.beginPath();x.rect(110,1160-5*88-20,660*k,5*88+30);x.clip();x.fillStyle='rgba(237,227,210,.9)';x.fillRect(110,1160-5*88-20,620,5*88+30);x.restore();
    // llana
    x.save();x.translate(110+620*k,1160-220+Math.sin(u*9)*60);x.fillStyle='#8D9296';x.strokeStyle=DK;x.lineWidth=6;rr(-30,-110,60,220,10);x.fill();x.stroke();x.fillStyle=OR;rr(20,-20,70,40,10);x.fill();x.stroke();x.restore()}
-  if(u>1.6)chip('PEGA BLOCK',480,(u-1.6)/.3,DK,'#fff',48);if(u>4.0)chip('APLANADO LISO',570,(u-4.0)/.3,DK,'#fff',48);if(u>5.4)chip('⏱ MÁS TIEMPO PARA TRABAJAR',1320,(u-5.4)/.3,GR,'#fff',44)}
+  if(u>1.6)chip('PEGA BLOCK',480,(u-1.6)/.3,DK,'#fff',48);if(u>4.0)chip('APLANADO LISO',570,(u-4.0)/.3,DK,'#fff',48);if(u>5.4)chip('MÁS TIEMPO PARA TRABAJAR',1320,(u-5.4)/.3,GR,'#fff',44)}
  if(sc===5){const k=ease(u/.5),cr=cl((u-1.2)/.6);const sh=u>1.0&&u<1.6?Math.sin(u*80)*10:0;
   x.save();x.translate(sh,0);x.fillStyle='#E2D6C2';x.strokeStyle=DK;x.lineWidth=7;rr(160,900,760,110,8);x.fill();x.stroke();rr(180,1010,70,400,6);x.fill();x.stroke();rr(830,1010,70,400,6);x.fill();x.stroke();
   x.fillStyle=RD;x.font='900 44px I';x.textAlign='center';x.fillText('LOSA DE MORTERO',540,970);
@@ -106,18 +107,34 @@ window.R=t=>{const sc=S.findIndex(([a,b])=>t>=a&&t<b),u=t-(S[sc]?S[sc][0]:0);
   x.save();x.translate(540,900);x.fillStyle='#5E6266';x.strokeStyle=DK;x.lineWidth=7;x.beginPath();x.moveTo(-240,-100);x.lineTo(240,-100);x.lineTo(190,90);x.lineTo(-190,90);x.closePath();x.fill();x.stroke();
   x.fillStyle='#8E9196';for(let i=0;i<9;i++){x.beginPath();x.arc(-170+i*42,-100-((i*29)%40),40,Math.PI,0);x.fill();x.stroke()}
   const sh=Math.sin(u*40)*6*(u>.6?1:0);x.translate(60+sh,-170);x.rotate(.5);x.fillStyle='#8D9296';rr(-40,-150,80,200,10);x.fill();x.stroke();x.fillStyle=OR;rr(-16,-230,32,90,10);x.fill();x.stroke();x.restore();
-  chip('PURO CEMENTO',330,u/.4,OR,'#fff',64);chip('😩 DIFÍCIL DE TRABAJAR',480,(u-1.0)/.4,DK,'#fff',52);xmark(180,660,(u-1.8)/.3);bag({x:860,y:1300,s:.55,kind:'c',mood:'duda',blink})}
+  chip('PURO CEMENTO',330,u/.4,OR,'#fff',64);chip('DIFÍCIL DE TRABAJAR',480,(u-1.0)/.4,DK,'#fff',52);xmark(180,660,(u-1.8)/.3);bag({x:860,y:1300,s:.55,kind:'c',mood:'duda',blink})}
  if(sc===7){const scr=u<2.4?'s_home':(u<5.2?'s_lista':'s_enviar');phone(540,930,u/.6,scr,1.05);
   chip('¿CUÁNTOS BULTOS OCUPO?',230,u/.4,DK,'#fff',56);
   if(u>2.4&&u<5.2){x.save();x.globalAlpha=.55+.45*Math.sin(u*8);x.strokeStyle=OR;x.lineWidth=10;rr(300,990,490,215,20);x.stroke();x.restore()}
-  if(u>5.2){x.save();x.fillStyle='rgba(52,54,57,.55)';x.fillRect(0,0,1080,1920);x.restore();bubble(560,700,(u-5.3)/.3,['Hola, para mi barda ocupo','cemento y mortero 🧱'],true);
-   bubble(520,980,(u-6.0)/.3,['¡Claro! Te recomendamos','10 de mortero y 4 de cemento.','✅ Hay existencia'],false);img('telefono',880,1560,330,(u-5.6)/.4)}}
+  if(u>5.2){x.save();x.fillStyle='rgba(52,54,57,.55)';x.fillRect(0,0,1080,1920);x.restore();bubble(560,700,(u-5.3)/.3,['Hola, para mi barda ocupo','cemento y mortero'],true);
+   bubble(520,980,(u-6.0)/.3,['¡Claro! Te recomendamos','10 de mortero y 4 de cemento.','Hay existencia'],false);img('telefono',880,1560,330,(u-5.6)/.4)}}
  if(sc===8){x.fillStyle=OR;x.fillRect(0,0,1080,1920);const k=ease(u/.6);
   title([["CEMENTO",'#fff'],["PARA LO FUERTE",YE]],210,u/.4,DK,96);title([["MORTERO",'#fff'],["PARA PEGAR",YE]],470,(u-.6)/.4,DK,96);
   bag({x:lerp(-200,330,k),y:1250,kind:'c',mood:'feliz',arms:'arriba',blink,rot:.12*k,s:.85});bag({x:lerp(1300,750,k),y:1250,kind:'m',mood:'feliz',arms:'arriba',blink,rot:-.12*k,s:.85});
-  if(u>.7){sym('✋',540,760,(u-.7)/.3,'#fff',120)}
   if(u>1.2){const kk=back((u-1.2)/.4);x.save();x.translate(540,1760);x.scale(kk,kk);x.font='900 60px I';const w=x.measureText('construmartmx.com').width;x.fillStyle=DK;rr(-w/2-34,-52,w+68,100,28);x.fill();x.fillStyle='#fff';x.textAlign='center';x.textBaseline='middle';x.fillText('construmartmx.com',0,2);x.restore()}}
+
+ if(sc===9){x.fillStyle=OR;x.fillRect(-100,-100,1300,2200);
+   title([["COTIZA HOY",'#fff']],260,u/.4,DK,110);img('qr-pulgar',540,1330,640,(u-.2)/.4);
+   if(u>.5){const kk=back((u-.5)/.4);x.save();x.translate(540,1450);x.scale(kk,kk);x.font='900 64px I';const w=x.measureText('construmartmx.com').width;x.fillStyle=DK;rr(-w/2-36,-56,w+72,108,30);x.fill();x.fillStyle='#fff';x.textAlign='center';x.textBaseline='middle';x.fillText('construmartmx.com',0,2);x.restore()}
+   socials(540,1580,(u-.7)/.4);
+   if(u>.9){const kk=back((u-.9)/.4);x.save();x.translate(540,1720);x.scale(kk,kk);x.fillStyle='#fff';rr(-470,-60,940,120,30);x.fill();x.fillStyle=DK;x.font='900 40px I';x.textAlign='center';x.textBaseline='middle';x.fillText('Río Suchiate 311-218-6196',30,-18);x.fillText('Armadillo 311-170-9152',30,26);telIco(-330,-18,38);telIco(-300,26,38);x.restore()}
+   x.setTransform(1,0,0,1,0,0);return}
  x.setTransform(1,0,0,1,0,0);
  caption(t)};
+function telIco(X,Y,S){x.save();x.translate(X,Y);x.fillStyle='#2bb24c';x.beginPath();x.arc(0,0,S/2,0,7);x.fill();x.scale(S/100,S/100);x.fillStyle='#fff';x.beginPath();x.moveTo(-22,-26);x.quadraticCurveTo(-30,-10,-18,8);x.quadraticCurveTo(-4,28,18,30);x.lineTo(28,18);x.lineTo(12,6);x.lineTo(4,14);x.quadraticCurveTo(-8,8,-12,-6);x.lineTo(-4,-14);x.lineTo(-14,-30);x.closePath();x.fill();x.restore()}
+const TTP=new Path2D('M16.6 2h-3.4v13.4a2.9 2.9 0 1 1-2.1-2.8V9.1a6.4 6.4 0 1 0 5.5 6.3V8.6a7.9 7.9 0 0 0 4.4 1.3V6.5a4.4 4.4 0 0 1-4.4-4.5z');
+function icoIG(X,Y,S){x.save();x.translate(X,Y);const g=x.createRadialGradient(-S*.2,S*.55,2,-S*.2,S*.55,S*1.3);g.addColorStop(0,'#fdf497');g.addColorStop(.1,'#fdf497');g.addColorStop(.45,'#fd5949');g.addColorStop(.65,'#d6249f');g.addColorStop(1,'#285AEB');x.fillStyle=g;rr(-S/2,-S/2,S,S,S*.26);x.fill();
+ x.strokeStyle='#fff';x.lineWidth=S*.08;rr(-S*.3,-S*.3,S*.6,S*.6,S*.17);x.stroke();x.beginPath();x.arc(0,0,S*.14,0,7);x.stroke();x.fillStyle='#fff';x.beginPath();x.arc(S*.18,-S*.18,S*.04,0,7);x.fill();x.restore()}
+function icoTT(X,Y,S){x.save();x.translate(X,Y);x.fillStyle='#111';rr(-S/2,-S/2,S,S,S*.26);x.fill();const k=S/24*.72;x.translate(-12*k,-12*k);x.scale(k,k);
+ x.save();x.translate(-.7,-.6);x.fillStyle='#25F4EE';x.fill(TTP);x.restore();x.save();x.translate(.7,.6);x.fillStyle='#FE2C55';x.fill(TTP);x.restore();x.fillStyle='#fff';x.fill(TTP);x.restore()}
+function socials(X,Y,k){if(k<=0)return;x.save();x.translate(X,Y);const s=back(k);x.scale(s,s);x.font='800 40px I';x.textBaseline='middle';x.textAlign='left';
+ const a='@f.construmart',b='@construmartmx',S=64,g=14,gap=44;const wa=x.measureText(a).width,wb=x.measureText(b).width;const W=S+g+wa+gap+S+g+wb;let cx=-W/2;
+ icoIG(cx+S/2,0,S);cx+=S+g;x.fillStyle='#fff';x.fillText(a,cx,2);cx+=wa+gap;icoTT(cx+S/2,0,S);cx+=S+g;x.fillStyle='#fff';x.fillText(b,cx,2);x.restore()}
+window.R=t=>{if(t<VS_TI){vsIntro(t);return}R0(t-VS_TI+3.0)};
 R(0);
 </script></body></html>
