@@ -9,7 +9,7 @@ const IM={};
 for(const n of ['m-pudin','mart-alto','mart-sorpresa','fina-cafe','fina-senala','hormiguita-corre','m-corre','m-festeja','m-guino','m-lentes','m-manos','m-pensando','m-pulgar','m-sentado','m-sorpresa','mart-cemento','mart-pulgar','mart-qr-pulgar','v-asoma','v-brazos','v-corre','v-festeja','v-guino','v-pulgar','v-sorpresa','vigo-caja','vigo-saludo','zombie-camina','zombie-cerebros','zombie-nuca','zombie-sorpresa','zombie-toca','zombies-grupo']){const i=new Image();i.src=n+'.png';IM[n]=i}
 for(const n of ['azadon','brocha','cadena','candado','cinta','desplantador','escalera','linterna','martillo','pala','parrilla','pintura']){const i=new Image();i.src='productos/'+n+'.png';IM['p-'+n]=i}
 // Escenas (borrador sin voz; se re-sincronizan con la voz)
-var S=[[0, 5.2], [5.2, 9.1], [9.1, 15.7], [15.7, 19.3], [19.3, 24.0], [24.0, 29.5], [29.5, 36.2], [36.2, 47.0], [47.0, 51.9], [51.9, 56.9], [56.9, 65.9], [65.9, 75.7], [75.7, 82.7]];
+var S=[[0, 5.2], [5.2, 9.1], [9.1, 15.7], [15.7, 19.3], [19.3, 24.0], [24.0, 29.5], [29.5, 36.2], [36.2, 47.0], [47.0, 51.9], [51.9, 56.9], [56.9, 65.9], [65.9, 76.5], [76.5, 83.5]];
 var CAPY=1770;
 var CAPS=[[5.2, 8.72, "Si el apocalipsis zombie empieza mientras vas a entregar un pedido…"], [9.14, 13.0, "…primero, cámbiate. Con uniforme no sobrevive nadie."], [13.64, 15.3, "Ahora sí… como de serie."], [15.92, 19.0, "Y no corras a tu casa. Corre a la ferretería más cercana."], [19.42, 23.54, "Es el lugar más seguro de la ciudad… y todo lo que necesitas está en los estantes."], [24.16, 27.44, "Regla uno: que no entren. Cadena y candado…"], [27.74, 29.04, "…y un aviso, por si acaso."], [29.64, 31.48, "Regla dos: que no te vean."], [31.74, 33.6, "Si no te ven… no se detienen."], [33.6, 35.78, "Y un botiquín cerca. Siempre."], [36.38, 40.98, "Regla tres: la luz se va a acabar… pero Mart quería carne asada…"], [40.98, 41.9, "…en la parrilla eléctrica."], [43.98, 46.0, "Por eso, siempre: linterna."], [47.32, 48.62, "Regla cuatro: sube."], [49.04, 51.54, "Desde arriba lo ves todo… y nadie te alcanza."], [52.02, 54.12, "Regla cinco: piensa a largo plazo."], [54.58, 56.36, "En teoría… pueden aguantar meses."], [57.02, 59.42, "Afuera, los gruñidos se fueron apagando."], [59.9, 61.38, "Pero había un solo problema."], [61.38, 65.54, "Alguien toca la puerta. Lento… paciente."]];
 </script>
@@ -155,8 +155,8 @@ window.R=t=>{
   pic('m-sentado',300,1700,380,1,0,false,.85);
   if(u>4.5){const k=(u-4.5);for(const [d,X,Y] of [[0,700,700],[.9,780,820],[1.8,690,940]]){const a=cl((k-d)/.2)*cl(1-(k-d-.6)/.4);if(a>0){x.save();x.globalAlpha=a;x.font='900 72px I';x.fillStyle='#ddd';x.textAlign='center';x.fillText('toc…',X,Y);x.restore()}}}
   vign(.75);hud('DÍA 3 · 3:00 AM',u/.4);CY=1120}
- if(sc===11){shake(9.65,.4,26);store(t,.55);nightTint(.3);
-  const P=[[0,1.2],[1.2,2.7],[2.7,5.0],[5.0,7.9],[7.9,7.9],[7.9,8.7],[8.7,9.8]];let p=P.findIndex(([a,b])=>u>=a&&u<b);if(p<0)p=6;const w=u-P[p][0];
+ if(sc===11){shake(10.45,.4,26);store(t,.55);nightTint(.3);
+  const P=[[0,1.2],[1.2,2.7],[2.7,5.8],[5.8,8.7],[8.7,8.7],[8.7,9.5],[9.5,10.6]];let p=P.findIndex(([a,b])=>u>=a&&u<b);if(p<0)p=6;const w=u-P[p][0];
   if(p===0){pic('zombie-toca',540,1620,560,w/.3);stampT('TOC TOC',760,620,w-.2,YE,100)}
   if(p===1){pic('zombie-cerebros',640,1700,500,w/.25);bubble('¿CEREBROOOS?',540,520,(w-.15)/.25,640,800,66)}
   if(p===2){pic('fina-senala',360,1760,380,w/.25);bubble('NO HAY…\n¿CEMEEENTO SÍ?',600,520,(w-.15)/.25,400,820,60)}
