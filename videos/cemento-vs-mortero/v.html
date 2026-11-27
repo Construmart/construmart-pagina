@@ -9,15 +9,7 @@ const IM={};for(const n of ['telefono','festeja','qr-pulgar','pensando','alto','
 const SC={};for(const n of ['s_home','s_lista','s_enviar']){const i=new Image();i.src=n+'.jpg';SC[n]=i}
 const S=[[0,3.0],[3.0,8.0],[8.0,10.0],[10.0,17.5],[17.5,24.5],[24.5,27.5],[27.5,31.0],[31.0,38.5],[38.5,42.0],[42.0,45.6]];
 var CAPY=1760;
-const CAPS=[[0.15,2.9,"¿Cuál es la diferencia entre cemento y mortero?"],
-[3.1,7.9,"Parecen iguales: los dos vienen en bulto gris y los dos se mezclan con arena y agua."],
-[8.1,9.9,"Pero no hacen el mismo trabajo."],
-[10.1,17.4,"El cemento es el fuerte: con arena, grava y varilla se vuelve concreto para castillos, losas y firmes. Todo lo que carga peso."],
-[17.6,24.4,"El mortero es el que pega: une tus blocks y deja liso tu aplanado. Es más manejable y te da más tiempo para trabajar."],
-[24.6,27.4,"Si haces tu losa con mortero, no va a aguantar igual."],
-[27.6,30.9,"Y si pegas block solo con cemento, la mezcla es más difícil de trabajar."],
-[31.1,38.4,"¿No sabes cuántos bultos ocupas? Arma tu lista en construmartmx.com y te asesoramos por WhatsApp, con precio y existencia."],
-[38.6,41.6,"Cemento para lo fuerte. Mortero para pegar."]];
+const CAPS=[[3.0, 7.68, "Parecen iguales: los dos vienen en bulto y los dos se mezclan con arena y agua."], [8.0, 9.54, "Pero no hacen el mismo trabajo."], [10.0, 17.01, "El cemento es el fuerte: con arena, grava y varilla se vuelve concreto para castillos, losas y firmes. Todo lo que carga peso."], [17.5, 24.04, "El mortero es el que pega: une tus blocks y deja liso tu aplanado. Es más manejable y te da más tiempo para trabajar."], [24.5, 27.05, "Si haces tu losa con mortero, no va a aguantar igual."], [27.5, 30.6, "Y si pegas block solo con cemento, la mezcla es más difícil de trabajar."], [31.0, 38.16, "¿No sabes cuántos bultos ocupas? Arma tu lista en construmartmx.com y te asesoramos por WhatsApp, con precio y existencia."], [38.5, 41.3, "Cemento para lo fuerte. Mortero para pegar."]];
 </script>
 <script src="helpers.js"></script>
 <script src="intro_vs.js"></script>
@@ -134,7 +126,7 @@ window.R0=t=>{const sc=S.findIndex(([a,b])=>t>=a&&t<b),u=t-(S[sc]?S[sc][0]:0);
  if(sc===8){x.fillStyle=OR;x.fillRect(0,0,1080,1920);const k=ease(u/.6);
   title([["CEMENTO",'#fff'],["PARA LO FUERTE",YE]],210,u/.4,DK,96);title([["MORTERO",'#fff'],["PARA PEGAR",YE]],470,(u-.6)/.4,DK,96);
   bag({x:lerp(-200,330,k),y:1250,kind:'c',mood:'feliz',arms:'arriba',blink,rot:.12*k,s:.85});bag({x:lerp(1300,750,k),y:1250,kind:'m',mood:'feliz',arms:'arriba',blink,rot:-.12*k,s:.85});
-  if(u>1.2){const kk=back((u-1.2)/.4);x.save();x.translate(540,1760);x.scale(kk,kk);x.font='900 60px I';const w=x.measureText('construmartmx.com').width;x.fillStyle=DK;rr(-w/2-34,-52,w+68,100,28);x.fill();x.fillStyle='#fff';x.textAlign='center';x.textBaseline='middle';x.fillText('construmartmx.com',0,2);x.restore()}}
+  if(u>1.2){const kk=back((u-1.2)/.4);x.save();x.translate(540,1600);x.scale(kk,kk);x.font='900 60px I';const w=x.measureText('construmartmx.com').width;x.fillStyle=DK;rr(-w/2-34,-52,w+68,100,28);x.fill();x.fillStyle='#fff';x.textAlign='center';x.textBaseline='middle';x.fillText('construmartmx.com',0,2);x.restore()}}
 
  if(sc===9){x.fillStyle=OR;x.fillRect(-100,-100,1300,2200);
    title([["COTIZA HOY",'#fff']],260,u/.4,DK,110);img('qr-pulgar',540,1330,640,(u-.2)/.4);
@@ -153,6 +145,8 @@ function icoTT(X,Y,S){x.save();x.translate(X,Y);x.fillStyle='#111';rr(-S/2,-S/2,
 function socials(X,Y,k){if(k<=0)return;x.save();x.translate(X,Y);const s=back(k);x.scale(s,s);x.font='800 40px I';x.textBaseline='middle';x.textAlign='left';
  const a='@f.construmart',b='@construmartmx',S=64,g=14,gap=44;const wa=x.measureText(a).width,wb=x.measureText(b).width;const W=S+g+wa+gap+S+g+wb;let cx=-W/2;
  icoIG(cx+S/2,0,S);cx+=S+g;x.fillStyle='#fff';x.fillText(a,cx,2);cx+=wa+gap;icoTT(cx+S/2,0,S);cx+=S+g;x.fillStyle='#fff';x.fillText(b,cx,2);x.restore()}
-window.R=t=>{if(t<VS_TI){vsIntro(t);return}R0(t-VS_TI+3.0)};
+const VA=[2.34, 6.66, 8.74, 16.46, 23.2, 26.02, 29.86, 37.0, 40.4],RA=[3, 8, 10, 17.5, 24.5, 27.5, 31, 38.5, 42];
+function warp(v){if(v<=VA[0])return RA[0]+(v-VA[0]);for(let i=0;i<VA.length-1;i++)if(v<=VA[i+1])return RA[i]+(RA[i+1]-RA[i])*(v-VA[i])/(VA[i+1]-VA[i]);return RA[RA.length-1]+(v-VA[VA.length-1])}
+window.R=t=>{if(t<VS_TI){vsIntro(t);return}R0(warp(t-2.6))};
 R(0);
 </script></body></html>
