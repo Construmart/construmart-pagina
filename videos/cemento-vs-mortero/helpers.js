@@ -6,7 +6,7 @@ const GROUPS=[];for(const [a,b,t] of CAPS){const w=t.split(' ');const n=Math.cei
  for(let g=0;g<n;g++){const ws=w.slice(g*per,(g+1)*per);const st=[];for(const ww of ws){st.push(a+(b-a)*acc/tot);acc+=ww.length+1}GROUPS.push({ws,st,end:g<n-1?a+(b-a)*acc/tot:b+0.15})}}
 function caption(t){let g=null;for(const G of GROUPS)if(t>=G.st[0]-0.02&&t<G.end)g=G;if(!g)return;
  x.font='800 54px I';const sp=x.measureText(' ').width;const ws=g.ws.map(w=>x.measureText(w).width);const W=ws.reduce((a,b)=>a+b,0)+sp*(ws.length-1);
- const y=1560,X0=540-W/2;x.fillStyle='rgba(52,54,57,.94)';rr(X0-26,y-50,W+52,86,22);x.fill();let X=X0;let cur=0;for(let i=0;i<g.ws.length;i++)if(t>=g.st[i])cur=i;
+ const y=(typeof CAPY!=="undefined"?CAPY:1560),X0=540-W/2;x.fillStyle='rgba(52,54,57,.94)';rr(X0-26,y-50,W+52,86,22);x.fill();let X=X0;let cur=0;for(let i=0;i<g.ws.length;i++)if(t>=g.st[i])cur=i;
  for(let i=0;i<g.ws.length;i++){x.fillStyle=i===cur?YE:'#fff';x.textBaseline='middle';x.textAlign='left';x.fillText(g.ws[i],X,y-6);X+=ws[i]+sp}}
 function rr(X,Y,W,H,r){x.beginPath();x.roundRect(X,Y,W,H,r)}
 function chip(txt,y,k,bg=DK,fg='#fff',size=74){if(k<=0)return;x.save();x.translate(540,y);const s=back(k);x.scale(s,s);x.rotate(-0.03);x.font=`900 ${size}px I`;const w=x.measureText(txt).width;x.fillStyle=bg;rr(-w/2-34,-size*.78,w+68,size*1.5,22);x.fill();x.fillStyle=fg;x.textAlign='center';x.textBaseline='middle';x.fillText(txt,0,2);x.restore()}
